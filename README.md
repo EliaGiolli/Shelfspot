@@ -1,7 +1,5 @@
 # 📚 ShelfSpot | Modern Library Management
 
-> **Status:** 🚧 **Project under active development**
-
 ShelfSpot is a high-performance library management platform designed to deliver a seamless and reactive user experience. Built with **Angular 19+**, it showcases modern framework architectures including Signal-based reactivity and strict Zod data validation.
 
 ---
@@ -28,7 +26,7 @@ ShelfSpot is a high-performance library management platform designed to deliver 
 
 ---
 
-## 🛠 **Currently in Development (Forms & UX/UI)**
+## 🛠 **Forms & UX/UI**
 
 - 📬 **Signal-Based Contact Form:**  
   Modern messaging form using signal-driven state instead of `ReactiveFormsModule` for lighter, faster UX.
