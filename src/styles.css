@@ -1,0 +1,47 @@
+@import "tailwindcss";
+
+@theme {
+  /* Nuova Palette "Library Heritage" */
+  --color-primary: var(--deep-leather);
+  --color-secondary: var(--aged-parchment);
+  --color-text-primary: var(--old-ink);
+  --color-danger:var(--danger);
+  --color-accent: var(--burnished-amber);
+  --color-light: var(--light);
+
+  /* Definiamo i valori specifici */
+  --deep-leather: #2d1b0d;      /* Marrone scurissimo (Rilegature) */
+  --aged-parchment: #f4ece1;    /* Crema caldo (Pagine invecchiate) */
+  --old-ink: #3d342d;           /* Grigio fango scuro (Inchiostro) */
+  --burnished-amber: #b45309;   /* Ambra/Bronzo (Dettagli in oro) */
+  --danger: #E63946;
+  --light: #fff;
+}
+
+html, body {
+  margin: 0;
+  overflow-x: hidden;
+  /* Usiamo le variabili Tailwind v4 appena definite */
+  background-color: var(--color-secondary);
+  color: var(--color-text-primary);
+  font-family: 'Poppins', system-ui, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* GLOBAL TYPOGRAPHY */
+h1, h2, h3, strong {
+    color: var(--color-primary); /* I titoli usano il marrone pelle per contrasto */
+    font-weight: 700; 
+    letter-spacing: -0.01em;
+}
+
+p, span, li {
+    color: var(--color-text-primary);
+    line-height: 1.7; /* Leggermente più arioso per favorire la lettura */
+}
+
+/* Un tocco di classe: selezione del testo color carta/oro */
+::selection {
+  background-color: var(--color-accent);
+  color: var(--color-secondary);
+}
