@@ -1,47 +1,94 @@
+
 @import "tailwindcss";
 
-@theme {
-  /* Nuova Palette "Library Heritage" */
-  --color-primary: var(--deep-leather);
-  --color-secondary: var(--aged-parchment);
-  --color-text-primary: var(--old-ink);
-  --color-danger:var(--danger);
-  --color-accent: var(--burnished-amber);
-  --color-light: var(--light);
+/*
+ * DESIGN SYSTEM — Library Heritage
+ *
+ * Nuova palette cromatica.
+ * I token --color-* vengono esposti da Tailwind CSS v4
+ * e generano le rispettive utility class.
+ */
 
-  /* Definiamo i valori specifici */
-  --deep-leather: #2d1b0d;      /* Marrone scurissimo (Rilegature) */
-  --aged-parchment: #f4ece1;    /* Crema caldo (Pagine invecchiate) */
-  --old-ink: #3d342d;           /* Grigio fango scuro (Inchiostro) */
-  --burnished-amber: #b45309;   /* Ambra/Bronzo (Dettagli in oro) */
-  --danger: #E63946;
-  --light: #fff;
+@theme {
+  /* Background e superfici */
+  --color-bg-main: #F4ECE1;
+  --color-surface: #EAE0D2;
+  --color-surface-elevated: #FBF8F3;
+
+  /* Testi */
+  --color-text-main: #3D342D;
+  --color-secondary-brown: #5B4030;
+
+  /* Accenti */
+  --color-accent: #A47755;
+  --color-accent-soft: #D8C3AA;
+
+  /* Colori di sistema */
+  --color-danger: #E63946;
+  --color-light: #FFFFFF;
+
+  /*
+   * Alias di compatibilità.
+   * Mantengono funzionanti le utility e i riferimenti
+   * CSS esistenti durante la migrazione.
+   */
+  --color-primary: var(--color-secondary-brown);
+  --color-secondary: var(--color-bg-main);
+  --color-text-primary: var(--color-text-main);
 }
 
-html, body {
+/*
+ * Variabili legacy.
+ * Mantengono compatibili eventuali riferimenti diretti
+ * a queste proprietà nei componenti esistenti.
+ */
+:root {
+  --deep-leather: var(--color-secondary-brown);
+  --aged-parchment: var(--color-bg-main);
+  --old-ink: var(--color-text-main);
+  --burnished-amber: var(--color-accent);
+  --danger: var(--color-danger);
+  --light: var(--color-light);
+}
+
+html,
+body {
   margin: 0;
   overflow-x: hidden;
-  /* Usiamo le variabili Tailwind v4 appena definite */
-  background-color: var(--color-secondary);
-  color: var(--color-text-primary);
+
+  background-color: var(--color-bg-main);
+  color: var(--color-text-main);
+
   font-family: 'Poppins', system-ui, sans-serif;
-  transition: background-color 0.3s ease, color 0.3s ease;
+
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
 /* GLOBAL TYPOGRAPHY */
-h1, h2, h3, strong {
-    color: var(--color-primary); /* I titoli usano il marrone pelle per contrasto */
-    font-weight: 700; 
-    letter-spacing: -0.01em;
+/*
+ * Queste regole sono mantenute temporaneamente.
+ * La loro revisione è prevista nei TASK-110 e successivi.
+ */
+h1,
+h2,
+h3,
+strong {
+  color: var(--color-primary);
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
-p, span, li {
-    color: var(--color-text-primary);
-    line-height: 1.7; /* Leggermente più arioso per favorire la lettura */
+p,
+span,
+li {
+  color: var(--color-text-primary);
+  line-height: 1.7;
 }
 
-/* Un tocco di classe: selezione del testo color carta/oro */
+/* Text selection */
 ::selection {
   background-color: var(--color-accent);
-  color: var(--color-secondary);
+  color: var(--color-bg-main);
 }
