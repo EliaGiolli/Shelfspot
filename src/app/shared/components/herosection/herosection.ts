@@ -6,14 +6,14 @@ import {
 } from '@angular/core';
 import { IconComponent } from '../icon/icon';
 import { CardComponent } from '../card/card';
-import { Button } from '../button/button';
+import { ButtonLink } from '../button-links/button-links';
 
 import { HttpBookService } from '../../../core/services/http-book.service';
 import { ApiBookData } from '../../types/api-book-data';
 
 @Component({
   selector: 'app-herosection',
-  imports: [IconComponent, CardComponent, Button],
+  imports: [IconComponent, CardComponent, ButtonLink],
   templateUrl: './herosection.html',
   styleUrl: './herosection.css',
 })

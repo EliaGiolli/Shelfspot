@@ -1,25 +1,32 @@
 import { Component, computed, input } from '@angular/core';
 import { ButtonVariant } from '../../types/custom-components-types';
+import { CustomButton } from '../../utils/btn-custom-variants';
 
 @Component({
   selector: 'app-button',
-  imports: [],
+  standalone: true,
   template: `
-    <button [type]="type()" [disabled]="disabled()">
+    <button
+      [class] = "buttonClasses()"
+      [type]="type()"
+      [disabled]="disabled()"
+      [attr.aria-label]="ariaLabel() || null"
+    >
       <ng-content></ng-content>
     </button>
   `,
-  styleUrl: './button.css',
   host: {
-    '[class]': 'variantClass()',
     '[class.disabled]': 'disabled()'
   }
 })
 export class Button {
   variant = input<ButtonVariant>('primary');
   type = input<'button' | 'submit' | 'reset'>('button');
-  disabled = input<boolean>(false);
-  href = input<string>()
+  disabled = input(false);
+  ariaLabel = input<string>();
 
-  protected variantClass = computed(() => `btn-${this.variant()}`);
+  // This computation is part of the mimicking the behavior of clsx and CVA began inside the btn-custom-variants.ts file
+   protected buttonClasses = computed(() =>
+    `${CustomButton.base} ${CustomButton.variants[this.variant()]}`
+  );
 }

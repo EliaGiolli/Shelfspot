@@ -1,0 +1,2811 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+public/
+  favicon.ico
+src/
+  app/
+    core/
+      models/
+        benefits.model.ts
+        faqs.model.ts
+        reviews.model.ts
+      schemas/
+        book-api.schema.ts
+        form-contacts.schema.ts
+      services/
+        contacts.service.ts
+        favorites.service.ts
+        http-book.service.ts
+        loans.service.ts
+      tokens/
+        api.token.ts
+    features/
+      auth/
+        login/
+          login.css
+          login.html
+          login.ts
+        register/
+          register.css
+          register.html
+          register.ts
+      book-search/
+        search-modal/
+          search-modal.css
+          search-modal.html
+          search-modal.ts
+        search-page/
+          search-page.css
+          search-page.html
+          search-page.ts
+      contacts/
+        contacts.css
+        contacts.html
+        contacts.ts
+      favorites/
+        favorite-page/
+          favorite-page.css
+          favorite-page.html
+          favorite-page.ts
+      layouts/
+        auth-layout/
+          auth-layout.css
+          auth-layout.html
+          auth-layout.ts
+        book-layout/
+          book-layout.css
+          book-layout.html
+          book-layout.ts
+        homepage/
+          homepage.css
+          homepage.html
+          homepage.ts
+        main-layout/
+          main-layout.css
+          main-layout.ts
+      loans/
+        loans-page/
+          loans-page.css
+          loans-page.ts
+      not-found/
+        not-found.css
+        not-found.html
+        not-found.ts
+    shared/
+      components/
+        button/
+          button.css
+          button.ts
+        card/
+          card.css
+          card.ts
+        footer/
+          footer.css
+          footer.html
+          footer.ts
+        herosection/
+          herosection.css
+          herosection.html
+          herosection.ts
+        icon/
+          icon.css
+          icon.spec.ts
+          icon.ts
+        navbar/
+          navbar.css
+          navbar.html
+          navbar.ts
+        tooltip/
+          tooltip.css
+          tooltip.ts
+      directives/
+        click-feedback.directive.ts
+        tooltip.directive.ts
+      pipes/
+        cover-fallback-pipe-pipe.ts
+      types/
+        api-book-data.ts
+        custom-components-types.ts
+        loans.types.ts
+      validators/
+        signal-validator.ts
+    app.config.ts
+    app.css
+    app.html
+    app.routes.ts
+    app.ts
+  assets/
+    icons/
+      arrow-left.svg
+      arrow-right.svg
+      badge-check.svg
+      book-open.svg
+      chevron-down.svg
+      database.svg
+      external-link.svg
+      googlemaps.svg
+      heart.svg
+      linkedin.svg
+      mail.svg
+      menu.svg
+      monitor.svg
+      search.svg
+      send.svg
+      trash.svg
+      user.svg
+      x.svg
+    images/
+      book-fallback-cover.jpg
+      library-background.jpg
+  index.html
+  main.ts
+  styles.css
+  test-setup.ts
+.editorconfig
+.gitignore
+.postcssrc.json
+.prettierrc
+angular.json
+package.json
+README.md
+tsconfig.app.json
+tsconfig.json
+tsconfig.spec.json
+typing.d.ts
+vitest.config.ts
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="src/app/core/models/benefits.model.ts">
+export const benefits = [
+  {
+    icon: '📚',
+    title: 'Explore Diverse Genres',
+    description: 'From epic fantasy to urban legends, browse thousands of genres tailored to your taste.',
+  },
+  {
+    icon: '⭐',
+    title: 'Personalized Favourites',
+    description: 'Save and manage your favorite books easily with your personalized sidebar.',
+  },
+  {
+    icon: '🏠',
+    title: 'Home Book Delivery',
+    description: 'Request books online and get them delivered right to your doorstep with ease.',
+  },
+];
+</file>
+
+<file path="src/app/core/models/faqs.model.ts">
+export const FAQs = [
+   {
+    question: "How do I search for books?",
+    answer: "Simply type your query into the search bar and results will appear instantly.",
+  },
+  {
+    question: "Can I save my favorite books?",
+    answer: "Yes! You can add books to your favorites and access them anytime.",
+  },
+  {
+    question: "Is there a mobile app?",
+    answer: "Currently, we support mobile browsers with a responsive design.",
+  },
+]
+</file>
+
+<file path="src/app/core/models/reviews.model.ts">
+export const reviews = [
+  {
+    name: "Alice Johnson",
+    text: "An amazing platform! Found so many great fantasy books.",
+  },
+  {
+    name: "Mark Smith",
+    text: "Easy to use and has a fantastic collection.",
+  },
+  {
+    name: "Sophia Lee",
+    text: "My go-to site for fantasy book recommendations!",
+  },
+];
+</file>
+
+<file path="src/app/core/schemas/book-api.schema.ts">
+import { z } from 'zod';
+
+// Base schema with common fields for both
+const BaseBookSchema = z.object({
+  key: z.string(),
+  title: z.string(),
+  author_name: z.array(z.string()).optional(),
+  cover_i: z.number().optional(),
+  first_publish_year: z.number().optional(),
+});
+
+// 1. Schema for the search results (Light)
+export const BookSearchResultSchema = BaseBookSchema;
+export type BookSearchResult = z.infer<typeof BookSearchResultSchema>;
+
+// 2. Schema for the book detail (Full)
+export const BookDetailSchema = BaseBookSchema.extend({
+  subject: z.array(z.string()).optional().default([]),
+  description: z.string().optional().or(z.object({ value: z.string() }).transform(d => d.value)),
+  numberOfPages: z.number().optional(),
+});
+export type BookDetail = z.infer<typeof BookDetailSchema>;
+
+// Schema for the search response
+export const SearchResponseSchema = z.object({
+  docs: z.array(BookSearchResultSchema)
+});
+</file>
+
+<file path="src/app/core/schemas/form-contacts.schema.ts">
+import { z } from 'zod';
+import { FormStatus } from '../../shared/types/custom-components-types';
+
+export const ContactsFormSchema = z.object({
+    name: z.string().min(3).nonempty(),
+    email: z.string().email().regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/),
+    message: z.string().min(4).max(100),
+    status: z.nativeEnum(FormStatus)
+});
+</file>
+
+<file path="src/app/core/services/contacts.service.ts">
+import { Injectable, inject, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { API_URL } from '../tokens/api.token';
+import { delay, Observable, of, tap } from 'rxjs';
+
+export interface ContactMessage {
+  name: string;
+  email: string;
+  message: string;
+}
+
+@Injectable({ providedIn: 'root' })
+export class ContactsService {
+  private http = inject(HttpClient);
+  private baseUrl = inject(API_URL);
+  
+  // Signal to manage the global state of the sending
+  isSending = signal(false);
+
+  sendMessage(data: ContactMessage): Observable<any> {
+    this.isSending.set(true);
+    
+    // Simulate an API call with a 1.5s delay
+    return of({ success: true }).pipe(
+      delay(1500),
+      tap(() => this.isSending.set(false))
+    );
+  }
+}
+</file>
+
+<file path="src/app/core/services/favorites.service.ts">
+import { Injectable, signal } from "@angular/core";
+import { ApiBookData } from "../../shared/types/api-book-data";
+
+@Injectable({ providedIn: 'root' })
+export class FavoriteService {
+  // Private signal to manage the internal state
+  private favoritesSignal = signal<ApiBookData[]>(this.loadFromStorage());
+
+  // Public signal for readonly components
+  favorites = this.favoritesSignal.asReadonly();
+
+  toggleFavorite(book: ApiBookData) {
+    this.favoritesSignal.update(list => {
+      const exists = list.find(b => b.key === book.key);
+      const newList = exists ? list.filter(b => b.key !== book.key) : [...list, book];
+      localStorage.setItem('shelfspot_favs', JSON.stringify(newList));
+      return newList;
+    });
+  }
+
+  private loadFromStorage(): ApiBookData[] {
+    const data = localStorage.getItem('shelfspot_favs');
+    return data ? JSON.parse(data) : [];
+  }
+
+  isFavorite(book: ApiBookData): boolean {
+    return this.favorites().some(b => b.key === book.key);
+  }
+}
+</file>
+
+<file path="src/app/core/services/http-book.service.ts">
+import { 
+    Injectable, 
+    inject,
+} from "@angular/core";
+// HTTP
+import { HttpClient } from "@angular/common/http";
+// RxJS and Operators
+import { map, Observable } from "rxjs";
+// Tokens
+import { API_URL } from "../tokens/api.token";
+// Types and Schemas
+import { type ApiBookData } from "../../shared/types/api-book-data";
+import { type BookSearchResult,  SearchResponseSchema} from "../schemas/book-api.schema";
+
+@Injectable({ providedIn: 'root' })
+export class HttpBookService {
+    private http = inject(HttpClient);
+    private readonly API_URL = inject(API_URL);
+
+    // definition of the method that will be called by the component(s)
+    searchBooks(query: string, page: number = 1): Observable<BookSearchResult[]> {
+        const params = `?q=${encodeURIComponent(query)}&page=${page}`;
+        
+        return this.http.get<unknown>(`${this.API_URL}/search.json${params}`).pipe(
+            map(rawResponse => {
+            const result = SearchResponseSchema.safeParse(rawResponse);
+            
+            if (!result.success) {
+                console.error('Schema validation failed:', result.error.format());
+                return []; 
+            }
+            
+            return result.data.docs;
+            }),
+            map(books => books.slice(0, 12))
+        );
+    }
+
+    searchBookById(id:string):Observable<ApiBookData | null> {
+        return this.http.get<ApiBookData>(`${this.API_URL}/works/${id}.json`);
+    }
+
+    //It returns only the first result
+    getFirstBookByQuery(query: string): Observable<BookSearchResult | null> {
+        return this.searchBooks(query)
+            .pipe(
+                map(books => books.length > 0 ? books[0] : null)
+            );
+    }
+}
+</file>
+
+<file path="src/app/core/services/loans.service.ts">
+// src/app/core/services/loan.service.ts
+import { Injectable, signal, computed } from '@angular/core';
+import { BookDetail } from '../schemas/book-api.schema';
+import { type Loan } from '../../shared/types/loans.types';
+
+
+@Injectable({ providedIn: 'root' })
+export class LoanService {
+  private loansSignal = signal<Loan[]>([]);
+
+  // It exposes the signal as ReadOnly
+  loans = this.loansSignal.asReadonly();
+
+  // Derived data: counts the books in loan
+  loanCount = computed(() => this.loansSignal().length);
+
+  addLoan(book: BookDetail) {
+    if (this.isBorrowed(book.key)) return;
+
+    const newLoan: Loan = {
+      id: Math.random().toString(36).substring(2),
+      book,
+      loanDate: new Date(),
+      dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000) // 14 days
+    };
+
+    this.loansSignal.update(current => [...current, newLoan]);
+  }
+
+  isBorrowed(bookKey: string): boolean {
+    return this.loansSignal().some(loan => loan.book.key === bookKey);
+  }
+
+  returnBook(loanId: string) {
+    this.loansSignal.update(current => current.filter(l => l.id !== loanId));
+  }
+}
+</file>
+
+<file path="src/app/core/tokens/api.token.ts">
+import { InjectionToken } from '@angular/core';
+
+export const API_URL = new InjectionToken<string>('API_URL', {
+  providedIn: 'root',
+  factory: () => 'https://openlibrary.org' // Base URL
+});
+</file>
+
+<file path="src/app/features/auth/login/login.css">
+
+</file>
+
+<file path="src/app/features/auth/login/login.html">
+<p>login works!</p>
+</file>
+
+<file path="src/app/features/auth/login/login.ts">
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-login',
+  imports: [],
+  templateUrl: './login.html',
+  styleUrl: './login.css',
+})
+export class Login {}
+</file>
+
+<file path="src/app/features/auth/register/register.css">
+
+</file>
+
+<file path="src/app/features/auth/register/register.html">
+<p>register works!</p>
+</file>
+
+<file path="src/app/features/auth/register/register.ts">
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-register',
+  imports: [],
+  templateUrl: './register.html',
+  styleUrl: './register.css',
+})
+export class Register {}
+</file>
+
+<file path="src/app/features/book-search/search-modal/search-modal.css">
+
+</file>
+
+<file path="src/app/features/book-search/search-modal/search-modal.html">
+<dialog #bookDialog (close)="goBack()" class="p-0 overflow-visible">
+    <div class="max-w-5xl mx-auto p-4 sm:p-12 h-full flex items-center justify-center">
+      
+      @if (book(); as bookData) {
+        <div class="bg-white rounded-[2.5rem] shadow-2xl overflow-hidden grid grid-cols-1 md:grid-cols-2 relative w-full max-h-[90vh]">
+          
+          <button (click)="goBack()" 
+                  class="absolute top-6 left-6 z-10 flex items-center gap-2 text-primary/40 hover:text-accent transition-colors font-bold uppercase tracking-widest text-[10px]">
+            <app-icon name="arrow-left.svg" [size]="40" /> Back
+          </button>
+  
+          <!-- Image Column -->
+          <div class="bg-secondary/20 p-8 flex items-center justify-center">
+            <div class="w-full max-w-[280px] aspect-3/4 shadow-2xl rounded-2xl overflow-hidden">
+               <img [src]="bookData.cover_i | coverFallbackPipe:'L'" 
+                    [alt]="bookData.title" 
+                    class="w-full h-full object-cover">
+            </div>
+          </div>
+  
+          <!-- Colonna Contenuti -->
+          <div class="p-8 sm:p-10 flex flex-col gap-5 overflow-y-auto">
+            <header>
+              <h1 class="text-3xl sm:text-4xl font-serif font-bold text-primary leading-tight">
+                {{ bookData.title }}
+              </h1>
+              <p class="text-lg text-accent font-serif italic mt-1">
+                {{ bookData.author?.join(', ') || 'Unknown Author' }}
+              </p>
+            </header>
+  
+            <div class="flex flex-wrap gap-2">
+               <span class="px-3 py-1.5 bg-primary/5 rounded-full text-[10px] font-bold text-primary/60 uppercase tracking-tighter">
+                 Year: {{ bookData.first_publish_year || 'N/A' }}
+               </span>
+            </div>
+  
+            <p class="text-primary/70 leading-relaxed text-sm overflow-hidden line-clamp-6">
+              {{ bookData.subject?.join(', ') || 'No description available for this work.' }}
+            </p>
+  
+            <div class="mt-auto pt-6 border-t border-primary/5 flex gap-3">
+  
+                <app-button 
+                  variant="primary" 
+                  class="flex-1"
+                  appClickFeedback
+                  [disabled]="loanService.isBorrowed(bookData.key)"
+                  (click)="loanService.addLoan(bookData)">
+                  {{ loanService.isBorrowed(bookData.key) ? 'Already Borrowed' : 'Borrow Book' }}
+                </app-button>
+              
+                <app-button 
+                  variant="secondary" 
+                  appClickFeedback
+                  (click)="favoriteService.toggleFavorite(bookData)">
+                  <app-icon 
+                    [name]="favoriteService.isFavorite(bookData) ? 'badge-check.svg' : 'heart.svg'" 
+                    [size]="40" 
+                    [class.text-accent]="favoriteService.isFavorite(bookData)" />
+                </app-button>
+              
+              </div>
+          </div>
+        </div>
+      } @else {
+        <!-- Centered Skeleton Loader -->
+        <div class="bg-white rounded-[2.5rem] w-full max-w-4xl h-[500px] animate-pulse"></div>
+      }
+    </div>
+  </dialog>
+</file>
+
+<file path="src/app/features/book-search/search-modal/search-modal.ts">
+import { Component, inject, input, viewChild, ElementRef, effect } from '@angular/core';
+import { Location } from '@angular/common';
+// RxJS and Operators
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { switchMap } from 'rxjs';
+// Services
+import { HttpBookService } from '../../../core/services/http-book.service';
+import { FavoriteService } from '../../../core/services/favorites.service';
+import { LoanService } from '../../../core/services/loans.service';
+// Custom Components
+import { IconComponent } from '../../../shared/components/icon/icon';
+import { Button } from '../../../shared/components/button/button';
+// Pipes and Directives
+import { CoverFallbackPipe } from '../../../shared/pipes/cover-fallback-pipe-pipe';
+import { ClickFeedbackDirective } from '../../../shared/directives/click-feedback.directive';
+
+@Component({
+  selector: 'app-search-modal',
+  standalone: true,
+  imports: [
+    IconComponent, 
+    Button, 
+    CoverFallbackPipe, 
+    ClickFeedbackDirective
+  ],
+  templateUrl: './search-modal.html',
+  styles: [`
+    dialog::backdrop {
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+    }
+    dialog {
+      border: none;
+      background: transparent;
+      max-width: 100vw;
+      max-height: 100vh;
+    }
+  `]
+})
+export class SearchModalComponent {
+  private bookService = inject(HttpBookService);
+  public favoriteService = inject(FavoriteService);
+  public loanService = inject(LoanService)
+  private location = inject(Location);
+
+  // It gets the reference to the <dialog> element in the template
+  dialog = viewChild.required<ElementRef<HTMLDialogElement>>('bookDialog');
+
+  id = input.required<string>();
+
+  book = toSignal(
+    toObservable(this.id).pipe(
+      switchMap(id => this.bookService.searchBookById(id))
+    )
+  );
+
+  constructor() {
+    // It reacts automatically when the book is loaded
+    effect(() => {
+      const dialogEl = this.dialog().nativeElement;
+      if (this.book()) {
+        dialogEl.showModal(); 
+      } else {
+        dialogEl.close();
+      }
+    });
+  }
+
+  goBack() {
+    this.dialog().nativeElement.close();
+    this.location.back();
+  }
+}
+</file>
+
+<file path="src/app/features/book-search/search-page/search-page.css">
+
+</file>
+
+<file path="src/app/features/book-search/search-page/search-page.html">
+<section class="flex flex-col items-center w-full max-w-7xl mx-auto p-8" aria-labelledby="main-title">
+  
+  <header class="flex flex-col items-center text-center gap-4 mb-10">
+    <div class="flex items-center gap-4">
+      <app-icon name="book-open.svg" [size]="48" class="text-accent" aria-hidden="true" />
+      <h1 class="text-primary text-4xl font-serif font-bold italic tracking-tight" id="main-title">
+        Discovery <span class="text-accent">Hub</span>
+      </h1>
+    </div>
+    <p class="text-primary/70 max-w-2xl leading-relaxed">
+      Welcome to the ShelfSpot archives. Search millions of titles and find your next favorite read.
+    </p>
+  </header>
+
+  <div class="w-full max-w-4xl flex flex-col gap-4">
+    <div class="w-full bg-white rounded-3xl shadow-2xl shadow-primary/5 p-2 border border-primary/5 relative">
+      <form [formGroup]="formGroup" role="search" class="relative">
+        <label for="book-search-input" class="sr-only">Search for books by title or author</label>
+        <input 
+          id="book-search-input"
+          type="search" 
+          placeholder="Search for titles, authors or ISBN..." 
+          formControlName="bookInput"
+          class="w-full pl-14 pr-14 py-5 bg-transparent text-primary text-lg focus:outline-accent placeholder:text-primary/30"
+          [attr.aria-busy]="isLoading()"
+        >
+        <app-icon name="search.svg" [size]="32" class="absolute left-5 top-1/2 -translate-y-1/2 text-primary/30" aria-hidden="true" />
+        
+        @if (isLoading()) {
+          <div class="absolute right-5 top-1/2 -translate-y-1/2" role="status" aria-live="polite">
+             <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-accent"></div>
+             <span class="sr-only">Searching...</span>
+          </div>
+        }
+      </form>
+    </div>
+
+    @if (books().length > 0) {
+      <div class="flex justify-end">
+        <button 
+          (click)="clearSearch()" 
+          class="text-xs font-bold uppercase tracking-widest text-primary/40 hover:text-accent transition-colors flex items-center gap-2"
+          aria-label="Clear all search results"
+        >
+          <app-icon name="trash.svg" [size]="40" aria-hidden="true" /> Clear Results
+        </button>
+      </div>
+    }
+  </div>
+
+  <div class="w-full mt-8" role="region" aria-live="polite" aria-label="Search results">
+    
+    @if (books().length > 0) {
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        @for (book of books(); track book.key) {
+          <app-card [titleId]="'title-' + book.key">
+            <div card-header class="aspect-3/4 overflow-hidden rounded-xl bg-secondary/20 relative">
+               <img 
+                [src]="book.cover_i | coverFallbackPipe:'M'" 
+                [alt]="'Cover of ' + book.title" 
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+               >
+            </div>
+
+            <div card-body>
+              <h3 [id]="'title-' + book.key" class="font-serif font-bold text-primary truncate leading-tight">
+                {{ book.title }}
+              </h3>
+              <p class="text-sm text-primary/60 truncate italic mt-1">
+                {{ book.author_name?.join(', ') || 'Unknown Author' }}
+              </p>
+            </div>
+
+            <div card-footer>
+              <app-button 
+                variant="primary" 
+                class="w-full"
+                [ariaLabel]="'View details for ' + book.title"
+                [disabled]="isLoading()"
+                (click)="viewDetails(book)"
+              >
+                View Details
+              </app-button>
+            </div>
+          </app-card>
+        }
+      </div>
+
+      <nav class="flex justify-between items-center mt-12 py-6 border-t border-primary/5 w-full" aria-label="Pagination">
+        <button 
+          (click)="goToPrev()" 
+          [disabled]="currentPage() === 1 || isLoading()"
+          class="flex items-center gap-2 text-primary font-bold disabled:opacity-30 disabled:cursor-not-allowed group transition-colors hover:text-accent"
+        >
+          <app-icon name="arrow-left.svg" [size]="40" class="group-hover:-translate-x-1 transition-transform" aria-hidden="true" />
+          Previous Page
+        </button>
+
+        <span class="font-serif italic text-primary/60" aria-current="page">
+          Page {{ currentPage() }}
+        </span>
+
+        <button 
+          (click)="goToNext()" 
+          [disabled]="isLoading() || books().length < 12"
+          class="flex items-center gap-2 text-primary font-bold disabled:opacity-30 disabled:cursor-not-allowed group transition-colors hover:text-accent"
+        >
+          Next Page
+          <app-icon name="arrow-right.svg" [size]="40" class="group-hover:translate-x-1 transition-transform" aria-hidden="true" />
+        </button>
+      </nav>
+
+    } @else if (!isLoading() && formGroup.controls.bookInput.value.length > 2) {
+      <div class="text-center py-20 text-primary/40 italic font-serif" role="alert">
+        No books found for your search. Try another title?
+      </div>
+    }
+  </div>
+  <router-outlet />
+</section>
+</file>
+
+<file path="src/app/features/book-search/search-page/search-page.ts">
+import { 
+  Component, 
+  inject, 
+  signal, 
+} from '@angular/core';
+import { 
+  FormControl, 
+  FormGroup, 
+  ReactiveFormsModule, 
+  Validators 
+} from '@angular/forms';
+import { combineLatest } from 'rxjs';
+import { 
+  debounceTime, 
+  startWith,
+  distinctUntilChanged, 
+  switchMap, 
+  tap, 
+} from 'rxjs/operators';
+import { of } from 'rxjs';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { HttpBookService } from '../../../core/services/http-book.service';
+import { IconComponent } from '../../../shared/components/icon/icon';
+import { Button } from '../../../shared/components/button/button';
+import { CardComponent } from '../../../shared/components/card/card';
+import { CoverFallbackPipe } from '../../../shared/pipes/cover-fallback-pipe-pipe';
+import { Router, RouterOutlet } from '@angular/router';
+import { BookSearchResult } from '../../../core/schemas/book-api.schema';
+
+@Component({
+  selector: 'app-search-page',
+  standalone: true,
+  imports: [
+    ReactiveFormsModule, 
+    IconComponent, 
+    Button, 
+    CardComponent,
+    CoverFallbackPipe,
+    RouterOutlet
+  ], 
+  templateUrl: './search-page.html'
+})
+export class SearchPage {
+  private bookService = inject(HttpBookService);
+  private router = inject(Router);
+  isLoading = signal(false);
+  currentPage = signal(1);
+
+  formGroup = new FormGroup({
+    bookInput: new FormControl('', { nonNullable: true })
+  });
+
+  // An Observable defines the stream of search
+  private books$ = combineLatest([
+    this.formGroup.controls.bookInput.valueChanges.pipe(
+      startWith(this.formGroup.controls.bookInput.value),
+      debounceTime(400),
+      distinctUntilChanged(),
+      tap(() => this.currentPage.set(1))
+    ),
+    toObservable(this.currentPage)
+  ]).pipe(
+    switchMap(([query, page]) => {
+      if (query.length <= 2) {
+        return of([]); // if the query è short, we emit an empty array 
+      }
+      this.isLoading.set(true);
+      return this.bookService.searchBooks(query, page).pipe(
+        tap(() => this.isLoading.set(false))
+      );
+    })
+  );
+
+  // if there isn't data, we use an empty array []
+  books = toSignal(this.books$, { initialValue: [] });
+
+  // Metodi per la UI
+  goToNext() { this.currentPage.update(p => p + 1); }
+  goToPrev() { this.currentPage.update(p => Math.max(1, p - 1)); }
+
+  clearSearch() {
+    this.formGroup.controls.bookInput.setValue(''); 
+  }
+
+  viewDetails(book: BookSearchResult) {
+    // Puliamo la stringa '/works/OL12345W' per ottenere solo 'OL12345W'
+    const bookId = book.key.replace('/works/', '');
+    
+    // Navighiamo verso la rotta specifica
+    this.router.navigate(['/books/search', bookId]);
+  }
+}
+</file>
+
+<file path="src/app/features/contacts/contacts.css">
+
+</file>
+
+<file path="src/app/features/contacts/contacts.html">
+<section class="max-w-3xl mx-auto p-8 animate-fade-in" aria-labelledby="main-title">
+    <header class="text-center mb-12">
+      <h1 class="text-4xl font-serif font-bold text-primary" id="main-title">Get in <span class="text-accent">Touch</span></h1>
+      <p class="text-primary/60 mt-2">Have a question about ShelfSpot? We'd love to hear from you.</p>
+    </header>
+  
+    <div class="bg-white rounded-[2.5rem] p-8 sm:p-12 shadow-2xl border border-primary/5">
+      <!-- contacts.component.html -->
+        <form (submit)="$event.preventDefault(); sendContact()" class="flex flex-col gap-6" novalidate>
+        
+            <!-- Campo Nome -->
+            <div class="flex flex-col gap-2">
+            <label for="name" class="text-xs font-bold uppercase tracking-widest text-primary/40 ml-4">Full Name</label>
+            <input 
+                id="name"
+                type="text"
+                autocomplete="name"
+                [value]="name()"
+                (input)="name.set($any($event.target).value)"
+                (blur)="nameTouched.set(true)"
+                [attr.aria-invalid]="nameError() ? 'true' : 'false'"
+                [attr.aria-describedby]="nameError() ? 'name-error' : null"
+                class="w-full px-6 py-4 rounded-2xl bg-secondary/10 border-2 transition-all outline-none"
+                [class.border-red-400]="nameError()"
+                [class.border-transparent]="!nameError()"
+            >
+            @if (nameError()) {
+                <p id="name-error" class="text-red-500 text-xs ml-4 font-medium" role="alert">{{ nameError() }}</p>
+            }
+            </div>
+        
+            <!-- Campo Email -->
+            <div class="flex flex-col gap-2">
+            <label for="email" class="text-xs font-bold uppercase tracking-widest text-primary/40 ml-4">Email Address</label>
+            <input 
+                id="email"
+                type="email"
+                autocomplete="email"
+                [value]="email()"
+                (input)="email.set($any($event.target).value)"
+                (blur)="emailTouched.set(true)"
+                [attr.aria-invalid]="emailError() ? 'true' : 'false'"
+                [attr.aria-describedby]="emailError() ? 'email-error' : null"
+                class="w-full px-6 py-4 rounded-2xl bg-secondary/10 border-2 transition-all outline-none"
+                [class.border-red-400]="emailError()"
+            >
+            @if (emailError()) {
+                <p id="email-error" class="text-red-500 text-xs ml-4 font-medium" role="alert">{{ emailError() }}</p>
+            }
+            </div>
+        
+            <!-- Bottone con Feedback di Stato -->
+            <app-button 
+            variant="primary" 
+            type="submit"
+            class="mt-4 py-6 text-lg relative"
+            [disabled]="!isFormValid() || status() === 'sending'"
+            appClickFeedback>
+            
+            @switch (status()) {
+                @case ('sending') {
+                <span class="flex items-center gap-2 italic animate-pulse">
+                    <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    Sending...
+                </span>
+                }
+                @case ('success') {
+                <span class="flex items-center gap-2 text-green-200">
+                    <app-icon name="check.svg" /> Message Sent!
+                </span>
+                }
+                @case ('error') {
+                <span class="text-red-200">Try Again</span>
+                }
+                @default {
+                <span class="flex items-center gap-2">Send Message <app-icon name="send.svg" /></span>
+                }
+            }
+            </app-button>
+        </form>
+    </div>
+  </section>
+</file>
+
+<file path="src/app/features/contacts/contacts.ts">
+import { 
+  Component, 
+  signal, 
+  computed, 
+  inject 
+} from '@angular/core';
+// Custom Components
+import { Button } from '../../shared/components/button/button';
+import { IconComponent } from '../../shared/components/icon/icon';
+// Services and Validators
+import { ContactsService } from '../../core/services/contacts.service';
+import { isProfessionalEmail } from '../../shared/validators/signal-validator';
+// Types
+import { FormStatus } from '../../shared/types/custom-components-types';
+
+@Component({
+  selector: 'app-contacts',
+  standalone: true,
+  imports: [Button, IconComponent],
+  templateUrl: './contacts.html'
+})
+export class Contacts {
+  public contactService = inject(ContactsService);
+  // Form state via Signal
+  name = signal('');
+  email = signal('');
+  message = signal('');
+
+  // Signal for the submit button
+  status = signal<FormStatus>(FormStatus.idle);
+
+  // Signals for error handling
+  nameTouched = signal(false);
+  emailTouched = signal(false);
+  messageTouched = signal(false);
+
+  // Derived validation (Computed Signals)
+  isEmailValid = computed(() => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const value = this.email();
+    return emailRegex.test(this.email()) && isProfessionalEmail(value);
+  });
+
+  isFormValid = computed(() => {
+    return this.name().length > 2 && 
+           this.isEmailValid() && 
+           this.message().length > 10 &&
+           !this.contactService.isSending();
+  });
+
+  // Error handling
+  nameError = computed(() => {
+    if (!this.nameTouched()) return null;
+    if (this.name().length === 0) return 'Name is required';
+    if (this.name().length <= 2) return 'Name must be at least 3 characters';
+    return null;
+  });
+
+  emailError = computed(() => {
+    if (!this.emailTouched()) return null;
+    if (!this.email()) return 'Email is required';
+    if (!this.isEmailValid()) return 'Please enter a professional email address';
+    return null;
+  });
+
+  // Update methods
+  updateField(field: 'name' | 'email' | 'message', event: Event) {
+    const value = (event.target as HTMLInputElement | HTMLTextAreaElement).value;
+    if (field === 'name') this.name.set(value);
+    if (field === 'email') this.email.set(value);
+    if (field === 'message') this.message.set(value);
+  }
+
+  sendContact() {
+    if (!this.isFormValid()) return;
+
+    this.status.set(FormStatus.sending);
+
+    const payload = {
+      name: this.name(),
+      email: this.email(),
+      message: this.message()
+    };
+
+    this.contactService.sendMessage(payload).subscribe({
+      next: () => {
+        this.status.set(FormStatus.success);
+        this.resetForm();
+        setTimeout(() => this.status.set(FormStatus.idle), 3000); 
+      },
+      error: () => this.status.set(FormStatus.error)
+    });
+  }
+
+  private resetForm() {
+    this.name.set('');
+    this.email.set('');
+    this.message.set('');
+  }
+}
+</file>
+
+<file path="src/app/features/favorites/favorite-page/favorite-page.css">
+
+</file>
+
+<file path="src/app/features/favorites/favorite-page/favorite-page.html">
+<p>favorite-page works!</p>
+</file>
+
+<file path="src/app/features/favorites/favorite-page/favorite-page.ts">
+import { Component, inject } from '@angular/core';
+import { FavoriteService } from '../../../core/services/favorites.service';
+import { CardComponent } from '../../../shared/components/card/card';
+import { CommonModule } from '@angular/common';
+import { CoverFallbackPipe } from '../../../shared/pipes/cover-fallback-pipe-pipe';
+
+@Component({
+  selector: 'app-favorites',
+  standalone: true,
+  imports: [CommonModule, CardComponent, CoverFallbackPipe],
+  template: `
+    <section class="p-8 max-w-7xl mx-auto">
+      <h1 class="text-4xl font-serif font-bold text-primary mb-10">Your <span class="text-accent">Library</span></h1>
+      
+      @if (favService.favorites().length > 0) {
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          @for (book of favService.favorites(); track book.key) {
+            <app-card [titleId]="'title-' + book.key">
+              <div card-header class="aspect-3/4 rounded-xl overflow-hidden">
+                <img [src]="book.cover_i | coverFallbackPipe:'M'" class="w-full h-full object-cover">
+              </div>
+              <div card-body>
+                <h3 class="font-bold truncate">{{ book.title }}</h3>
+              </div>
+            </app-card>
+          }
+        </div>
+      } @else {
+        <div class="text-center py-20 italic text-primary/40">
+          Your collection is empty. Start exploring the hub!
+        </div>
+      }
+    </section>
+  `
+})
+export class FavoritePage {
+  favService = inject(FavoriteService);
+}
+</file>
+
+<file path="src/app/features/layouts/auth-layout/auth-layout.css">
+
+</file>
+
+<file path="src/app/features/layouts/auth-layout/auth-layout.html">
+<p>auth-layout works!</p>
+</file>
+
+<file path="src/app/features/layouts/auth-layout/auth-layout.ts">
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-auth-layout',
+  imports: [],
+  templateUrl: './auth-layout.html',
+  styleUrl: './auth-layout.css',
+})
+export class AuthLayout {}
+</file>
+
+<file path="src/app/features/layouts/book-layout/book-layout.css">
+@reference "../../../../styles.css";
+
+:host {
+  display: block;
+}
+
+/* Scrollbar personalizzata per un look più pulito */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-primary/10 rounded-full hover:bg-primary/20 transition-colors;
+}
+</file>
+
+<file path="src/app/features/layouts/book-layout/book-layout.html">
+<div class="flex h-screen overflow-hidden bg-secondary/10 m-0">
+  
+  <aside 
+    [class.w-64]="!isCollapsed()" 
+    [class.w-20]="isCollapsed()"
+    [class.justify-center]="isCollapsed()"
+    [class.items-center]="isCollapsed()"
+    class="flex flex-col h-full bg-primary/40 text-secondary transition-all duration-300 border-r border-primary/10 shadow-xl"
+  >
+    <div class="p-6 flex items-center justify-between">
+      @if (!isCollapsed()) {
+        <span class="font-serif font-bold text-xl text-accent italic">ShelfSpot</span>
+      }
+      <button (click)="toggleSidebar()" class="p-2 hover:bg-secondary/10 rounded-lg transition-colors">
+        <app-icon [name]="isCollapsed() ? 'menu.svg' : 'arrow-left.svg'" [size]="40" />
+      </button>
+    </div>
+
+    <nav class="flex-1 mt-4 px-3 space-y-2">
+        @for (item of menuItems; track item.path) {
+            <a 
+                [routerLink]="item.path"
+                routerLinkActive="bg-accent text-white"
+                class="flex items-center p-3 rounded-xl transition-all group relative"
+                
+                [appTooltip]="item.label"
+                [appTooltipEnabled]="isCollapsed()" 
+            >
+            <app-icon [name]="item.icon" [size]="40" class="min-w-6" />
+            
+            <span 
+                class="ml-4 font-medium transition-opacity duration-200"
+                [class.opacity-0]="isCollapsed()"
+                [class.hidden]="isCollapsed()"
+            >
+                {{ item.label }}
+            </span>
+
+            </a>
+        }
+    </nav>
+  </aside>
+
+  <main class="flex-1 flex flex-col min-w-0 overflow-hidden">
+    <header class="h-16 border-b border-primary/5 bg-white flex items-center px-8">
+      <h2 class="text-primary/50 font-medium uppercase text-xs tracking-widest">Dashboard / Books</h2>
+    </header>
+
+    <section class="grow overflow-y-auto custom-scrollbar">
+      <router-outlet />
+    </section>
+  </main>
+</div>
+</file>
+
+<file path="src/app/features/layouts/book-layout/book-layout.ts">
+import { Component, signal } from '@angular/core';
+import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { IconComponent } from '../../../shared/components/icon/icon';
+import { CommonModule } from '@angular/common';
+import { TooltipDirective } from '../../../shared/directives/tooltip.directive';
+
+@Component({
+  selector: 'app-book-layout',
+  standalone: true,
+  imports: [
+    RouterOutlet, 
+    RouterLink, 
+    RouterLinkActive, 
+    IconComponent, 
+    CommonModule,
+    TooltipDirective
+  ],
+  templateUrl: './book-layout.html',
+  styleUrl: './book-layout.css',
+})
+export class BookLayout {
+  isCollapsed = signal(false);
+
+  menuItems = [
+    { path: 'search', label: 'Search', icon: 'search.svg' },
+    { path: 'loans', label: 'Loans', icon: 'book-open.svg' },
+    { path: 'favorites', label: 'Favorites', icon: 'heart.svg' },
+  ];
+
+  toggleSidebar() {
+    this.isCollapsed.update(v => !v);
+  }
+}
+</file>
+
+<file path="src/app/features/layouts/homepage/homepage.css">
+
+</file>
+
+<file path="src/app/features/layouts/homepage/homepage.html">
+<section class="grow container mx-auto px-4 py-8">
+  
+  <div class="p-6 md:p-12 bg-secondary/30" aria-label="Introduzione">
+    <app-herosection />
+  </div>
+  
+  <section class="my-16 px-6 max-w-6xl mx-auto" aria-labelledby="benefits-title">
+    <div class="py-16 px-8 text-secondary">
+      <h2 id="benefits-title" class="text-danger text-4xl font-serif font-bold mb-12 text-center">
+        Why Choose ShelfSpot?
+      </h2>
+      <div class="grid gap-10 md:grid-cols-3">
+        @for (benefit of benefits; track benefit.title) {
+          <app-card
+            [titleId]="'benefit-' + $index"
+            class="flex flex-col items-center text-center p-6 rounded-2xl bg-light border-l-4 border-danger"
+          >
+            <div card-body>
+              <div class="text-5xl mb-6 filter drop-shadow-md" aria-hidden="true">{{ benefit.icon }}</div>
+              <h3 [id]="'benefit-' + $index" class="text-xl font-bold mb-3 font-serif italic">
+                {{ benefit.title }}
+              </h3>
+              <p class="text-secondary/80 leading-relaxed">{{ benefit.description }}</p>
+            </div>
+          </app-card>
+        } @empty {
+          <p class="text-center col-span-3">More benefits coming soon.</p>
+        }
+      </div>
+    </div>
+  </section>
+  
+  <section class="my-16 px-6 max-w-6xl mx-auto " aria-labelledby="reviews-title">
+    <h2 id="reviews-title" class="text-primary text-3xl font-serif font-bold mb-10 text-center">
+      What Our Readers Say
+    </h2>
+    <div class="grid gap-6 md:grid-cols-3">
+      @for (review of reviews; track review.name) {
+        <blockquote class="bg-light p-8 rounded-2xl shadow-sm border-l-4 border-danger relative">
+          <p class="mb-6 italic text-primary/80 leading-relaxed">"{{ review.text }}"</p>
+          <cite class="text-sm text-danger font-bold not-italic">— {{ review.name }}</cite>
+        </blockquote>
+      } @empty {
+        <p class="text-center col-span-3 italic">No reviews yet. Be the first to share your experience!</p>
+      }
+    </div>
+  </section>
+  
+  <section class="my-20 p-6 max-w-3xl mx-auto" aria-labelledby="faq-title">
+    <h2 id="faq-title" class="text-primary text-3xl font-serif font-bold mb-10 text-center">Frequently Asked Questions</h2>
+    
+    <div class="space-y-4">
+      @for (faq of faqs; track faq.question; let i = $index) {
+        <div class="bg-light rounded-md border-l-4 border-danger px-2">
+          <button 
+            (click)="toggleFaq(i)"
+            [attr.aria-expanded]="expandedIndex() === i"
+            class="w-full py-6 flex justify-between items-center text-left font-bold text-primary hover:text-danger transition-colors focus:outline-none"
+          >
+            <span class="text-lg font-serif">{{ faq.question }}</span>
+            <span class="transform transition-transform duration-300" [class.rotate-180]="expandedIndex() === i">
+              <app-icon name="chevron-down.svg" [size]="40" />
+            </span>
+          </button>
+          
+          <div 
+            class="overflow-hidden transition-all duration-300"
+            [style.max-height]="expandedIndex() === i ? '200px' : '0px'"
+          >
+            <p class="p-3 text-primary/70 leading-relaxed bg-accent/30">
+              {{ faq.answer }}
+            </p>
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+  <section class="bg-light py-16 px-6 max-w-6xl mx-auto text-center rounded-md shadow-lg">
+      <h2 class="text-accent text-4xl font-extrabold mb-6">Ready to Dive In?</h2>
+      <p class="max-w-xl mx-auto mb-10 text-lg">Contact us today to borrow your favorite books and start your adventure!</p>
+      <a href="/books/loans" aria-label="Contact us to borrow books" class="inline-block font-semibold rounded-lg px-10 py-4 shadow-lg transition bg-danger text-light hover:bg-danger/80">Borrow a Book Now!</a>
+  </section>
+</section>
+</file>
+
+<file path="src/app/features/layouts/homepage/homepage.ts">
+import { Component, signal } from '@angular/core';
+import { IconComponent } from '../../../shared/components/icon/icon';
+import { Herosection } from "../../../shared/components/herosection/herosection";
+
+//static data
+import { reviews } from '../../../core/models/reviews.model';
+import { benefits } from '../../../core/models/benefits.model';
+import { FAQs } from '../../../core/models/faqs.model';
+import { CardComponent } from '../../../shared/components/card/card';
+
+@Component({
+  selector: 'app-homepage',
+  imports: [IconComponent, Herosection, CardComponent],
+  templateUrl: './homepage.html',
+  styleUrl: './homepage.css',
+})
+export class Homepage {
+  readonly benefits = benefits;
+  readonly reviews = reviews;
+  readonly faqs = FAQs;
+
+  // Logic for the accordion
+  expandedIndex = signal<number | undefined>(undefined);
+
+  toggleFaq(index: number) {
+    this.expandedIndex.update(val => val === index ? undefined : index);
+  }
+}
+</file>
+
+<file path="src/app/features/layouts/main-layout/main-layout.css">
+
+</file>
+
+<file path="src/app/features/layouts/main-layout/main-layout.ts">
+import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+
+@Component({
+  selector: 'app-main-layout',
+  imports: [RouterOutlet],
+  template: `
+    <main class="min-h-2/3 w-full max-w-300 mx-auto px-6 pb-8 ">
+      <router-outlet />
+    </main>
+  `,
+  styleUrl: './main-layout.css',
+})
+export class MainLayout {}
+</file>
+
+<file path="src/app/features/loans/loans-page/loans-page.css">
+
+</file>
+
+<file path="src/app/features/loans/loans-page/loans-page.ts">
+import { Component, inject, signal } from "@angular/core";
+import { CoverFallbackPipe } from '../../../shared/pipes/cover-fallback-pipe-pipe';
+import { DatePipe } from '@angular/common';
+import { Button } from "../../../shared/components/button/button";
+import { LoanService } from "../../../core/services/loans.service";
+
+@Component({
+  selector: 'app-loans-page',
+  standalone: true,
+  imports: [CoverFallbackPipe, DatePipe, Button],
+  template: `
+    <div class="grid gap-4">
+      @for (item of loanService.loans(); track item.id) {
+        <div class="p-4 bg-white border border-primary/5 rounded-2xl flex justify-between items-center shadow-sm">
+          <div class="flex gap-4 items-center">
+            <img [src]="item.book.cover_i | coverFallbackPipe:'S'" class="w-12 h-16 object-cover rounded-lg">
+            <div>
+              <h3 class="font-bold">{{ item.book.title }}</h3>
+              <p class="text-xs text-primary/40 italic">Return by: {{ item.dueDate | date }}</p>
+            </div>
+          </div>
+          <app-button variant="secondary" (click)="loanService.returnBook(item.id)">Return</app-button>
+        </div>
+      } @empty {
+        <section class="p-8 max-w-7xl mx-auto">
+          <p class="italic text-primary/30 ">You have no active loans.</p>
+        </section>
+      }
+    </div>
+  `
+})
+export class LoansPage {
+  public loanService = inject(LoanService);
+
+}
+</file>
+
+<file path="src/app/features/not-found/not-found.css">
+
+</file>
+
+<file path="src/app/features/not-found/not-found.html">
+<main class="main-wrapper" role="main">
+    <div class="error-visual" aria-hidden="true">
+        <app-icon name="monitor" [size]="120" class="ghost-icon" />
+        <span class="error-code">404</span>
+    </div>
+
+    <div class="text-content">
+        <h1>Oops! Page not found</h1>
+        <p>It seems that the link is broken or that the requested page was moved away. Don't worry, you can navigate back below:</p>
+    </div>
+
+    <div class="actions-wrapper">
+        <app-button variant="primary" routerLink="/" aria-label="Back to Homepage">
+            <app-icon name="arrow-left" [size]="40"/>
+            <span class="primary-btn">Back to the Homepage</span>
+        </app-button>
+        
+        <app-button variant="secondary" routerLink="/projects" aria-label="Go to the projects">
+            <span>Explore my projects</span>
+            <app-icon name="database" [size]="40" />
+        </app-button>
+    </div>
+</main>
+</file>
+
+<file path="src/app/features/not-found/not-found.ts">
+import { Component } from '@angular/core';
+import { IconComponent } from '../../shared/components/icon/icon';
+import { Button } from '../../shared/components/button/button';
+
+@Component({
+  selector: 'app-not-found',
+  imports: [IconComponent, Button],
+  templateUrl: './not-found.html',
+  styleUrl: './not-found.css',
+})
+export class NotFound {}
+</file>
+
+<file path="src/app/shared/components/button/button.css">
+/* @reference imports only the definitions of classes and variables without generating extra CSS in the final file */
+@reference "../../../../styles.css";
+
+
+/* Stile base per l'host del componente */
+:host {
+  @apply inline-flex items-center justify-center rounded-full px-8 py-4 
+         font-bold transition-all duration-200 cursor-pointer 
+         active:scale-95 focus:outline-hidden;
+}
+
+/* Varianti basate sulla classe calcolata dal computed */
+:host(.btn-primary) {
+  @apply bg-primary text-secondary shadow-lg hover:bg-primary/90;
+}
+
+:host(.btn-accent) {
+  /* Usiamo il tuo Rosso Ceralacca */
+  @apply bg-danger text-white shadow-[0_10px_20px_-10px_rgba(230,57,70,0.5)] 
+         hover:bg-danger;
+}
+
+:host(.btn-outline) {
+  @apply border-2 border-primary text-primary hover:bg-primary hover:text-secondary;
+}
+
+/* Stato disabled */
+:host(.disabled) {
+  @apply opacity-50 cursor-not-allowed grayscale pointer-events-none;
+}
+</file>
+
+<file path="src/app/shared/components/button/button.ts">
+import { Component, computed, input } from '@angular/core';
+import { ButtonVariant } from '../../types/custom-components-types';
+
+@Component({
+  selector: 'app-button',
+  imports: [],
+  template: `
+    <button [type]="type()" [disabled]="disabled()">
+      <ng-content></ng-content>
+    </button>
+  `,
+  styleUrl: './button.css',
+  host: {
+    '[class]': 'variantClass()',
+    '[class.disabled]': 'disabled()'
+  }
+})
+export class Button {
+  variant = input<ButtonVariant>('primary');
+  type = input<'button' | 'submit' | 'reset'>('button');
+  disabled = input<boolean>(false);
+  href = input<string>()
+
+  protected variantClass = computed(() => `btn-${this.variant()}`);
+}
+</file>
+
+<file path="src/app/shared/components/card/card.css">
+
+</file>
+
+<file path="src/app/shared/components/card/card.ts">
+import { Component, input } from '@angular/core';
+
+@Component({
+  selector: 'app-card',
+  standalone: true,
+  template: `
+    <article 
+      class="bg-white p-5 rounded-2xl shadow-sm hover:shadow-md transition-all border border-primary/5 flex flex-col group h-full"
+      [attr.aria-labelledby]="titleId()"
+    >
+      <div class="card-header mb-4" aria-hidden="true">
+        <ng-content select="[card-header]"></ng-content>
+      </div>
+      <div class="card-body grow">
+        <ng-content select="[card-body]"></ng-content>
+      </div>
+      <div class="card-footer mt-4">
+        <ng-content select="[card-footer]"></ng-content>
+      </div>
+    </article>
+  `
+})
+export class CardComponent {
+  // Passiamo un ID univoco per collegare la card al suo titolo internamente
+  titleId = input.required<string>();
+}
+</file>
+
+<file path="src/app/shared/components/footer/footer.css">
+
+</file>
+
+<file path="src/app/shared/components/footer/footer.html">
+<footer class="mt-auto border-t border-accent/30 bg-primary px-6 pt-7 pb-8">
+  <div class="mx-auto flex max-w-300 flex-col items-center gap-10">
+    
+    <div class="text-center">
+      <h2 class="mb-2 text-2xl font-extrabold tracking-tight text-accent font-serif">
+        SHELFSPOT
+      </h2>
+      <p class="text-sm md:text-base text-secondary/90 italic">
+        Let's build something amazing together.
+      </p>
+    </div>
+
+    <div class="flex flex-wrap justify-center gap-8 md:gap-12">
+      <a href="#" target="_blank" 
+         class="group flex items-center gap-3 text-sm font-medium text-secondary transition-all duration-200 hover:-translate-y-1 hover:text-accent">
+        <app-icon name="googlemaps.svg" [size]="40" />
+        <span class="border-b border-transparent group-hover:border-accent">Map</span>
+      </a>
+      
+      <a href="#" target="_blank" 
+         class="group flex items-center gap-3 text-sm font-medium text-secondary transition-all duration-200 hover:-translate-y-1 hover:text-accent">
+        <app-icon name="linkedin.svg" [size]="40" />
+        <span class="border-b border-transparent group-hover:border-accent">LinkedIn</span>
+      </a>
+
+      <a href="mailto:eliagiolli22@gmail.com" 
+         class="group flex items-center gap-3 text-sm font-medium text-secondary transition-all duration-200 hover:-translate-y-1 hover:text-accent">
+        <app-icon name="mail.svg" [size]="40" />
+        <span class="border-b border-transparent group-hover:border-accent">Email</span>
+      </a>
+    </div>
+
+    <div class="mt-4 text-xs text-secondary/60 border-t border-secondary/10 pt-8 w-full text-center">
+      &copy; {{ currentYear }} ShelfSpot. Built with Angular & OpenLibrary API.
+    </div>
+  </div>
+</footer>
+</file>
+
+<file path="src/app/shared/components/footer/footer.ts">
+import { Component } from '@angular/core';
+import { IconComponent } from '../icon/icon';
+
+@Component({
+  selector: 'app-footer',
+  imports: [IconComponent],
+  templateUrl: './footer.html',
+  styleUrl: './footer.css',
+})
+export class Footer {
+  readonly currentYear = Date.now()
+}
+</file>
+
+<file path="src/app/shared/components/herosection/herosection.css">
+
+</file>
+
+<file path="src/app/shared/components/herosection/herosection.html">
+<main class="max-w-7xl mx-auto p-4 md:p-6" role="main">
+  <section 
+    class="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-4 h-auto md:h-[600px]"
+    aria-label="Library Overview Dashboard"
+  >
+    
+    <app-card 
+      [titleId]="'hero-title'" 
+      class="md:col-span-2 md:row-span-2 bg-primary/50 p-0 border-none shadow-xl relative overflow-hidden group"
+    >
+      <div card-body class="p-6 flex flex-col justify-center h-full text-secondary relative z-10">
+        <h1 id="hero-title" class="text-4xl md:text-5xl font-serif font-bold leading-tight">
+          Keep your stories <br> <span class="text-accent" aria-hidden="true">in order.</span>
+          <span class="sr-only">Keep your stories in order.</span>
+        </h1>
+        <p class="mt-6 text-secondary/70 text-lg max-w-md">
+          A sophisticated tool for modern readers. Catalog your collection and track your loans with ease.
+        </p>
+        
+        <app-button 
+          variant="primary" 
+          class="mt-8 w-fit"
+          routerLink="/books/search"
+          aria-label="Get started by searching for a book"
+        >
+          Get Started
+        </app-button>
+
+        <app-icon 
+          name="book-open.svg" 
+          [size]="300" 
+          class="absolute -bottom-10 -right-10 opacity-10 rotate-12 group-hover:rotate-0 transition-transform duration-700" 
+          aria-hidden="true"
+        />
+      </div>
+    </app-card>
+
+    <app-card [titleId]="'quick-search-title'" class="bg-white">
+      <div card-header class="flex justify-between items-center w-full">
+        <h2 id="quick-search-title" class="text-[10px] font-bold uppercase tracking-[0.2em] text-primary/40">
+          Quick Search
+        </h2>
+        <app-icon name="search.svg" [size]="35" class="text-accent" aria-hidden="true" />
+      </div>
+
+      <div card-body class="mt-4" aria-live="polite" aria-atomic="true">
+        @if (featuredBook(); as book) {
+          <div class="flex items-center gap-4 animate-in fade-in slide-in-from-bottom-2">
+            <img [src]="'https://covers.openlibrary.org/b/id/' + book.cover_i + '-S.jpg'" 
+                 class="w-12 h-16 object-cover rounded shadow-md" 
+                 [alt]="'Latest search result: ' + book.title">
+            <div class="overflow-hidden">
+              <p class="text-primary font-bold text-sm truncate">{{ book.title }}</p>
+              <p class="text-primary/60 text-xs truncate italic">by {{ book.author }}</p>
+            </div>
+          </div>
+        } @else {
+          <div class="flex items-center gap-4 animate-pulse" aria-hidden="true">
+            <div class="w-12 h-16 bg-secondary/50 rounded"></div>
+            <div class="flex-1 space-y-2">
+              <div class="h-3 bg-secondary/50 rounded w-full"></div>
+              <div class="h-3 bg-secondary/50 rounded w-2/3"></div>
+            </div>
+            <span class="sr-only">Loading latest book data...</span>
+          </div>
+        }
+      </div>
+
+      <div card-footer>
+        <p class="text-primary font-medium text-xs">Find any edition in seconds.</p>
+      </div>
+    </app-card>
+
+    <div 
+      class="md:row-span-2 bg-accent/20 rounded-3xl overflow-hidden relative group border border-primary/5"
+      role="img" 
+      aria-label="Atmospheric photo of a classic library with wooden shelves"
+    >
+      <img src="assets/images/library-background.jpg" 
+           class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+           alt="" 
+           aria-hidden="true">
+      <div class="absolute inset-0 bg-linear-to-t from-primary/90 via-primary/20 to-transparent flex items-end p-8">
+        <p class="text-secondary font-serif italic text-2xl tracking-wide">Curated Picks</p>
+      </div>
+    </div>
+
+    <app-card [titleId]="'stats-title'" class="bg-accent border-none">
+      <div card-body class="flex flex-col justify-center items-center text-center text-primary h-full py-4">
+          <p id="stats-title" class="sr-only">Lending Statistics</p>
+          <span class="text-5xl font-bold font-serif mb-1" aria-describedby="stats-label">12</span>
+          <span id="stats-label" class="text-[10px] font-bold uppercase tracking-widest opacity-80">
+            Books Currently Lent
+          </span>
+          <app-icon name="user.svg" [size]="40" class="mt-4 opacity-90" aria-hidden="true" />
+      </div>
+    </app-card>
+
+  </section>
+</main>
+</file>
+
+<file path="src/app/shared/components/herosection/herosection.ts">
+import { 
+  Component, 
+  inject, 
+  signal, 
+  OnInit 
+} from '@angular/core';
+import { IconComponent } from '../icon/icon';
+import { CardComponent } from '../card/card';
+import { Button } from '../button/button';
+
+import { HttpBookService } from '../../../core/services/http-book.service';
+import { ApiBookData } from '../../types/api-book-data';
+
+@Component({
+  selector: 'app-herosection',
+  imports: [IconComponent, CardComponent, Button],
+  templateUrl: './herosection.html',
+  styleUrl: './herosection.css',
+})
+export class Herosection implements OnInit {
+  private bookService = inject(HttpBookService);
+  featuredBook = signal<ApiBookData | null>(null);
+
+  ngOnInit() {
+    this.bookService.getFirstBookByQuery('The Great Gatsby').subscribe(
+      book => this.featuredBook.set(book as ApiBookData)
+    );
+  }
+}
+</file>
+
+<file path="src/app/shared/components/icon/icon.css">
+/* Esempio di badge tech nel CSS */
+:host { display: inline-block; line-height: 0; }
+.tech-tag {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px; 
+    background-color: #F8F9FF; 
+    border: 1px solid rgba(45, 68, 255, 0.08);
+    
+    border-radius: 50%; 
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+
+    &:hover {
+        background-color: var(--bg-background-secondary);
+        border-color: rgba(45, 68, 255, 0.2);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(45, 68, 255, 0.1);
+    }
+}
+</file>
+
+<file path="src/app/shared/components/icon/icon.spec.ts">
+import { TestBed } from '@angular/core/testing';
+import { IconComponent } from './icon';
+import { describe, it, expect, beforeEach } from 'vitest';
+
+describe('IconComponent', () => {
+  
+  beforeEach(async () => {
+    // We strictly configure the testing module first
+    await TestBed.configureTestingModule({
+      imports: [IconComponent],
+    }).compileComponents();
+  });
+
+  it('should render the correct image source path', () => {
+    // Create the component instance
+    const fixture = TestBed.createComponent(IconComponent);
+    const component = fixture.componentInstance;
+    
+    // Set inputs via the signal reference
+    fixture.componentRef.setInput('name', 'menu.svg');
+    fixture.detectChanges();
+
+    const img = fixture.nativeElement.querySelector('img') as HTMLImageElement;
+    
+    // Check if the path is correctly built
+    expect(img.src).toContain('/assets/icons/menu.svg');
+  });
+
+  it('should apply custom dimensions', () => {
+    const fixture = TestBed.createComponent(IconComponent);
+    fixture.componentRef.setInput('name', 'mail.svg');
+    fixture.componentRef.setInput('size', 50);
+    fixture.detectChanges();
+
+    const img = fixture.nativeElement.querySelector('img') as HTMLImageElement;
+    
+    // Validate inline styles
+    expect(img.style.width).toBe('50px');
+    expect(img.style.height).toBe('50px');
+  });
+});
+</file>
+
+<file path="src/app/shared/components/icon/icon.ts">
+import { Component, input } from '@angular/core';
+
+@Component({
+  selector: 'app-icon',
+  standalone: true,
+  template: `
+    <span 
+      class="flex items-center justify-center rounded-full border border-primary/10 bg-secondary/80 p-3 
+             transition-all duration-300 ease-out cursor-pointer
+             hover:-translate-y-0.5 hover:border-accent/30 hover:bg-secondary hover:shadow-lg hover:shadow-primary/5"
+      [style.width.px]="size()" 
+      [style.height.px]="size()"
+    >
+      <img 
+        [src]="'/assets/icons/' + name()" 
+        [style.width.px]="size()" 
+        [style.height.px]="size()"
+        [attr.alt]="decorative() ? '' : (alt() || (name() + ' icon'))"
+        [attr.aria-hidden]="decorative() ? 'true' : null"
+        class="block"
+      />
+    </span>
+  `
+})
+export class IconComponent {
+  name = input.required<string>(); 
+  size = input<number>(24);
+  decorative = input<boolean>(false);
+  alt = input<string | undefined>();
+}
+</file>
+
+<file path="src/app/shared/components/navbar/navbar.css">
+
+</file>
+
+<file path="src/app/shared/components/navbar/navbar.html">
+<header class="sticky top-0 z-1000 w-full border-b border-accent/20 bg-primary px-6 backdrop-blur-md">
+  <div class="mx-auto flex max-w-300 items-center justify-between py-4">
+    
+    <a routerLink="/" 
+       class="text-2xl font-extrabold text-accent transition-opacity hover:opacity-80 font-serif">
+      SHELFSPOT
+    </a>
+
+    <button (click)="toggleMenu()" 
+            class="block p-2 text-secondary md:hidden cursor-pointer" 
+            aria-label="Toggle menu">
+      <app-icon 
+        [name]="isMenuOpen() ? CLOSE_ICON : MENU_ICON" 
+        [size]="45">
+      </app-icon>
+    </button>
+
+    <nav [style.height]="isMenuOpen() ? 'calc(100dvh - 70px)' : '0px'"
+         class="fixed top-16 left-0 w-full overflow-y-auto bg-primary/95 flex flex-col items-center transition-[height] duration-300 ease-in-out md:static md:h-auto md:w-auto md:flex-row md:bg-transparent md:gap-8 md:overflow-visible">
+      
+      <a routerLink="/" 
+         routerLinkActive="!text-accent" 
+         [routerLinkActiveOptions]="{exact: true}" 
+         (click)="isMenuOpen.set(false)"
+         class="w-full py-6 text-center text-lg font-medium text-secondary/80 transition-colors hover:text-accent md:w-auto md:py-0 md:text-base border-b border-accent/10 md:border-none">
+         Homepage
+      </a>
+
+      <a routerLink="/books/search" 
+         routerLinkActive="!text-accent" 
+         (click)="isMenuOpen.set(false)"
+         class="w-full py-6 text-center text-lg font-medium text-secondary/80 transition-colors hover:text-accent md:w-auto md:py-0 md:text-base border-b border-accent/10 md:border-none">
+         Search Books
+      </a>
+
+      <a routerLink="/books/favorites" 
+         routerLinkActive="!text-accent" 
+         (click)="isMenuOpen.set(false)"
+         class="w-full py-6 text-center text-lg font-medium text-secondary/80 transition-colors hover:text-accent md:w-auto md:py-0 md:text-base border-b border-accent/10 md:border-none">
+         Favorites
+      </a>
+
+      <a routerLink="/books/loans" 
+         routerLinkActive="!text-accent" 
+         (click)="isMenuOpen.set(false)"
+         class="w-full py-6 text-center text-lg font-medium text-secondary/80 transition-colors hover:text-accent md:w-auto md:py-0 md:text-base border-b border-accent/10 md:border-none">
+         Loans
+      </a>
+
+      <a routerLink="/contacts" 
+         routerLinkActive="!text-accent" 
+         (click)="isMenuOpen.set(false)"
+         class="w-full py-6 text-center text-lg font-medium text-secondary/80 transition-colors hover:text-accent md:w-auto md:py-0 md:text-base">
+         Contact me
+      </a>
+      
+    </nav>
+  </div>
+</header>
+</file>
+
+<file path="src/app/shared/components/navbar/navbar.ts">
+import { Component, signal } from '@angular/core';
+import { RouterLink, RouterLinkActive } from '@angular/router';
+import { IconComponent } from '../icon/icon';
+
+@Component({
+  selector: 'app-navbar',
+  standalone: true,
+  imports: [RouterLink, RouterLinkActive,IconComponent],
+  templateUrl: './navbar.html',
+  styleUrl: './navbar.css',
+})
+export class Navbar {
+  isMenuOpen = signal(false);
+
+  readonly MENU_ICON = 'menu.svg';
+  readonly CLOSE_ICON = 'x.svg';
+
+  toggleMenu() {
+    this.isMenuOpen.update(val => !val);
+  }
+}
+</file>
+
+<file path="src/app/shared/components/tooltip/tooltip.css">
+
+</file>
+
+<file path="src/app/shared/components/tooltip/tooltip.ts">
+import { Component, input } from "@angular/core";
+
+@Component({
+  selector: 'app-sidebar-tooltip',
+  standalone: true,
+  template: `
+    <div class="bg-primary text-white px-3 py-1.5 rounded-md text-xs 
+                absolute left-4 z-100 whitespace-nowrap shadow-xl 
+                border border-secondary/10 animate-in fade-in zoom-in duration-200">
+      {{ text() }}
+      <div class="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 bg-primary rotate-45"></div>
+    </div>
+  `,
+})
+export class SidebarTooltip {
+  text = input.required<string>(); 
+}
+</file>
+
+<file path="src/app/shared/directives/click-feedback.directive.ts">
+// src/app/shared/directives/click-feedback.directive.ts
+import { Directive, HostListener, ElementRef, inject } from '@angular/core';
+
+@Directive({
+  selector: '[appClickFeedback]',
+  standalone: true
+})
+export class ClickFeedbackDirective {
+  private el = inject(ElementRef);
+
+  @HostListener('mousedown') onMouseDown() {
+    this.el.nativeElement.style.transform = 'scale(0.95)';
+    this.el.nativeElement.style.transition = 'transform 0.1s';
+  }
+
+  @HostListener('mouseup') onMouseUp() {
+    this.el.nativeElement.style.transform = 'scale(1)';
+  }
+}
+</file>
+
+<file path="src/app/shared/directives/tooltip.directive.ts">
+import { 
+    Directive, 
+    ViewContainerRef, 
+    input, 
+    HostListener, 
+    ComponentRef,
+    inject 
+} from '@angular/core';
+import { SidebarTooltip } from '../../shared/components/tooltip/tooltip';
+
+@Directive({
+  selector: '[appTooltip]',
+  standalone: true
+})
+export class TooltipDirective {
+  
+  text = input.required<string>({ alias: 'appTooltip' });
+  //The directive creates the component only if the sidebar is collapsed
+  shouldShow = input<boolean>(true, { alias: 'appTooltipEnabled' });  
+
+  private vcr = inject(ViewContainerRef);
+  private componentRef: ComponentRef<SidebarTooltip> | null = null;
+
+  @HostListener('mouseenter')
+  onMouseEnter() {
+    // if the sidebar is set to open, we don't create the component
+    if (!this.shouldShow() || this.componentRef) return;
+
+    this.componentRef = this.vcr.createComponent(SidebarTooltip);
+    
+    this.componentRef.setInput('text', this.text());
+  }
+
+  @HostListener('mouseleave')
+  onMouseLeave() {
+    this.destroy();
+  }
+
+  ngOnDestroy() {
+    this.destroy();
+  }
+
+  private destroy() {
+    if (this.componentRef) {
+      this.componentRef.destroy();
+      this.componentRef = null;
+    }
+  }
+}
+</file>
+
+<file path="src/app/shared/pipes/cover-fallback-pipe-pipe.ts">
+import { Pipe, PipeTransform } from '@angular/core';
+
+@Pipe({
+  name: 'coverFallbackPipe',
+  standalone: true
+})
+export class CoverFallbackPipe implements PipeTransform {
+ transform(coverId: number | undefined, size: 'S' | 'M' | 'L' = 'M'): string {
+    return coverId 
+      ? `https://covers.openlibrary.org/b/id/${coverId}-${size}.jpg`
+      : 'assets/images/book-fallback-cover.jpg'; // the default cover fallback
+  }
+}
+
+/**
+ * The OpenLibrary API usually doesn't return the book cover (cover_i is null).
+ * Instead of overload the template with conditional logic, a custom Pipe can handle the fallback
+ */
+</file>
+
+<file path="src/app/shared/types/api-book-data.ts">
+export interface ApiBookData {
+    key: string;
+    title: string;
+    author: string[];
+    subject:string[];
+    first_publish_year: number,
+    cover_i: number,
+    description: string;
+}
+</file>
+
+<file path="src/app/shared/types/custom-components-types.ts">
+// Buttons
+export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost';
+
+// Form-Contacts
+
+export enum FormStatus {
+    idle = 'idle', 
+    sending = 'sending',
+    success = 'success',
+    error ='error'
+} 
+
+export interface ContactsFormTypes {
+    name: string,
+    email:string,
+    message?: string
+    formStatus: FormStatus
+}
+</file>
+
+<file path="src/app/shared/types/loans.types.ts">
+import { type BookDetail } from "../../core/schemas/book-api.schema";
+
+export interface Loan {
+    id: string;
+    book: BookDetail;
+    loanDate: Date;
+    dueDate: Date;
+  }
+</file>
+
+<file path="src/app/shared/validators/signal-validator.ts">
+// Check if the email belongs to a professional domain
+export function isProfessionalEmail(email: string): boolean {
+    const forbiddenDomains = ['test.com', 'dummy.it', 'spam.org'];
+    const domain = email.split('@')[1];
+    return !forbiddenDomains.includes(domain);
+  }
+</file>
+
+<file path="src/app/app.config.ts">
+import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
+import { provideHttpClient, withFetch } from '@angular/common/http';
+import { provideRouter, withComponentInputBinding } from '@angular/router';
+
+import { routes } from './app.routes';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideBrowserGlobalErrorListeners(),
+    provideRouter(
+      routes, 
+      withComponentInputBinding()
+    ),
+    provideHttpClient(
+      withFetch()
+    )
+  ]
+};
+</file>
+
+<file path="src/app/app.css">
+
+</file>
+
+<file path="src/app/app.html">
+<div class="flex flex-col min-h-dvh bg-secondary">
+  
+  <app-navbar />
+
+  <main>
+    <router-outlet />
+  </main>
+
+  <app-footer />
+
+</div>
+</file>
+
+<file path="src/app/app.routes.ts">
+import { Routes } from '@angular/router';
+
+export const routes: Routes = [
+  {
+    path: '',
+    loadComponent: () => import('./features/layouts/main-layout/main-layout').then(m => m.MainLayout),
+    children: [
+      { path: '', redirectTo: 'home', pathMatch: 'full' },
+      {
+        path: 'home',
+        loadComponent: () => import('./features/layouts/homepage/homepage').then(m => m.Homepage),
+      },
+      {
+        path: 'contacts',
+        loadComponent: () => import('./features/contacts/contacts').then(m => m.Contacts)
+      }
+    ]
+  },
+  {
+    path: 'books',
+    // Qui in futuro aggiungeremo: canActivate: [authGuard]
+    loadComponent: () => import('./features/layouts/book-layout/book-layout').then(m => m.BookLayout),
+    children: [
+      {
+        path: 'search',
+        loadComponent: () => import('./features/book-search/search-page/search-page').then(m => m.SearchPage)
+      },
+      {
+        path: 'search/:id',
+        loadComponent: () => import('./features/book-search/search-modal/search-modal').then(m => m.SearchModalComponent)
+      },
+      {
+        path: 'favorites',
+        loadComponent: () => import('./features/favorites/favorite-page/favorite-page').then(m => m.FavoritePage)
+      },
+      {
+        path: 'loans',
+        loadComponent: () => import('./features/loans/loans-page/loans-page').then(m => m.LoansPage)
+      }
+    ]
+  },
+  {
+    path: 'auth',
+    loadComponent: () => import('./features/layouts/auth-layout/auth-layout').then(m => m.AuthLayout),
+    children: [
+      {
+        path: 'login',
+        loadComponent: () => import('./features/auth/login/login').then(m => m.Login)
+      },
+      {
+        path: 'register',
+        loadComponent: () => import('./features/auth/register/register').then(m => m.Register)
+      }
+    ]
+  },
+  {
+    path: '**',
+    loadComponent: () => import('./features/not-found/not-found').then(m => m.NotFound)
+  }
+];
+</file>
+
+<file path="src/app/app.ts">
+import { Component, signal } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+import { Navbar } from './shared/components/navbar/navbar';
+import { Footer } from './shared/components/footer/footer';
+
+@Component({
+  selector: 'app-root',
+  imports: [RouterOutlet, Navbar, Footer],
+  templateUrl: './app.html',
+  styleUrl: './app.css'
+})
+export class App {
+  protected readonly title = signal('shelfspot');
+}
+</file>
+
+<file path="src/assets/icons/arrow-left.svg">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left-icon lucide-arrow-left"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+</file>
+
+<file path="src/assets/icons/arrow-right.svg">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right-icon lucide-arrow-right"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+</file>
+
+<file path="src/assets/icons/badge-check.svg">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-badge-check-icon lucide-badge-check"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="m9 12 2 2 4-4"/></svg>
+</file>
+
+<file path="src/assets/icons/book-open.svg">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book-open-icon lucide-book-open"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>
+</file>
+
+<file path="src/assets/icons/chevron-down.svg">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"/></svg>
+</file>
+
+<file path="src/assets/icons/database.svg">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-database-search-icon lucide-database-search"><path d="M21 11.693V5"/><path d="m22 22-1.875-1.875"/><path d="M3 12a9 3 0 0 0 8.697 2.998"/><path d="M3 5v14a9 3 0 0 0 9.28 2.999"/><circle cx="18" cy="18" r="3"/><ellipse cx="12" cy="5" rx="9" ry="3"/></svg>
+</file>
+
+<file path="src/assets/icons/external-link.svg">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-external-link-icon lucide-external-link"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
+</file>
+
+<file path="src/assets/icons/googlemaps.svg">
+<svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Google Maps</title><path d="M19.527 4.799c1.212 2.608.937 5.678-.405 8.173-1.101 2.047-2.744 3.74-4.098 5.614-.619.858-1.244 1.75-1.669 2.727-.141.325-.263.658-.383.992-.121.333-.224.673-.34 1.008-.109.314-.236.684-.627.687h-.007c-.466-.001-.579-.53-.695-.887-.284-.874-.581-1.713-1.019-2.525-.51-.944-1.145-1.817-1.79-2.671L19.527 4.799zM8.545 7.705l-3.959 4.707c.724 1.54 1.821 2.863 2.871 4.18.247.31.494.622.737.936l4.984-5.925-.029.01c-1.741.601-3.691-.291-4.392-1.987a3.377 3.377 0 0 1-.209-.716c-.063-.437-.077-.761-.004-1.198l.001-.007zM5.492 3.149l-.003.004c-1.947 2.466-2.281 5.88-1.117 8.77l4.785-5.689-.058-.05-3.607-3.035zM14.661.436l-3.838 4.563a.295.295 0 0 1 .027-.01c1.6-.551 3.403.15 4.22 1.626.176.319.323.683.377 1.045.068.446.085.773.012 1.22l-.003.016 3.836-4.561A8.382 8.382 0 0 0 14.67.439l-.009-.003zM9.466 5.868L14.162.285l-.047-.012A8.31 8.31 0 0 0 11.986 0a8.439 8.439 0 0 0-6.169 2.766l-.016.018 3.665 3.084z"/></svg>
+</file>
+
+<file path="src/assets/icons/heart.svg">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-heart-icon lucide-heart"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/></svg>
+</file>
+
+<file path="src/assets/icons/linkedin.svg">
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+<svg height="800px" width="800px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+	 viewBox="0 0 382 382" xml:space="preserve">
+<path style="fill:#0077B7;" d="M347.445,0H34.555C15.471,0,0,15.471,0,34.555v312.889C0,366.529,15.471,382,34.555,382h312.889
+	C366.529,382,382,366.529,382,347.444V34.555C382,15.471,366.529,0,347.445,0z M118.207,329.844c0,5.554-4.502,10.056-10.056,10.056
+	H65.345c-5.554,0-10.056-4.502-10.056-10.056V150.403c0-5.554,4.502-10.056,10.056-10.056h42.806
+	c5.554,0,10.056,4.502,10.056,10.056V329.844z M86.748,123.432c-22.459,0-40.666-18.207-40.666-40.666S64.289,42.1,86.748,42.1
+	s40.666,18.207,40.666,40.666S109.208,123.432,86.748,123.432z M341.91,330.654c0,5.106-4.14,9.246-9.246,9.246H286.73
+	c-5.106,0-9.246-4.14-9.246-9.246v-84.168c0-12.556,3.683-55.021-32.813-55.021c-28.309,0-34.051,29.066-35.204,42.11v97.079
+	c0,5.106-4.139,9.246-9.246,9.246h-44.426c-5.106,0-9.246-4.14-9.246-9.246V149.593c0-5.106,4.14-9.246,9.246-9.246h44.426
+	c5.106,0,9.246,4.14,9.246,9.246v15.655c10.497-15.753,26.097-27.912,59.312-27.912c73.552,0,73.131,68.716,73.131,106.472
+	L341.91,330.654L341.91,330.654z"/>
+</svg>
+</file>
+
+<file path="src/assets/icons/mail.svg">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mail-icon lucide-mail"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="4" width="20" height="16" rx="2"/></svg>
+</file>
+
+<file path="src/assets/icons/menu.svg">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu-icon lucide-menu"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/></svg>
+</file>
+
+<file path="src/assets/icons/monitor.svg">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-monitor-smartphone-icon lucide-monitor-smartphone"><path d="M18 8V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h8"/><path d="M10 19v-3.96 3.15"/><path d="M7 19h5"/><rect width="6" height="10" x="16" y="12" rx="2"/></svg>
+</file>
+
+<file path="src/assets/icons/search.svg">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search-icon lucide-search"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+</file>
+
+<file path="src/assets/icons/send.svg">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-send-icon lucide-send"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/></svg>
+</file>
+
+<file path="src/assets/icons/trash.svg">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash-icon lucide-trash"><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+</file>
+
+<file path="src/assets/icons/user.svg">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-icon lucide-user"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+</file>
+
+<file path="src/assets/icons/x.svg">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+</file>
+
+<file path="src/index.html">
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Shelfspot</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+<body>
+  <app-root></app-root>
+</body>
+</html>
+</file>
+
+<file path="src/main.ts">
+import { bootstrapApplication } from '@angular/platform-browser';
+import { appConfig } from './app/app.config';
+import { App } from './app/app';
+
+bootstrapApplication(App, appConfig)
+  .catch((err) => console.error(err));
+</file>
+
+<file path="src/styles.css">
+@import "tailwindcss";
+
+@theme {
+  /* Nuova Palette "Library Heritage" */
+  --color-primary: var(--deep-leather);
+  --color-secondary: var(--aged-parchment);
+  --color-text-primary: var(--old-ink);
+  --color-danger:var(--danger);
+  --color-accent: var(--burnished-amber);
+  --color-light: var(--light);
+
+  /* Definiamo i valori specifici */
+  --deep-leather: #2d1b0d;      /* Marrone scurissimo (Rilegature) */
+  --aged-parchment: #f4ece1;    /* Crema caldo (Pagine invecchiate) */
+  --old-ink: #3d342d;           /* Grigio fango scuro (Inchiostro) */
+  --burnished-amber: #b45309;   /* Ambra/Bronzo (Dettagli in oro) */
+  --danger: #E63946;
+  --light: #fff;
+}
+
+html, body {
+  margin: 0;
+  overflow-x: hidden;
+  /* Usiamo le variabili Tailwind v4 appena definite */
+  background-color: var(--color-secondary);
+  color: var(--color-text-primary);
+  font-family: 'Poppins', system-ui, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* GLOBAL TYPOGRAPHY */
+h1, h2, h3, strong {
+    color: var(--color-primary); /* I titoli usano il marrone pelle per contrasto */
+    font-weight: 700; 
+    letter-spacing: -0.01em;
+}
+
+p, span, li {
+    color: var(--color-text-primary);
+    line-height: 1.7; /* Leggermente più arioso per favorire la lettura */
+}
+
+/* Un tocco di classe: selezione del testo color carta/oro */
+::selection {
+  background-color: var(--color-accent);
+  color: var(--color-secondary);
+}
+</file>
+
+<file path="src/test-setup.ts">
+import '@analogjs/platform/testing/setup-vitest';
+import { TestBed } from '@angular/core/testing';
+import {
+  BrowserTestingModule,
+  platformBrowserTesting,
+} from '@angular/platform-browser/testing';
+
+TestBed.initTestEnvironment(
+  BrowserTestingModule,
+  platformBrowserTesting()
+);
+</file>
+
+<file path=".editorconfig">
+# Editor configuration, see https://editorconfig.org
+root = true
+
+[*]
+charset = utf-8
+indent_style = space
+indent_size = 2
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.ts]
+quote_type = single
+ij_typescript_use_double_quotes = false
+
+[*.md]
+max_line_length = off
+trim_trailing_whitespace = false
+</file>
+
+<file path=".gitignore">
+# See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
+
+# Compiled output
+/dist
+/tmp
+/out-tsc
+/bazel-out
+
+# Node
+/node_modules
+npm-debug.log
+yarn-error.log
+
+# IDEs and editors
+.idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/mcp.json
+.history/*
+
+# Miscellaneous
+/.angular/cache
+.sass-cache/
+/connect.lock
+/coverage
+/libpeerconnection.log
+testem.log
+/typings
+__screenshots__/
+
+# System files
+.DS_Store
+Thumbs.db
+</file>
+
+<file path=".postcssrc.json">
+{
+  "plugins": {
+    "@tailwindcss/postcss": {}
+  }
+}
+</file>
+
+<file path=".prettierrc">
+{
+  "printWidth": 100,
+  "singleQuote": true,
+  "overrides": [
+    {
+      "files": "*.html",
+      "options": {
+        "parser": "angular"
+      }
+    }
+  ]
+}
+</file>
+
+<file path="angular.json">
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "cli": {
+    "packageManager": "npm"
+  },
+  "newProjectRoot": "projects",
+  "projects": {
+    "shelfspot": {
+      "projectType": "application",
+      "schematics": {},
+      "root": "",
+      "sourceRoot": "src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "browser": "src/main.ts",
+            "tsConfig": "tsconfig.app.json",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "public"
+              },
+              "src/assets"
+            ],
+            "styles": [
+              "src/styles.css"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "1MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "shelfspot:build:production"
+            },
+            "development": {
+              "buildTarget": "shelfspot:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test"
+        }
+      }
+    }
+  }
+}
+</file>
+
+<file path="package.json">
+{
+  "name": "shelfspot",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "vitest"
+  },
+  "private": true,
+  "packageManager": "npm@11.11.0",
+  "dependencies": {
+    "@angular/common": "^21.2.0",
+    "@angular/compiler": "^21.2.0",
+    "@angular/core": "^21.2.0",
+    "@angular/forms": "^21.2.0",
+    "@angular/platform-browser": "^21.2.0",
+    "@angular/router": "^21.2.0",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@analogjs/platform": "^2.4.10",
+    "@analogjs/vite-plugin-angular": "^2.4.10",
+    "@angular/build": "^21.2.7",
+    "@angular/cli": "^21.2.7",
+    "@angular/compiler-cli": "^21.2.0",
+    "@angular/platform-browser-dynamic": "^21.2.10",
+    "@tailwindcss/postcss": "^4.1.12",
+    "@testing-library/angular": "^19.2.1",
+    "@vitest/ui": "^4.1.5",
+    "jsdom": "^28.1.0",
+    "postcss": "^8.5.3",
+    "prettier": "^3.8.1",
+    "tailwindcss": "^4.1.12",
+    "typescript": "~5.9.2",
+    "vitest": "^4.1.5"
+  }
+}
+</file>
+
+<file path="README.md">
+# 📚 ShelfSpot | Modern Library Management
+
+ShelfSpot is a high-performance library management platform designed to deliver a seamless and reactive user experience. Built with **Angular 19+**, it showcases modern framework architectures including Signal-based reactivity and strict Zod data validation.
+
+---
+
+## 🚀 **Completed Features**
+
+- ⚡ **Reactive Core Architecture:**  
+  State management via Angular **Signals** for fine-grained reactivity and ultra-fast UI updates.
+
+- 🔎 **Discovery Hub:**  
+  Advanced book search using the **OpenLibrary API**, leveraging RxJS (`switchMap`, `toSignal`) for efficient async data streams.
+
+- 🖼️ **Native Modal Book Details:**  
+  Uses the native `<dialog>` element for high-performance modals, including focus trapping for accessibility and deep-linking via URL parameters.
+
+- 🛡️ **Runtime Validation with Zod:**  
+  **Zod** schemas validate and sanitize API responses, maintaining strict, type-safe data models (`BookDetail`, `BookSearchResult`).
+
+- 🔗 **Type-Safe Services:**  
+  Decoupled architecture using **Injection Tokens** for API configs and strict TypeScript interfaces throughout the data layer.
+
+- 🟦 **Bento Grid UI:**  
+  Modern, responsive design powered by **Tailwind CSS** with custom icons and a refined color palette.
+
+---
+
+## 🛠 **Forms & UX/UI**
+
+- 📬 **Signal-Based Contact Form:**  
+  Modern messaging form using signal-driven state instead of `ReactiveFormsModule` for lighter, faster UX.
+
+- ✅ **Advanced Defensive Validation:**  
+  Custom email validators for professional domains, with errors triggered post-user interaction (touched state only).
+
+- ♿ **A11y & UX Optimization:**  
+  Enhanced accessibility with `aria-invalid`, `aria-describedby`, and dynamic screen reader alerts (`role="alert"`).
+
+- 💾 **Loan & Favorites Persistence:**  
+  Finalizing **LoanService** and **FavoriteService** for robust, real-time local data persistence.
+
+- ✨ **Refined UI Feedback:**  
+  Implementing skeleton loaders, micro-interactions for button states (loading / success / error), and smooth transitions.
+
+---
+
+## 🧰 **Tech Stack**
+
+| 🧩 Feature             | ⚙️ Technology / Framework                      |
+|-----------------------|-----------------------------------------------|
+| 🏗️ Framework          | Angular 19+ (Signals, Standalone Components)  |
+| 🎨 Styling            | Tailwind CSS / Lucide Icons                   |
+| 🔄 State Management   | Signals / RxJS (Interop)                      |
+| ✔️ Validation         | Zod / Signal-based Form Logic                  |
+| 🌐 API Integration    | OpenLibrary API                               |
+
+---
+
+## 📝 **Note for Recruiters**
+
+This project is a showcase of specialization in **Zoneless-ready Angular** applications. The goal is to demonstrate how to build complex, accessible, and high-performance interfaces by leveraging modern framework APIs and functional programming patterns.
+
+---
+
+## 🔗 **Quick Links**
+
+- 🚀 [Live Demo](#)
+- 📂 [API Documentation](#)
+- 🛠 [Main Repository](#)
+</file>
+
+<file path="tsconfig.app.json">
+/* To learn more about Typescript configuration file: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html. */
+/* To learn more about Angular compiler options: https://angular.dev/reference/configs/angular-compiler-options. */
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/app",
+    "rootDir": "./src",
+    "types": []
+  },
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "src/**/*.spec.ts"
+  ]
+}
+</file>
+
+<file path="tsconfig.json">
+/* To learn more about Typescript configuration file: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html. */
+/* To learn more about Angular compiler options: https://angular.dev/reference/configs/angular-compiler-options. */
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "strict": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "ES2022",
+    "module": "preserve",
+    "moduleResolution": "Bundler",
+    "types": ["vitest/globals", "node"]
+  },
+  "angularCompilerOptions": {
+    "enableI18nLegacyMessageIdFormat": false,
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
+  },
+  "files": [],
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.spec.json"
+    }
+  ]
+}
+</file>
+
+<file path="tsconfig.spec.json">
+/* To learn more about Typescript configuration file: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html. */
+/* To learn more about Angular compiler options: https://angular.dev/reference/configs/angular-compiler-options. */
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/spec",
+    "types": [
+      "vitest/globals"
+    ]
+  },
+  "include": [
+    "src/**/*.d.ts",
+    "src/**/*.spec.ts"
+  ]
+}
+</file>
+
+<file path="typing.d.ts">
+declare module '@analogjs/platform/testing/vitest' {
+    const plugin: any;
+    export default plugin;
+  }
+</file>
+
+<file path="vitest.config.ts">
+import { defineConfig } from 'vitest/config';
+import angular from '@analogjs/vite-plugin-angular';
+
+export default defineConfig({
+  plugins: [angular()],
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: ['./src/test-setup.ts'],
+    include: ['**/*.spec.ts'],
+    reporters: ['default'],
+  },
+});
+</file>
+
+</files>

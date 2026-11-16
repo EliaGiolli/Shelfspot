@@ -31,6 +31,7 @@
     "@tailwindcss/postcss": "^4.1.12",
     "@testing-library/angular": "^19.2.1",
     "@vitest/ui": "^4.1.5",
+    "daisyui": "^5.8.1",
     "jsdom": "^28.1.0",
     "postcss": "^8.5.3",
     "prettier": "^3.8.1",

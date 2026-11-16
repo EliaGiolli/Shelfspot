@@ -10,14 +10,22 @@
     </div>
 
     <div class="actions-wrapper">
-        <app-button variant="primary" routerLink="/" aria-label="Back to Homepage">
-            <app-icon name="arrow-left" [size]="40"/>
+        <app-button-link
+            [variant]="'primary'"
+            routerLink="/"
+            ariaLabel="Back to Homepage"
+        >
+            <app-icon name="arrow-left" [size]="40" />
             <span class="primary-btn">Back to the Homepage</span>
-        </app-button>
-        
-        <app-button variant="secondary" routerLink="/projects" aria-label="Go to the projects">
+        </app-button-link>
+
+        <app-button-link
+            [variant]="'outline'"
+            routerLink="/projects"
+            ariaLabel="Go to the projects"
+        >
             <span>Explore my projects</span>
             <app-icon name="database" [size]="40" />
-        </app-button>
+        </app-button-link>
     </div>
 </main>

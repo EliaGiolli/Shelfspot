@@ -1,5 +1,5 @@
 // Buttons
-export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost';
+export type ButtonVariant = 'primary' | 'accent' | 'outline'; // This is used inside the btn-custom-variants.ts file as well
 
 // Form-Contacts
 
