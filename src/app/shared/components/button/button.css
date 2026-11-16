@@ -1,3 +1,4 @@
+
 @reference "../../../../styles.css";
 
 :host {
@@ -7,10 +8,25 @@
 }
 
 .button-control {
-  @apply inline-flex w-full items-center justify-center
-         appearance-none border-0 bg-transparent p-0
-         font-inherit text-inherit no-underline
-         cursor-pointer;
+  display: inline-flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+
+  appearance: none;
+  border: 0;
+  padding: 0;
+  background: transparent;
+
+  font: inherit;
+  color: inherit;
+  text-decoration: none;
+
+  cursor: pointer;
+}
+
+.button-control:focus-visible {
+  @apply outline-2 outline-offset-4 outline-accent;
 }
 
 :host(.btn-primary) {
@@ -31,5 +47,5 @@
 }
 
 :host(.disabled) .button-control {
-  @apply cursor-not-allowed;
+  cursor: not-allowed;
 }
