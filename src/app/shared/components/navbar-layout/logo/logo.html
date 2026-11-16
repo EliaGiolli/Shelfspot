@@ -3,15 +3,13 @@
   routerLink="/"
   aria-label="ShelfSpot, home"
 >
-  <span class="inline-flex items-center gap-2 whitespace-nowrap">
+  <div class="flex justify-center items-center text-center gap-2">
     <img
       src="logo-mark.png"
       alt=""
-      width="50"
-      height="36"
+      [style.width.px]="size()" 
+      [style.height.px]="size()"
     >
-    <span class="text-xl tracking-tight text-secondary-brown">
-      <span class="font-bold">Shelf</span><span class="font-normal">Spot</span>
-    </span>
-  </span>
+    <h3>Shelfspot</h3>
+  </div>
 </app-button-link>

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { ButtonLink } from '../../button-links/button-links';
 
 @Component({
@@ -7,4 +7,7 @@ import { ButtonLink } from '../../button-links/button-links';
   templateUrl: './logo.html',
   styleUrl: './logo.css',
 })
-export class Logo {}
+export class Logo {
+  alt = input<string | undefined>()
+  size = input<number>(24);
+}
