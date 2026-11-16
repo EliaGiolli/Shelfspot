@@ -19,7 +19,11 @@ import { LoanService } from "../../../core/services/loans.service";
               <p class="text-xs text-primary/40 italic">Return by: {{ item.dueDate | date }}</p>
             </div>
           </div>
-          <app-button variant="secondary" (click)="loanService.returnBook(item.id)">Return</app-button>
+          <app-button 
+            [variant]="'outline'" 
+            (click)="loanService.returnBook(item.id)">
+              Return
+          </app-button>
         </div>
       } @empty {
         <section class="p-8 max-w-7xl mx-auto">

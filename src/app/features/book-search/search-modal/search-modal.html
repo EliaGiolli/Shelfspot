@@ -42,7 +42,7 @@
             <div class="mt-auto pt-6 border-t border-primary/5 flex gap-3">
   
                 <app-button 
-                  variant="primary" 
+                  [variant]="'primary'" 
                   class="flex-1"
                   appClickFeedback
                   [disabled]="loanService.isBorrowed(bookData.key)"
@@ -51,7 +51,7 @@
                 </app-button>
               
                 <app-button 
-                  variant="secondary" 
+                  [variant]="'outline'" 
                   appClickFeedback
                   (click)="favoriteService.toggleFavorite(bookData)">
                   <app-icon 

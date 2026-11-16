@@ -15,7 +15,6 @@ import { CustomButton } from '../../utils/btn-custom-variants';
       <ng-content></ng-content>
     </button>
   `,
-  styleUrl: './button.css',
   host: {
     '[class.disabled]': 'disabled()'
   }

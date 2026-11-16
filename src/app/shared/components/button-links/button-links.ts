@@ -19,7 +19,6 @@ import { ButtonLinks } from '../../utils/btn-custom-variants';
       <ng-content></ng-content>
     </a>
   `,
-  styleUrl: '../button/button.css',
   host: {
     '[class.disabled]': 'disabled()'
   }
