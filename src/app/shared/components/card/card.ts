@@ -1,26 +1,32 @@
+
 import { Component, input } from '@angular/core';
 
 @Component({
   selector: 'app-card',
   standalone: true,
   template: `
-    <article 
-      class="bg-white p-5 rounded-2xl shadow-sm hover:shadow-md transition-all border border-primary/5 flex flex-col group h-full"
+    <article
+      class="group flex h-full flex-col rounded-2xl border border-accent/20 bg-surface-elevated p-5 shadow-sm transition-shadow duration-200 hover:shadow-md"
       [attr.aria-labelledby]="titleId()"
     >
-      <div class="card-header mb-4" aria-hidden="true">
+      <!-- Header -->
+      <div class="mb-4">
         <ng-content select="[card-header]"></ng-content>
       </div>
-      <div class="card-body grow">
+
+      <!-- Body -->
+      <div class="grow">
         <ng-content select="[card-body]"></ng-content>
       </div>
-      <div class="card-footer mt-4">
+
+      <!-- Footer -->
+      <div class="mt-4">
         <ng-content select="[card-footer]"></ng-content>
       </div>
     </article>
   `
 })
 export class CardComponent {
-  // Passiamo un ID univoco per collegare la card al suo titolo internamente
+  // Unique ID associated with the card title
   titleId = input.required<string>();
 }

@@ -6,21 +6,21 @@
   
   <section class="my-16 px-6 max-w-6xl mx-auto" aria-labelledby="benefits-title">
     <div class="py-16 px-8 text-secondary">
-      <h2 id="benefits-title" class="text-danger text-4xl font-serif font-bold mb-12 text-center">
+      <h2 id="benefits-title" class="text-text-main text-4xl font-serif font-bold mb-12 text-center">
         Why Choose ShelfSpot?
       </h2>
-      <div class="grid gap-10 md:grid-cols-3">
+      <div class="bg-surface-elevated grid gap-10 md:grid-cols-3">
         @for (benefit of benefits; track benefit.title) {
           <app-card
             [titleId]="'benefit-' + $index"
-            class="flex flex-col items-center text-center p-6 rounded-2xl bg-light border-l-4 border-danger"
+            class="flex flex-col items-center text-center p-6 rounded-2xl border-l-4 border-accent"
           >
             <div card-body>
               <div class="text-5xl mb-6 filter drop-shadow-md" aria-hidden="true">{{ benefit.icon }}</div>
-              <h3 [id]="'benefit-' + $index" class="text-xl font-bold mb-3 font-serif italic">
+              <h3 [id]="'benefit-' + $index" class="text-text-main text-xl font-bold mb-3 font-serif italic">
                 {{ benefit.title }}
               </h3>
-              <p class="text-secondary/80 leading-relaxed">{{ benefit.description }}</p>
+              <p class="text-accent leading-relaxed">{{ benefit.description }}</p>
             </div>
           </app-card>
         } @empty {
