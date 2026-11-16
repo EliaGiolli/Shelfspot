@@ -1,4 +1,4 @@
-// This configuration tries to mimic the behavior of the combination between CVA and CLSX libraries
+
 import { ButtonVariant } from '../types/custom-components-types';
 
 type ButtonStyles = {
@@ -8,55 +8,51 @@ type ButtonStyles = {
 
 export const CustomButton: ButtonStyles = {
   base: [
-    'inline-flex items-center justify-center',
-    'rounded-full px-8 py-4',
-    'font-bold transition-all duration-200',
+    'btn',
+    'rounded-full',
+    'px-8 py-4',
+    'font-bold',
+    'transition-all duration-200',
     'active:scale-95',
-    'focus-within:outline-hidden',
-    'disabled:opacity-50 disabled:cursor-not-allowed disabled:grayscale'
+    'focus-visible:outline-2 focus-visible:outline-offset-4'
   ].join(' '),
 
   variants: {
-    primary: 'bg-primary text-secondary shadow-lg hover:bg-primary/90',
+    primary: 'btn-primary shadow-lg',
 
     accent: [
-      'bg-danger text-white',
-      'shadow-[0_10px_20px_-10px_rgba(230,57,70,0.5)]',
-      'hover:bg-danger/90'
+      'btn-error',
+      'text-white',
+      'shadow-[0_10px_20px_-10px_rgba(230,57,70,0.5)]'
     ].join(' '),
 
-    outline: [
-      'border-2 border-primary text-primary',
-      'hover:bg-primary hover:text-secondary'
-    ].join(' ')
+    outline: 'btn-outline'
   }
 };
 
 export const ButtonLinks: ButtonStyles = {
   base: [
-    'inline-flex items-center justify-center w-full',
-    // whitespace-nowrap prevents text from wrapping within an element 
+    'btn',
+    'w-full',
     'whitespace-nowrap',
     'px-4 py-4',
-    'font-bold transition-all duration-200 text-base md:text-lg',
+    'text-base md:text-lg',
+    'font-bold',
     'no-underline',
+    'transition-all duration-200',
     'active:scale-95',
-    'focus-within:outline-hidden',
-    'aria-disabled:opacity-50 aria-disabled:cursor-not-allowed aria-disabled:grayscale'
+    'focus-visible:outline-2 focus-visible:outline-offset-4'
   ].join(' '),
 
   variants: {
-    primary: 'bg-accent text-secondary shadow-lg hover:bg-primary/90 rounded-full',
+    primary: 'btn-primary shadow-lg',
 
     accent: [
-      'bg-danger text-white rounded-full',
-      'shadow-[0_10px_20px_-10px_rgba(230,57,70,0.5)]',
-      'hover:bg-danger/90'
+      'btn-error',
+      'text-white',
+      'shadow-[0_10px_20px_-10px_rgba(230,57,70,0.5)]'
     ].join(' '),
 
-    outline: [
-      'text-primary',
-      'hover:border-b-2 hover:border-primary '
-    ].join(' ')
+    outline: 'btn-ghost'
   }
 };

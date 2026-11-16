@@ -1,5 +1,63 @@
+
 @import "tailwindcss";
-/* @plugin "daisyui"; */
+
+@plugin "daisyui" {
+  themes: shelfspot --default;
+}
+
+@plugin "daisyui/theme" {
+  name: "shelfspot";
+  default: true;
+  prefersdark: false;
+  color-scheme: light;
+
+  /* Background e superfici */
+  --color-base-100: #FBF8F3;
+  --color-base-200: #EAE0D2;
+  --color-base-300: #D8C3AA;
+  --color-base-content: #3D342D;
+
+  /* Colori principali */
+  --color-primary: #5B4030;
+  --color-primary-content: #F4ECE1;
+
+  --color-secondary: #A47755;
+  --color-secondary-content: #FFFFFF;
+
+  --color-accent: #D8C3AA;
+  --color-accent-content: #3D342D;
+
+  /* Colori neutri */
+  --color-neutral: #3D342D;
+  --color-neutral-content: #FBF8F3;
+
+  /* Colori di sistema */
+  --color-info: #5B4030;
+  --color-info-content: #FFFFFF;
+
+  --color-success: #477A52;
+  --color-success-content: #FFFFFF;
+
+  --color-warning: #D69A35;
+  --color-warning-content: #3D342D;
+
+  --color-error: #E63946;
+  --color-error-content: #FFFFFF;
+
+  /* Forme e dimensioni */
+  --radius-selector: 1rem;
+  --radius-field: 0.5rem;
+  --radius-box: 1rem;
+
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+
+  --border: 1px;
+
+  /* Effetti */
+  --depth: 1;
+  --noise: 0;
+}
 
 @theme {
   /* Background e superfici */
@@ -29,9 +87,7 @@
   --color-bg-secondary: var(--color-surface);
 }
 
-
- @layer base {
-
+@layer base {
   :root {
     --deep-leather: var(--color-secondary-brown);
     --aged-parchment: var(--color-bg-main);
@@ -62,7 +118,6 @@
       color 0.3s ease;
   }
 
-  /* Heading hierarchy */
   h1,
   h2,
   h3,
@@ -102,7 +157,6 @@
     font-size: 1rem;
   }
 
-  /* Body text */
   p {
     margin-block: 0 1rem;
     font-size: 1rem;

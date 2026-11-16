@@ -6,7 +6,7 @@ import { Component, input } from '@angular/core';
   standalone: true,
   template: `
     <article
-      class="group flex h-full flex-col rounded-2xl border border-accent/20 bg-surface-elevated p-5 shadow-sm transition-shadow duration-200 hover:shadow-md"
+      class="group flex h-full flex-col rounded-2xl border border-secondary/20 bg-base-100 p-5 shadow-sm transition-shadow duration-200 hover:shadow-md"
       [attr.aria-labelledby]="titleId()"
     >
       <!-- Header -->
