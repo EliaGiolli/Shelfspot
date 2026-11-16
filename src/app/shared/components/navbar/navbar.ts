@@ -1,11 +1,17 @@
 import { Component, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { IconComponent } from '../icon/icon';
+import { ButtonLink } from '../button-links/button-links';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive,IconComponent],
+  imports: [
+    RouterLink, 
+    RouterLinkActive,
+    IconComponent, 
+    ButtonLink
+  ],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
 })

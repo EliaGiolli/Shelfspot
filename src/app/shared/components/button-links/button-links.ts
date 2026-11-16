@@ -1,6 +1,7 @@
 import { Component, computed, input } from '@angular/core';
 import { RouterLink, UrlTree } from '@angular/router';
 import { ButtonVariant } from '../../types/custom-components-types';
+import { ButtonLinks } from '../../utils/btn-custom-variants';
 
 @Component({
   selector: 'app-button-link',
@@ -8,7 +9,7 @@ import { ButtonVariant } from '../../types/custom-components-types';
   imports: [RouterLink],
   template: `
     <a
-      class="button-control"
+      [class]="linkClasses()"
       [href]="disabled() ? null : href()"
       [routerLink]="disabled() || href() ? null : routerLink()"
       [attr.aria-label]="ariaLabel() || null"
@@ -20,7 +21,6 @@ import { ButtonVariant } from '../../types/custom-components-types';
   `,
   styleUrl: '../button/button.css',
   host: {
-    '[class]': 'variantClass()',
     '[class.disabled]': 'disabled()'
   }
 })
@@ -31,5 +31,8 @@ export class ButtonLink {
   disabled = input(false);
   ariaLabel = input<string>();
 
-  protected variantClass = computed(() => `btn-${this.variant()}`);
+  // This computation is part of the mimicking the behavior of clsx and CVA began inside the btn-custom-variants.ts file
+  protected linkClasses = computed(() =>
+    `${ButtonLinks.base} ${ButtonLinks.variants[this.variant()]}`
+  );
 }

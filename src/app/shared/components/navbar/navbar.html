@@ -1,59 +1,88 @@
-<header class="sticky top-0 z-1000 w-full border-b border-accent/20 bg-primary px-6 backdrop-blur-md">
-  <div class="mx-auto flex max-w-300 items-center justify-between py-4">
-    
-    <a routerLink="/" 
-       class="text-2xl font-extrabold text-accent transition-opacity hover:opacity-80 font-serif">
-      SHELFSPOT
-    </a>
 
-    <button (click)="toggleMenu()" 
-            class="block p-2 text-secondary md:hidden cursor-pointer" 
-            aria-label="Toggle menu">
-      <app-icon 
-        [name]="isMenuOpen() ? CLOSE_ICON : MENU_ICON" 
-        [size]="45">
-      </app-icon>
+<header class="sticky top-0 z-[1000] w-full border-b border-accent/20 bg-surface/95 px-4 backdrop-blur-md sm:px-6">
+  <div class="relative mx-auto flex min-h-20 max-w-300 items-center justify-between gap-6">
+
+    <!-- Brand -->
+    <app-button-link
+      routerLink="/"
+      class="shrink-0 font-serif text-2xl font-extrabold text-accent transition-opacity duration-200 hover:opacity-80 md:text-3xl"
+    >
+      SHELFSPOT
+    </app-button-link>
+
+    <!-- Mobile menu button -->
+    <button
+      type="button"
+      (click)="toggleMenu()"
+      class="inline-flex cursor-pointer items-center justify-center rounded-lg p-2 text-secondary-brown transition-colors hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent md:hidden"
+      [attr.aria-expanded]="isMenuOpen()"
+      aria-controls="main-navigation"
+      [attr.aria-label]="isMenuOpen() ? 'Close navigation menu' : 'Open navigation menu'"
+    >
+      <app-icon
+        [name]="isMenuOpen() ? CLOSE_ICON : MENU_ICON"
+        [size]="36"
+      />
     </button>
 
-    <nav [style.height]="isMenuOpen() ? 'calc(100dvh - 70px)' : '0px'"
-         class="fixed top-16 left-0 w-full overflow-y-auto bg-primary/95 flex flex-col items-center transition-[height] duration-300 ease-in-out md:static md:h-auto md:w-auto md:flex-row md:bg-transparent md:gap-8 md:overflow-visible">
-      
-      <a routerLink="/" 
-         routerLinkActive="!text-accent" 
-         [routerLinkActiveOptions]="{exact: true}" 
-         (click)="isMenuOpen.set(false)"
-         class="w-full py-6 text-center text-lg font-medium text-secondary/80 transition-colors hover:text-accent md:w-auto md:py-0 md:text-base border-b border-accent/10 md:border-none">
-         Homepage
-      </a>
+    <!-- Navigation -->
+    <nav
+      id="main-navigation"
+      [class.max-h-0]="!isMenuOpen()"
+      [class.max-h-[calc(100dvh-5rem)]]="isMenuOpen()"
+      [class.invisible]="!isMenuOpen()"
+      [class.visible]="isMenuOpen()"
+      [class.opacity-0]="!isMenuOpen()"
+      [class.opacity-100]="isMenuOpen()"
+      [class.overflow-y-auto]="isMenuOpen()"
+      class="absolute left-0 top-full z-50 flex w-full flex-col items-center overflow-hidden bg-surface/95 shadow-lg transition-[max-height,opacity,visibility] duration-300 ease-in-out md:visible md:static md:max-h-none md:w-auto md:flex-row md:gap-6 md:overflow-visible md:bg-transparent md:opacity-100 md:shadow-none"
+    >
+      <app-button-link
+        routerLink="/"
+        routerLinkActive="!text-accent"
+        [routerLinkActiveOptions]="{ exact: true }"
+        (click)="isMenuOpen.set(false)"
+        [variant]="'outline'"
+      >
+        Homepage
+      </app-button-link>
 
-      <a routerLink="/books/search" 
-         routerLinkActive="!text-accent" 
-         (click)="isMenuOpen.set(false)"
-         class="w-full py-6 text-center text-lg font-medium text-secondary/80 transition-colors hover:text-accent md:w-auto md:py-0 md:text-base border-b border-accent/10 md:border-none">
-         Search Books
-      </a>
+      <app-button-link
+        [variant]="'outline'"
+        routerLink="/books/search"
+        routerLinkActive="!text-accent"
+        (click)="isMenuOpen.set(false)"
+      >
+        Search Books
+      </app-button-link>
 
-      <a routerLink="/books/favorites" 
-         routerLinkActive="!text-accent" 
-         (click)="isMenuOpen.set(false)"
-         class="w-full py-6 text-center text-lg font-medium text-secondary/80 transition-colors hover:text-accent md:w-auto md:py-0 md:text-base border-b border-accent/10 md:border-none">
-         Favorites
-      </a>
+      <app-button-link
+        [variant]="'outline'"
+        routerLink="/books/favorites"
+        routerLinkActive="!text-accent"
+        (click)="isMenuOpen.set(false)"
+      >
+        Favorites
+      </app-button-link>
 
-      <a routerLink="/books/loans" 
-         routerLinkActive="!text-accent" 
-         (click)="isMenuOpen.set(false)"
-         class="w-full py-6 text-center text-lg font-medium text-secondary/80 transition-colors hover:text-accent md:w-auto md:py-0 md:text-base border-b border-accent/10 md:border-none">
-         Loans
-      </a>
+      <app-button-link
+        [variant]="'outline'"
+        routerLink="/books/loans"
+        routerLinkActive="!text-accent"
+        (click)="isMenuOpen.set(false)"
+      >
+        Loans
+      </app-button-link>
 
-      <a routerLink="/contacts" 
-         routerLinkActive="!text-accent" 
-         (click)="isMenuOpen.set(false)"
-         class="w-full py-6 text-center text-lg font-medium text-secondary/80 transition-colors hover:text-accent md:w-auto md:py-0 md:text-base">
-         Contact me
-      </a>
-      
+      <app-button-link
+        [variant]="'outline'"
+        routerLink="/contacts"
+        routerLinkActive="!text-accent"
+        (click)="isMenuOpen.set(false)"
+      >
+        Contacts
+      </app-button-link>
     </nav>
+
   </div>
 </header>

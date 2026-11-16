@@ -1,13 +1,4 @@
-
 @import "tailwindcss";
-
-/*
- * DESIGN SYSTEM — Library Heritage
- *
- * Nuova palette cromatica.
- * I token --color-* vengono esposti da Tailwind CSS v4
- * e generano le rispettive utility class.
- */
 
 @theme {
   /* Background e superfici */
@@ -27,31 +18,28 @@
   --color-danger: #E63946;
   --color-light: #FFFFFF;
 
-  /*
-   * Alias di compatibilità.
-   * Mantengono funzionanti le utility e i riferimenti
-   * CSS esistenti durante la migrazione.
-   */
+  /* Alias */
   --color-primary: var(--color-secondary-brown);
   --color-secondary: var(--color-bg-main);
   --color-text-primary: var(--color-text-main);
+
+  /* Alias superfici */
+  --color-bg-primary: var(--color-surface-elevated);
+  --color-bg-secondary: var(--color-surface);
 }
 
-/*
- * Variabili legacy.
- * Mantengono compatibili eventuali riferimenti diretti
- * a queste proprietà nei componenti esistenti.
- */
-:root {
-  --deep-leather: var(--color-secondary-brown);
-  --aged-parchment: var(--color-bg-main);
-  --old-ink: var(--color-text-main);
-  --burnished-amber: var(--color-accent);
-  --danger: var(--color-danger);
-  --light: var(--color-light);
-}
 
-@layer base {
+ @layer base {
+
+  :root {
+    --deep-leather: var(--color-secondary-brown);
+    --aged-parchment: var(--color-bg-main);
+    --old-ink: var(--color-text-main);
+    --burnished-amber: var(--color-accent);
+    --danger: var(--color-danger);
+    --light: var(--color-light);
+  }
+
   html {
     font-family: 'Poppins', system-ui, sans-serif;
     font-size: 16px;
