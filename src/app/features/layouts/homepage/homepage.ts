@@ -3,6 +3,7 @@ import { IconComponent } from '../../../shared/components/icon/icon';
 import { Herosection } from "../homepage/herosection/herosection";
 import { BentoGrid } from './bento-grid/bento-grid';
 import { CardComponent } from '../../../shared/components/card/card';
+import { BookPreview } from './book-preview/book-preview';
 
 //static data
 import { benefits } from '../../../core/models/benefits.model';
@@ -14,6 +15,7 @@ import { FAQs } from '../../../core/models/faqs.model';
     IconComponent, 
     Herosection, 
     BentoGrid,
+    BookPreview,
     CardComponent
   ],
   templateUrl: './homepage.html',

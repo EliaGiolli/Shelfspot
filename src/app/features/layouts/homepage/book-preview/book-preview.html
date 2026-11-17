@@ -1,0 +1,159 @@
+<section
+  class="my-24 mx-auto max-w-7xl px-4"
+  aria-labelledby="book-preview-title"
+>
+  <header class="mb-10 text-center">
+    <h2
+      id="book-preview-title"
+      class="mb-4 font-serif text-3xl font-bold text-primary md:text-4xl"
+    >
+      Discover Your Next Read
+    </h2>
+
+    <p class="mx-auto max-w-2xl text-base-content/70">
+      Explore our handpicked selection of fiction, science and timeless classics.
+    </p>
+  </header>
+
+  <!-- Category filters -->
+    <nav
+        class="mb-8 flex flex-wrap justify-center gap-3"
+        aria-label="Filter books by category"
+    >
+        <button
+            class="btn rounded-full"
+            [class.btn-primary]="selectedCategory() === 'all'"
+            [class.btn-outline]="selectedCategory() !== 'all'"
+            (click)="selectCategory('all')"
+        >
+            All
+        </button>
+
+        <button
+            class="btn rounded-full"
+            [class.btn-primary]="selectedCategory() === 'fiction'"
+            [class.btn-outline]="selectedCategory() !== 'fiction'"
+            (click)="selectCategory('fiction')"
+        >
+            Narrative
+        </button>
+
+        <button
+            class="btn rounded-full"
+            [class.btn-primary]="selectedCategory() === 'science'"
+            [class.btn-outline]="selectedCategory() !== 'science'"
+            (click)="selectCategory('science')"
+        >
+            Science
+        </button>
+
+        <button
+            class="btn rounded-full"
+            [class.btn-primary]="selectedCategory() === 'classics'"
+            [class.btn-outline]="selectedCategory() !== 'classics'"
+            (click)="selectCategory('classics')"
+        >
+            Classics
+        </button>
+    </nav>
+
+  <!-- Books carousel -->
+  @if (isLoading()) {
+    <div
+        class="carousel carousel-start w-full gap-4 rounded-box"
+        role="status"
+        aria-label="Loading books"
+    >
+        @for (item of [1, 2, 3]; track item) {
+        <div class="carousel-item">
+            <app-book-skeleton />
+        </div>
+        }
+    </div>
+    } @else {
+    <div class="carousel carousel-start w-full gap-4 rounded-box">
+        @for (book of books(); track book.key; let i = $index) {
+            <article class="carousel-item w-1/3 px-2">
+                <app-card
+                [titleId]="'preview-book-title-' + i"
+                variant="compact"
+                class="w-full"
+                >
+                <div card-header>
+                    <h3
+                    [id]="'preview-book-title-' + i"
+                    class="line-clamp-2 font-serif text-lg font-bold text-primary"
+                    >
+                    {{ book.title }}
+                    </h3>
+                </div>
+
+                <div card-body>
+                    <div class="flex h-64 items-center justify-center overflow-hidden rounded-xl bg-base-200">
+                    @if (book.cover_i) {
+                        <img
+                        [src]="'https://covers.openlibrary.org/b/id/' + book.cover_i + '-M.jpg'"
+                        [alt]="'Cover of ' + book.title"
+                        class="h-full w-full object-contain"
+                        loading="lazy"
+                        />
+                    } @else {
+                        <span class="text-sm text-base-content/50">
+                        Cover unavailable
+                        </span>
+                    }
+                    </div>
+
+                    <p class="mt-3 text-sm text-base-content/70">
+                    {{ book.author_name?.join(', ') || 'Unknown author' }}
+                    </p>
+
+                    <p class="text-xs text-base-content/50">
+                    First published: {{ book.first_publish_year || 'Unknown' }}
+                    </p>
+                </div>
+
+                <div card-footer>
+                    <a
+                    [routerLink]="['/books/search', book.key.split('/').pop()]"
+                    class="btn btn-outline btn-primary btn-sm w-full rounded-full"
+                    >
+                    View details
+                    </a>
+                </div>
+                </app-card>
+            </article>
+        } @empty {
+        <p class="w-full py-8 text-center text-base-content/60">
+            No books available in this category.
+        </p>
+        }
+    </div>
+    }
+
+    <!-- Pagination -->
+    <div class="join mt-8 flex justify-center">
+        <button
+            class="join-item btn btn-outline"
+            [disabled]="currentPage() === 1 || isLoading()"
+            (click)="previousPage()"
+            aria-label="Previous page"
+        >
+            «
+        </button>
+
+        <button class="join-item btn btn-active" aria-current="page">
+            {{ currentPage() }}
+        </button>
+
+        <button
+            class="join-item btn btn-outline"
+            [disabled]="isLoading()"
+            (click)="nextPage()"
+            aria-label="Next page"
+        >
+            »
+        </button>
+    </div>
+
+</section>
