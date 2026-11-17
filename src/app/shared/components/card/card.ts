@@ -1,12 +1,14 @@
 
-import { Component, input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
+import { CardVariant } from '../../types/custom-components-types';
+import { CustomCard } from '../../utils/card-custom-variants';
 
 @Component({
   selector: 'app-card',
   standalone: true,
   template: `
     <article
-      class="group flex h-full flex-col rounded-2xl border border-secondary/20 bg-base-100 p-5 shadow-sm transition-shadow duration-200 hover:shadow-md"
+      [class]="cardClasses()"
       [attr.aria-labelledby]="titleId()"
     >
       <!-- Header -->
@@ -27,6 +29,10 @@ import { Component, input } from '@angular/core';
   `
 })
 export class CardComponent {
-  // Unique ID associated with the card title
   titleId = input.required<string>();
+  variant = input<CardVariant>('default');
+
+  protected cardClasses = computed(() =>
+    `${CustomCard.base} ${CustomCard.variants[this.variant()]}`
+  );
 }

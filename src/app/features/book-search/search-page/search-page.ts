@@ -29,6 +29,7 @@ import { HttpBookService } from '../../../core/services/http-book.service';
 import { IconComponent } from '../../../shared/components/icon/icon';
 import { Button } from '../../../shared/components/button/button';
 import { CardComponent } from '../../../shared/components/card/card';
+import { InputComponent } from '../../../shared/components/input/input';
 import { CoverFallbackPipe } from '../../../shared/pipes/cover-fallback-pipe-pipe';
 import { BookSearchResult } from '../../../core/schemas/book-api.schema';
 
@@ -38,6 +39,7 @@ import { BookSearchResult } from '../../../core/schemas/book-api.schema';
   imports: [
     ReactiveFormsModule, 
     IconComponent, 
+    InputComponent,
     Button, 
     CardComponent,
     CoverFallbackPipe,
@@ -70,7 +72,7 @@ export class SearchPage {
   private books$ = combineLatest([
     this.formGroup.controls.bookInput.valueChanges.pipe(
       startWith(this.formGroup.controls.bookInput.value),
-      debounceTime(400),
+      debounceTime(250),
       distinctUntilChanged(),
       tap(() => this.currentPage.set(1))
     ),

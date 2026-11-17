@@ -12,48 +12,56 @@
     </p>
   </header>
 
-  <div class="w-full max-w-4xl flex flex-col gap-4">
-    <div class="w-full bg-white rounded-3xl shadow-2xl shadow-primary/5 p-2 border border-primary/5 relative">
-      <form [formGroup]="formGroup" role="search" class="relative">
-        <label for="book-search-input" class="sr-only">Search for books by title or author</label>
-        <input 
-          id="book-search-input"
-          type="search" 
-          placeholder="Search for titles, authors or ISBN..." 
+<div class="w-full max-w-4xl flex flex-col gap-4">
+  <div class="w-full bg-white rounded-3xl shadow-2xl shadow-primary/5 p-3 border border-primary/5">
+    <form [formGroup]="formGroup" role="search">
+      <div class="flex items-center gap-3">
+        <app-icon
+          name="search.svg"
+          [size]="28"
+          class="shrink-0 text-primary/40"
+          aria-hidden="true"
+        />
+
+        <app-input
           formControlName="bookInput"
-          class="w-full pl-14 pr-14 py-5 bg-transparent text-primary text-lg focus:outline-accent placeholder:text-primary/30"
-          [attr.aria-busy]="isLoading()"
-        >
-        <app-icon name="search.svg" [size]="32" class="absolute left-5 top-1/2 -translate-y-1/2 text-primary/30" aria-hidden="true" />
-        
+          variant="search"
+          type="search"
+          placeholder="Search by title or author..."
+          ariaLabel="Search books by title or author"
+          [id]="'book-search-input'"
+        />
+
         @if (isLoading()) {
-          <div class="absolute right-5 top-1/2 -translate-y-1/2" role="status" aria-live="polite">
-             <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-accent"></div>
-             <span class="sr-only">Searching...</span>
+          <div class="shrink-0" role="status" aria-live="polite">
+            <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-accent"></div>
+            <span class="sr-only">Searching...</span>
           </div>
         }
-      </form>
-    </div>
-
-    @if (books().length > 0) {
-      <div class="flex justify-end">
-        <button 
-          (click)="clearSearch()" 
-          class="text-xs font-bold uppercase tracking-widest text-primary/40 hover:text-accent transition-colors flex items-center gap-2"
-          aria-label="Clear all search results"
-        >
-          <app-icon name="trash.svg" [size]="40" aria-hidden="true" /> Clear Results
-        </button>
       </div>
-    }
+    </form>
   </div>
+
+  @if (books().length > 0) {
+    <div class="flex justify-end">
+      <button
+        (click)="clearSearch()"
+        class="text-xs font-bold uppercase tracking-widest text-primary/40 hover:text-accent transition-colors flex items-center gap-2"
+        aria-label="Clear all search results"
+      >
+        <app-icon name="trash.svg" [size]="40" aria-hidden="true" />
+        Clear Results
+      </button>
+    </div>
+  }
+</div>
 
   <div class="w-full mt-8" role="region" aria-live="polite" aria-label="Search results">
     
     @if (books().length > 0) {
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         @for (book of books(); track book.key) {
-          <app-card [titleId]="'title-' + book.key">
+          <app-card [titleId]="'title-' + book.key" [variant]="'default'">
             <div card-header class="aspect-3/4 overflow-hidden rounded-xl bg-secondary/20 relative">
                <img 
                 [src]="book.cover_i | coverFallbackPipe:'M'" 

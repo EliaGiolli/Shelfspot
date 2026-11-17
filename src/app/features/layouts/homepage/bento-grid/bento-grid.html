@@ -1,21 +1,26 @@
-<section 
+
+<section
   class="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-4 h-auto md:h-[600px] my-20"
   aria-label="Library Overview Dashboard"
 >
-  
-  <app-card 
-    [titleId]="'hero-title'" 
-    class="md:col-span-2 md:row-span-2 bg-primary/50 p-0 border-none shadow-xl relative overflow-hidden group"
+
+  <!-- Hero Card -->
+  <app-card
+    [titleId]="'hero-title'"
+    variant="featured"
+    class="md:col-span-2 md:row-span-2 bg-primary/50 p-0 border-none shadow-xl relative overflow-hidden"
   >
     <div card-body class="p-6 flex flex-col justify-center h-full text-secondary relative z-10">
       <h1 id="hero-title" class="text-4xl md:text-5xl font-serif font-bold leading-tight">
-        Keep your stories <br> <span class="text-accent" aria-hidden="true">in order.</span>
+        Keep your stories <br>
+        <span class="text-accent" aria-hidden="true">in order.</span>
         <span class="sr-only">Keep your stories in order.</span>
       </h1>
+
       <p class="mt-6 text-secondary/70 text-lg max-w-md">
         A sophisticated tool for modern readers. Catalog your collection and track your loans with ease.
       </p>
-      
+
       <app-button-link
         variant="primary"
         class="mt-8 w-fit"
@@ -25,82 +30,102 @@
         Get Started
       </app-button-link>
 
-      <app-icon 
-        name="book-open.svg" 
-        [size]="300" 
-        class="absolute -bottom-10 -right-10 opacity-10 rotate-12 group-hover:rotate-0 transition-transform duration-700" 
+      <app-icon
+        name="book-open.svg"
+        [size]="300"
+        class="absolute -bottom-10 -right-10 opacity-10 rotate-12 group-hover:rotate-0 transition-transform duration-700"
         aria-hidden="true"
       />
     </div>
   </app-card>
 
- 
-<app-card [titleId]="'quick-search-title'" class="bg-white">
-  <div card-header class="flex justify-between items-center w-full">
-    <h2 id="quick-search-title" class="text-[10px] font-bold uppercase tracking-[0.2em] text-primary/40">
-      Quick Search
-    </h2>
-    <app-icon name="search.svg" [size]="35" class="text-accent" aria-hidden="true" />
-  </div>
+  <!-- Quick Search Card -->
+  <app-card
+    [titleId]="'quick-search-title'"
+    variant="default"
+    class="bg-white"
+  >
+    <div card-header class="flex justify-between items-center w-full">
+      <h2 id="quick-search-title" class="text-[10px] font-bold uppercase tracking-[0.2em] text-primary/40">
+        Quick Search
+      </h2>
 
-  <div card-body class="mt-4">
-    <form (ngSubmit)="onSearch()" class="flex flex-col gap-3">
-      <label for="quick-search-input" class="text-primary text-sm font-medium">
-        Find your next book
-      </label>
+      <app-icon name="search.svg" [size]="35" class="text-accent" aria-hidden="true" />
+    </div>
 
-      <input
-        id="quick-search-input"
-        type="search"
-        name="query"
-        placeholder="Title or author..."
-        class="input input-bordered w-full"
-        minlength="3"
-        required
-        [value]="searchQuery()"
-        (input)="searchQuery.set($any($event.target).value)"
-      />
+    <div card-body class="mt-4">
+      <form (ngSubmit)="onSearch()" class="flex flex-col gap-3">
+        <label for="quick-search-input" class="text-primary text-sm font-medium">
+          Find your next book
+        </label>
 
-      <app-button
-        type="submit"
-        variant="primary"
-        [disabled]="searchQuery().trim().length < 3"
-      >
-        Search Books
-      </app-button>
-    </form>
-  </div>
+        <input
+          id="quick-search-input"
+          type="search"
+          name="query"
+          placeholder="Title or author..."
+          class="input input-bordered w-full"
+          minlength="3"
+          required
+          [value]="searchQuery()"
+          (input)="searchQuery.set($any($event.target).value)"
+        />
 
-  <div card-footer>
-    <p class="text-primary font-medium text-xs">
-      Find any edition in seconds.
-    </p>
-  </div>
-</app-card>
+        <app-button
+          type="submit"
+          variant="primary"
+          [disabled]="searchQuery().trim().length < 3"
+        >
+          Search Books
+        </app-button>
+      </form>
+    </div>
 
+    <div card-footer>
+      <p class="text-primary font-medium text-xs">
+        Find any edition in seconds.
+      </p>
+    </div>
+  </app-card>
 
-  <div 
+  <!-- Curated Picks -->
+  <div
     class="md:row-span-2 bg-accent/20 rounded-3xl overflow-hidden relative group border border-primary/5"
-    role="img" 
+    role="img"
     aria-label="Atmospheric photo of a classic library with wooden shelves"
   >
-    <img src="assets/images/library-background.jpg" 
-         class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
-         alt="" 
-         aria-hidden="true">
+    <img
+      src="assets/images/library-background.jpg"
+      class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+      alt=""
+      aria-hidden="true"
+    />
+
     <div class="absolute inset-0 bg-linear-to-t from-primary/90 via-primary/20 to-transparent flex items-end p-8">
-      <p class="text-secondary font-serif italic text-2xl tracking-wide">Curated Picks</p>
+      <p class="text-secondary font-serif italic text-2xl tracking-wide">
+        Curated Picks
+      </p>
     </div>
   </div>
 
-  <app-card [titleId]="'stats-title'" class="bg-accent border-none">
+  <!-- Lending Statistics -->
+  <app-card
+    [titleId]="'stats-title'"
+    variant="compact"
+    class="bg-accent border-none"
+  >
     <div card-body class="flex flex-col justify-center items-center text-center text-primary h-full py-4">
-        <p id="stats-title" class="sr-only">Lending Statistics</p>
-        <span class="text-5xl font-bold font-serif mb-1" aria-describedby="stats-label">{{ loanCount() }}</span>
-        <span id="stats-label" class="text-[10px] font-bold uppercase tracking-widest opacity-80">
-          Books Currently Lent
-        </span>
-        <app-icon name="user.svg" [size]="40" class="mt-4 opacity-90" aria-hidden="true" />
+      <p id="stats-title" class="sr-only">Lending Statistics</p>
+
+      <span class="text-5xl font-bold font-serif mb-1" aria-describedby="stats-label">
+        {{ loanCount() }}
+      </span>
+
+      <span id="stats-label" class="text-[10px] font-bold uppercase tracking-widest opacity-80">
+        Books Currently Lent
+      </span>
+
+      <app-icon name="user.svg" [size]="40" class="mt-4 opacity-90" aria-hidden="true" />
     </div>
   </app-card>
 

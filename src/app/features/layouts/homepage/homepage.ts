@@ -5,7 +5,6 @@ import { BentoGrid } from './bento-grid/bento-grid';
 import { CardComponent } from '../../../shared/components/card/card';
 
 //static data
-import { reviews } from '../../../core/models/reviews.model';
 import { benefits } from '../../../core/models/benefits.model';
 import { FAQs } from '../../../core/models/faqs.model';
 
@@ -21,7 +20,6 @@ import { FAQs } from '../../../core/models/faqs.model';
 })
 export class Homepage {
   readonly benefits = benefits;
-  readonly reviews = reviews;
   readonly faqs = FAQs;
 
   // Logic for the accordion
