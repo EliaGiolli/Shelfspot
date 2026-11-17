@@ -1,6 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { IconComponent } from '../../../shared/components/icon/icon';
-import { Herosection } from "../../../shared/components/herosection/herosection";
+import { Herosection } from "../homepage/herosection/herosection";
 
 //static data
 import { reviews } from '../../../core/models/reviews.model';
