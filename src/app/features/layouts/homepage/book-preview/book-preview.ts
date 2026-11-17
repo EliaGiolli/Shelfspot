@@ -41,6 +41,20 @@ export class BookPreview implements OnInit{
     this.loadBooks();
   }
 
+  protected nextPage(): void {
+    this.currentPage.update(page => page + 1);
+    this.loadBooks();
+  }
+
+  protected previousPage(): void {
+    if (this.currentPage() === 1) {
+      return;
+    }
+
+    this.currentPage.update(page => page - 1);
+    this.loadBooks();
+  }
+
   protected loadBooks(): void {
     const category = this.selectedCategory();
     const page = this.currentPage();
@@ -57,6 +71,7 @@ export class BookPreview implements OnInit{
           this.httpBookService.getBooksBySubject('classics', page)
         ]).pipe(
           // map() transforms the data emitted by an Observable without modifying the source
+          // in this case it takes the data gathered by forkJoin and puts them in one array
           map(([fiction, science, classics]) => [
             ...fiction,
             ...science,
