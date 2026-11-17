@@ -9,6 +9,7 @@ import { HttpBookService } from '../../../../core/services/http-book.service';
 import { type BookSearchResult } from '../../../../core/schemas/book-api.schema';
 import { CardComponent } from '../../../../shared/components/card/card';
 import { BookSkeleton } from '../../../../shared/components/book-skeleton/book-skeleton';
+import { forkJoin, map } from 'rxjs';
 
 @Component({
   selector: 'app-book-preview',
@@ -41,22 +42,47 @@ export class BookPreview implements OnInit{
   }
 
   protected loadBooks(): void {
+    const category = this.selectedCategory();
+    const page = this.currentPage();
+
     this.isLoading.set(true);
 
-    this.httpBookService.getBooksBySubject('fiction', this.currentPage())
-      .subscribe({
-        next: (books) => {
-          this.books.set(books);
-          this.isLoading.set(false);
-        },
-        error: (error) => {
-          console.error('Error loading preview books:', error);
-          this.books.set([]);
-          this.isLoading.set(false);
-        }
-      });
-  }
+    const request$ = category === 'all'
+      // forkJoin executes two or more Observables in parallel 
+      // and gathers the results when each of them accomplishes its task(s)
+      // it's quite helpful to manage Angular's HTTP requests
+      ? forkJoin([
+          this.httpBookService.getBooksBySubject('fiction', page),
+          this.httpBookService.getBooksBySubject('science', page),
+          this.httpBookService.getBooksBySubject('classics', page)
+        ]).pipe(
+          // map() transforms the data emitted by an Observable without modifying the source
+          map(([fiction, science, classics]) => [
+            ...fiction,
+            ...science,
+            ...classics
+          ])
+        )
+      : this.httpBookService.getBooksBySubject(category, page);
 
+    request$.subscribe({
+      next: (books) => {
+        const uniqueBooks = [
+          ...new Map(
+            books.map(book => [book.key, book] as const)
+          ).values()
+        ];
+
+        this.books.set(uniqueBooks);
+        this.isLoading.set(false);
+      },
+      error: (error) => {
+        console.error('Error loading preview books:', error);
+        this.books.set([]);
+        this.isLoading.set(false);
+      }
+    });
+  }
   ngOnInit(): void {
     this.loadBooks();
   }
