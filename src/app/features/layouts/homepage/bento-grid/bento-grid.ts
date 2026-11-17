@@ -1,28 +1,31 @@
-import { 
-  Component, 
-  inject, 
-  signal, 
-  OnInit 
-} from '@angular/core';
+
+import { Component, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { IconComponent } from '../../../../shared/components/icon/icon';
 import { CardComponent } from '../../../../shared/components/card/card';
 import { ButtonLink } from '../../../../shared/components/button-links/button-links';
-
-import { HttpBookService } from '../../../../core/services/http-book.service';
-import { ApiBookData } from '../../../../shared/types/api-book-data';
+import { Button } from '../../../../shared/components/button/button';
+import { LoanService } from '../../../../core/services/loans.service';
 
 @Component({
   selector: 'app-bento-grid',
-  imports: [IconComponent, CardComponent, ButtonLink],
+  imports: [IconComponent, CardComponent, ButtonLink, Button],
   templateUrl: './bento-grid.html',
 })
-export class BentoGrid implements OnInit {
-  private bookService = inject(HttpBookService);
-  featuredBook = signal<ApiBookData | null>(null);
+export class BentoGrid {
+  private router = inject(Router);
+  private loanService = inject(LoanService);
 
-  ngOnInit() {
-    this.bookService.getFirstBookByQuery('The Great Gatsby').subscribe(
-      book => this.featuredBook.set(book as ApiBookData)
-    );
+  loanCount = this.loanService.loanCount;
+  searchQuery = signal('');
+
+  onSearch(): void {
+    const query = this.searchQuery().trim();
+
+    if (query.length < 3) return;
+
+    this.router.navigate(['/books/search'], {
+      queryParams: { q: query }
+    });
   }
 }

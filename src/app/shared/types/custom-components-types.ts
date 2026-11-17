@@ -1,8 +1,9 @@
 // Buttons
 export type ButtonVariant = 'primary' | 'accent' | 'outline'; // This is used inside the btn-custom-variants.ts file as well
+// Input fields
+export type InputVariant = 'default' | 'search';
 
 // Form-Contacts
-
 export enum FormStatus {
     idle = 'idle', 
     sending = 'sending',

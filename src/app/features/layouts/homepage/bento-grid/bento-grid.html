@@ -1,5 +1,5 @@
 <section 
-  class="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-4 h-auto md:h-[600px]"
+  class="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-4 h-auto md:h-[600px] my-20"
   aria-label="Library Overview Dashboard"
 >
   
@@ -34,41 +34,50 @@
     </div>
   </app-card>
 
-  <app-card [titleId]="'quick-search-title'" class="bg-white">
-    <div card-header class="flex justify-between items-center w-full">
-      <h2 id="quick-search-title" class="text-[10px] font-bold uppercase tracking-[0.2em] text-primary/40">
-        Quick Search
-      </h2>
-      <app-icon name="search.svg" [size]="35" class="text-accent" aria-hidden="true" />
-    </div>
+ 
+<app-card [titleId]="'quick-search-title'" class="bg-white">
+  <div card-header class="flex justify-between items-center w-full">
+    <h2 id="quick-search-title" class="text-[10px] font-bold uppercase tracking-[0.2em] text-primary/40">
+      Quick Search
+    </h2>
+    <app-icon name="search.svg" [size]="35" class="text-accent" aria-hidden="true" />
+  </div>
 
-    <div card-body class="mt-4" aria-live="polite" aria-atomic="true">
-      @if (featuredBook(); as book) {
-        <div class="flex items-center gap-4 animate-in fade-in slide-in-from-bottom-2">
-          <img [src]="'https://covers.openlibrary.org/b/id/' + book.cover_i + '-S.jpg'" 
-               class="w-12 h-16 object-cover rounded shadow-md" 
-               [alt]="'Latest search result: ' + book.title">
-          <div class="overflow-hidden">
-            <p class="text-primary font-bold text-sm truncate">{{ book.title }}</p>
-            <p class="text-primary/60 text-xs truncate italic">by {{ book.author }}</p>
-          </div>
-        </div>
-      } @else {
-        <div class="flex items-center gap-4 animate-pulse" aria-hidden="true">
-          <div class="w-12 h-16 bg-secondary/50 rounded"></div>
-          <div class="flex-1 space-y-2">
-            <div class="h-3 bg-secondary/50 rounded w-full"></div>
-            <div class="h-3 bg-secondary/50 rounded w-2/3"></div>
-          </div>
-          <span class="sr-only">Loading latest book data...</span>
-        </div>
-      }
-    </div>
+  <div card-body class="mt-4">
+    <form (ngSubmit)="onSearch()" class="flex flex-col gap-3">
+      <label for="quick-search-input" class="text-primary text-sm font-medium">
+        Find your next book
+      </label>
 
-    <div card-footer>
-      <p class="text-primary font-medium text-xs">Find any edition in seconds.</p>
-    </div>
-  </app-card>
+      <input
+        id="quick-search-input"
+        type="search"
+        name="query"
+        placeholder="Title or author..."
+        class="input input-bordered w-full"
+        minlength="3"
+        required
+        [value]="searchQuery()"
+        (input)="searchQuery.set($any($event.target).value)"
+      />
+
+      <app-button
+        type="submit"
+        variant="primary"
+        [disabled]="searchQuery().trim().length < 3"
+      >
+        Search Books
+      </app-button>
+    </form>
+  </div>
+
+  <div card-footer>
+    <p class="text-primary font-medium text-xs">
+      Find any edition in seconds.
+    </p>
+  </div>
+</app-card>
+
 
   <div 
     class="md:row-span-2 bg-accent/20 rounded-3xl overflow-hidden relative group border border-primary/5"
@@ -87,7 +96,7 @@
   <app-card [titleId]="'stats-title'" class="bg-accent border-none">
     <div card-body class="flex flex-col justify-center items-center text-center text-primary h-full py-4">
         <p id="stats-title" class="sr-only">Lending Statistics</p>
-        <span class="text-5xl font-bold font-serif mb-1" aria-describedby="stats-label">12</span>
+        <span class="text-5xl font-bold font-serif mb-1" aria-describedby="stats-label">{{ loanCount() }}</span>
         <span id="stats-label" class="text-[10px] font-bold uppercase tracking-widest opacity-80">
           Books Currently Lent
         </span>

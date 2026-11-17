@@ -9,6 +9,11 @@ import {
   ReactiveFormsModule, 
   Validators 
 } from '@angular/forms';
+import { 
+  Router, 
+  RouterOutlet, 
+  ActivatedRoute 
+} from '@angular/router';
 import { combineLatest } from 'rxjs';
 import { 
   debounceTime, 
@@ -16,6 +21,7 @@ import {
   distinctUntilChanged, 
   switchMap, 
   tap, 
+  finalize
 } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
@@ -24,7 +30,6 @@ import { IconComponent } from '../../../shared/components/icon/icon';
 import { Button } from '../../../shared/components/button/button';
 import { CardComponent } from '../../../shared/components/card/card';
 import { CoverFallbackPipe } from '../../../shared/pipes/cover-fallback-pipe-pipe';
-import { Router, RouterOutlet } from '@angular/router';
 import { BookSearchResult } from '../../../core/schemas/book-api.schema';
 
 @Component({
@@ -42,9 +47,20 @@ import { BookSearchResult } from '../../../core/schemas/book-api.schema';
 })
 export class SearchPage {
   private bookService = inject(HttpBookService);
+  private route = inject(ActivatedRoute);
   private router = inject(Router);
   isLoading = signal(false);
   currentPage = signal(1);
+
+  constructor() {
+    // ActivatedRoute reads the 'q' param from the URL
+    const query = this.route.snapshot.queryParamMap.get('q') ?? '';
+
+    if(query) {
+      // setValue() updates the FormControl
+      this.formGroup.controls.bookInput.setValue(query);
+    }
+  }
 
   formGroup = new FormGroup({
     bookInput: new FormControl('', { nonNullable: true })
@@ -61,12 +77,15 @@ export class SearchPage {
     toObservable(this.currentPage)
   ]).pipe(
     switchMap(([query, page]) => {
-      if (query.length <= 2) {
-        return of([]); // if the query è short, we emit an empty array 
+      if (query.trim().length <= 2) {
+        return of([]);
       }
+
       this.isLoading.set(true);
+
       return this.bookService.searchBooks(query, page).pipe(
-        tap(() => this.isLoading.set(false))
+        // this allows the loading state is back in case of errors or wrong previous request
+        finalize(() => this.isLoading.set(false))
       );
     })
   );
