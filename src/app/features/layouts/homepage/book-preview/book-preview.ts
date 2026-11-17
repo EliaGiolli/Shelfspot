@@ -16,7 +16,6 @@ import { forkJoin, map } from 'rxjs';
   standalone: true,
   imports: [CardComponent,BookSkeleton, RouterLink],
   templateUrl: './book-preview.html',
-  styleUrl: './book-preview.css'
 })
 export class BookPreview implements OnInit{
   private httpBookService = inject(HttpBookService);
