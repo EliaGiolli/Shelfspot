@@ -8,11 +8,12 @@ import { RouterLink } from '@angular/router';
 import { HttpBookService } from '../../../../core/services/http-book.service';
 import { type BookSearchResult } from '../../../../core/schemas/book-api.schema';
 import { CardComponent } from '../../../../shared/components/card/card';
+import { BookSkeleton } from '../../../../shared/components/book-skeleton/book-skeleton';
 
 @Component({
   selector: 'app-book-preview',
   standalone: true,
-  imports: [CardComponent, RouterLink],
+  imports: [CardComponent,BookSkeleton, RouterLink],
   templateUrl: './book-preview.html',
   styleUrl: './book-preview.css'
 })
@@ -26,6 +27,18 @@ export class BookPreview implements OnInit{
   protected selectedCategory = signal<
     'all' | 'fiction' | 'science' | 'classics'
   >('all');
+
+  protected selectCategory(
+    category: 'all' | 'fiction' | 'science' | 'classics'
+  ): void {
+    if (this.selectedCategory() === category) {
+      return;
+    }
+
+    this.selectedCategory.set(category);
+    this.currentPage.set(1);
+    this.loadBooks();
+  }
 
   protected loadBooks(): void {
     this.isLoading.set(true);

@@ -16,20 +16,59 @@
   </header>
 
   <!-- Category filters -->
-  <nav
-    class="mb-8 flex flex-wrap justify-center gap-3"
-    aria-label="Filter books by category"
-  >
-    <button class="btn btn-primary rounded-full">All</button>
-    <button class="btn btn-outline rounded-full">Narrativa</button>
-    <button class="btn btn-outline rounded-full">Scienza</button>
-    <button class="btn btn-outline rounded-full">Classici</button>
-  </nav>
+    <nav
+        class="mb-8 flex flex-wrap justify-center gap-3"
+        aria-label="Filter books by category"
+    >
+        <button
+            class="btn rounded-full"
+            [class.btn-primary]="selectedCategory() === 'all'"
+            [class.btn-outline]="selectedCategory() !== 'all'"
+            (click)="selectCategory('all')"
+        >
+            All
+        </button>
+
+        <button
+            class="btn rounded-full"
+            [class.btn-primary]="selectedCategory() === 'fiction'"
+            [class.btn-outline]="selectedCategory() !== 'fiction'"
+            (click)="selectCategory('fiction')"
+        >
+            Narrative
+        </button>
+
+        <button
+            class="btn rounded-full"
+            [class.btn-primary]="selectedCategory() === 'science'"
+            [class.btn-outline]="selectedCategory() !== 'science'"
+            (click)="selectCategory('science')"
+        >
+            Science
+        </button>
+
+        <button
+            class="btn rounded-full"
+            [class.btn-primary]="selectedCategory() === 'classics'"
+            [class.btn-outline]="selectedCategory() !== 'classics'"
+            (click)="selectCategory('classics')"
+        >
+            Classics
+        </button>
+    </nav>
 
   <!-- Books carousel -->
   @if (isLoading()) {
-    <div class="flex w-full justify-center py-12">
-        <span class="loading loading-spinner loading-lg text-primary"></span>
+    <div
+        class="carousel carousel-start w-full gap-4 rounded-box"
+        role="status"
+        aria-label="Loading books"
+    >
+        @for (item of [1, 2, 3, 4, 5]; track item) {
+        <div class="carousel-item">
+            <app-book-skeleton />
+        </div>
+        }
     </div>
     } @else {
     <div class="carousel carousel-start w-full gap-4 rounded-box">
