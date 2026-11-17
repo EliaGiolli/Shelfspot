@@ -10,7 +10,11 @@ import { map, Observable } from "rxjs";
 import { API_URL } from "../tokens/api.token";
 // Types and Schemas
 import { type ApiBookData } from "../../shared/types/api-book-data";
-import { type BookSearchResult,  SearchResponseSchema} from "../schemas/book-api.schema";
+import { 
+    type BookSearchResult, 
+    SearchResponseSchema,
+    SubjectResponseSchema,
+} from "../schemas/book-api.schema";
 
 @Injectable({ providedIn: 'root' })
 export class HttpBookService {
@@ -34,6 +38,41 @@ export class HttpBookService {
             }),
             map(books => books.slice(0, 12))
         );
+    }
+
+    getBooksBySubject( subject: string, page: number = 1 ): Observable<BookSearchResult[]> {
+        const limit = 12;
+        // allows to prepare the pagination
+        const offset = (page - 1) * limit;
+
+        const params = `?limit=${limit}&offset=${offset}`;
+
+        return this.http.get<unknown>(
+                `${this.API_URL}/subjects/${encodeURIComponent(subject)}.json${params}`
+            )
+            .pipe(
+                // converts authors in author_name and cover_id in cover_i
+                // this mantains one format for each component
+                map(rawResponse => {
+                    const result = SubjectResponseSchema.safeParse(rawResponse);
+
+                    if (!result.success) {
+                    console.error(
+                        'Subject schema validation failed:',
+                        result.error.format()
+                    );
+                    return [];
+                    }
+
+                    return result.data.works.map(book => ({
+                    key: book.key,
+                    title: book.title,
+                    author_name: book.authors?.map(author => author.name) ?? [],
+                    cover_i: book.cover_id,
+                    first_publish_year: book.first_publish_year
+                    }));
+                })
+            );
     }
 
     searchBookById(id:string):Observable<ApiBookData | null> {

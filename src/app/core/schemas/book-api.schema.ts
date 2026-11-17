@@ -25,3 +25,21 @@ export type BookDetail = z.infer<typeof BookDetailSchema>;
 export const SearchResponseSchema = z.object({
   docs: z.array(BookSearchResultSchema)
 });
+
+// Schema for the Subject
+const SubjectBookSchema = z.object({
+  key: z.string(),
+  title: z.string(),
+  authors: z.array(
+    z.object({
+      key: z.string(),
+      name: z.string()
+    })
+  ).optional(),
+  cover_id: z.number().optional(),
+  first_publish_year: z.number().optional()
+});
+
+export const SubjectResponseSchema = z.object({
+  works: z.array(SubjectBookSchema)
+});
