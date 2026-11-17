@@ -33,7 +33,6 @@ export const CustomButton: ButtonStyles = {
 export const ButtonLinks: ButtonStyles = {
   base: [
     'btn',
-    'w-full',
     'whitespace-nowrap',
     'px-4 py-4',
     'text-base md:text-lg',

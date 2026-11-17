@@ -1,6 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { IconComponent } from '../../../shared/components/icon/icon';
 import { Herosection } from "../homepage/herosection/herosection";
+import { BentoGrid } from './bento-grid/bento-grid';
 
 //static data
 import { reviews } from '../../../core/models/reviews.model';
@@ -10,9 +11,13 @@ import { CardComponent } from '../../../shared/components/card/card';
 
 @Component({
   selector: 'app-homepage',
-  imports: [IconComponent, Herosection, CardComponent],
+  imports: [
+    IconComponent, 
+    Herosection, 
+    BentoGrid,
+    CardComponent
+  ],
   templateUrl: './homepage.html',
-  styleUrl: './homepage.css',
 })
 export class Homepage {
   readonly benefits = benefits;
