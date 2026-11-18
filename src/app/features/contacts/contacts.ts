@@ -1,100 +1,77 @@
-import { 
-  Component, 
-  signal, 
-  computed, 
-  inject 
-} from '@angular/core';
+
+import { Component, inject, signal } from '@angular/core';
+import {
+  FormBuilder,
+  ReactiveFormsModule,
+  Validators
+} from '@angular/forms';
+
 // Custom Components
 import { Button } from '../../shared/components/button/button';
 import { IconComponent } from '../../shared/components/icon/icon';
+import { FormComponent } from '../../shared/components/form/form-component';
+
 // Services and Validators
 import { ContactsService } from '../../core/services/contacts.service';
-import { isProfessionalEmail } from '../../shared/validators/signal-validator';
+import { professionalEmailValidator } from '../../shared/validators/signal-validator';
+
 // Types
 import { FormStatus } from '../../shared/types/custom-components-types';
 
 @Component({
   selector: 'app-contacts',
   standalone: true,
-  imports: [Button, IconComponent],
+  imports: [
+    ReactiveFormsModule,
+    Button,
+    IconComponent,
+    FormComponent
+  ],
   templateUrl: './contacts.html'
 })
 export class Contacts {
-  public contactService = inject(ContactsService);
-  // Form state via Signal
-  name = signal('');
-  email = signal('');
-  message = signal('');
+  private fb = inject(FormBuilder);
+  private contactService = inject(ContactsService);
 
-  // Signal for the submit button
-  status = signal<FormStatus>(FormStatus.idle);
+  protected status = signal<FormStatus>(FormStatus.idle);
 
-  // Signals for error handling
-  nameTouched = signal(false);
-  emailTouched = signal(false);
-  messageTouched = signal(false);
-
-  // Derived validation (Computed Signals)
-  isEmailValid = computed(() => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const value = this.email();
-    return emailRegex.test(this.email()) && isProfessionalEmail(value);
+  protected contactForm = this.fb.nonNullable.group({
+    name: ['', [
+      Validators.required,
+      Validators.minLength(3)
+    ]],
+    email: ['', [
+      Validators.required,
+      Validators.email,
+      professionalEmailValidator()
+    ]],
+    message: ['', [
+      Validators.required,
+      Validators.minLength(10)
+    ]]
   });
 
-  isFormValid = computed(() => {
-    return this.name().length > 2 && 
-           this.isEmailValid() && 
-           this.message().length > 10 &&
-           !this.contactService.isSending();
-  });
-
-  // Error handling
-  nameError = computed(() => {
-    if (!this.nameTouched()) return null;
-    if (this.name().length === 0) return 'Name is required';
-    if (this.name().length <= 2) return 'Name must be at least 3 characters';
-    return null;
-  });
-
-  emailError = computed(() => {
-    if (!this.emailTouched()) return null;
-    if (!this.email()) return 'Email is required';
-    if (!this.isEmailValid()) return 'Please enter a professional email address';
-    return null;
-  });
-
-  // Update methods
-  updateField(field: 'name' | 'email' | 'message', event: Event) {
-    const value = (event.target as HTMLInputElement | HTMLTextAreaElement).value;
-    if (field === 'name') this.name.set(value);
-    if (field === 'email') this.email.set(value);
-    if (field === 'message') this.message.set(value);
-  }
-
-  sendContact() {
-    if (!this.isFormValid()) return;
+  protected sendContact(): void {
+    if (this.contactForm.invalid || this.status() === FormStatus.sending) {
+      this.contactForm.markAllAsTouched();
+      return;
+    }
 
     this.status.set(FormStatus.sending);
 
-    const payload = {
-      name: this.name(),
-      email: this.email(),
-      message: this.message()
-    };
-
-    this.contactService.sendMessage(payload).subscribe({
+    this.contactService.sendMessage(this.contactForm.getRawValue()).subscribe({
       next: () => {
         this.status.set(FormStatus.success);
-        this.resetForm();
-        setTimeout(() => this.status.set(FormStatus.idle), 3000); 
-      },
-      error: () => this.status.set(FormStatus.error)
-    });
-  }
+        this.contactForm.reset();
 
-  private resetForm() {
-    this.name.set('');
-    this.email.set('');
-    this.message.set('');
+        setTimeout(() => {
+          this.status.set(FormStatus.idle);
+        }, 3000);
+      },
+      error: (error) => {
+        console.error('Error sending contact message:', error);
+        this.status.set(FormStatus.error);
+      }
+    });
   }
 }
