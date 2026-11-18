@@ -5,6 +5,8 @@ export type InputVariant = 'default' | 'search';
 // Card
 export type CardVariant = 'default' | 'featured' | 'compact';
 // Form-Contacts
+export type FormVariant = 'default' | 'auth';
+
 export enum FormStatus {
     idle = 'idle', 
     sending = 'sending',

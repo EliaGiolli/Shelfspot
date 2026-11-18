@@ -7,6 +7,7 @@ import {
 // Custom Components
 import { Button } from '../../shared/components/button/button';
 import { IconComponent } from '../../shared/components/icon/icon';
+import { FormComponent } from '../../shared/components/form/form-component';
 // Services and Validators
 import { ContactsService } from '../../core/services/contacts.service';
 import { isProfessionalEmail } from '../../shared/validators/signal-validator';
@@ -16,7 +17,7 @@ import { FormStatus } from '../../shared/types/custom-components-types';
 @Component({
   selector: 'app-contacts',
   standalone: true,
-  imports: [Button, IconComponent],
+  imports: [Button, IconComponent, FormComponent],
   templateUrl: './contacts.html'
 })
 export class Contacts {
