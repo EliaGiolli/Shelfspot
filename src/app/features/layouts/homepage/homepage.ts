@@ -1,28 +1,22 @@
 import { Component, signal, inject } from '@angular/core';
-import { IconComponent } from '../../../shared/components/icon/icon';
 import { Herosection } from "../homepage/herosection/herosection";
 import { BentoGrid } from './bento-grid/bento-grid';
-import { CardComponent } from '../../../shared/components/card/card';
 import { BookPreview } from './book-preview/book-preview';
-
-//static data
-import { benefits } from '../../../core/models/benefits.model';
-import { FAQs } from '../../../core/models/faqs.model';
+import { Benefits } from './benefits/benefits';
+import { AccordionComponent } from './accordion-component/accordion-component';
 
 @Component({
   selector: 'app-homepage',
   imports: [
-    IconComponent, 
-    Herosection, 
+    Herosection,
     BentoGrid,
     BookPreview,
-    CardComponent
-  ],
+    Benefits,
+    AccordionComponent
+],
   templateUrl: './homepage.html',
 })
 export class Homepage {
-  readonly benefits = benefits;
-  readonly faqs = FAQs;
 
   // Logic for the accordion
   expandedIndex = signal<number | undefined>(undefined);

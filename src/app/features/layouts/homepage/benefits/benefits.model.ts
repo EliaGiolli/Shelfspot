@@ -11,8 +11,8 @@ export const benefits = [
     description: 'Save and manage your favorite books easily with your personalized sidebar.',
   },
   {
-    icon: '🏠',
-    title: 'Home Book Delivery',
-    description: 'Request books online and get them delivered right to your doorstep with ease.',
+    icon: '🔎',
+    title: 'Discover Your Next Read',
+    description: 'Find your next favourite book with our search tools and explore fiction, science and timeless classics.'
   },
 ];
