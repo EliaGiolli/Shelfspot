@@ -1,0 +1,32 @@
+<section
+  class="my-24 mx-auto max-w-3xl px-6"
+  aria-labelledby="faq-title"
+>
+  <h2
+    id="faq-title"
+    class="mb-10 text-center font-serif text-3xl font-bold text-primary"
+  >
+    Frequently Asked Questions
+  </h2>
+
+  <div class="space-y-4">
+    @for (faq of faqs; track faq.question; let i = $index) {
+      <div class="collapse collapse-arrow border border-base-300 bg-base-100">
+        <input
+          type="checkbox"
+          [checked]="expandedIndex() === i"
+          (change)="toggleFaq(i)"
+          [attr.aria-label]="faq.question"
+        />
+
+        <div class="collapse-title font-semibold text-base-content">
+          {{ faq.question }}
+        </div>
+
+        <div class="collapse-content text-sm leading-relaxed text-base-content/80">
+          <p>{{ faq.answer }}</p>
+        </div>
+      </div>
+    }
+  </div>
+</section>
