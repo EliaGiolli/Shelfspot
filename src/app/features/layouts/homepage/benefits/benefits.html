@@ -1,0 +1,46 @@
+<section class="my-24 px-4 max-w-6xl mx-auto" aria-labelledby="benefits-title">
+
+  <!-- Section header -->
+  <div class="mb-14 text-center">
+    <p class="text-sm font-semibold uppercase tracking-widest text-secondary mb-3">Why ShelfSpot</p>
+    <h2 id="benefits-title" class="text-3xl md:text-4xl font-bold text-primary">
+      Everything you need in one shelf
+    </h2>
+  </div>
+
+  <!-- Cards grid -->
+  <div class="grid gap-8 sm:grid-cols-2 md:grid-cols-3">
+    @for (benefit of benefits; track benefit.title) {
+      <app-card
+        [titleId]="'benefit-' + $index"
+        variant="featured"
+      >
+        <!-- Icon badge -->
+        <div card-header class="flex justify-center">
+          <div
+            class="flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 text-3xl shadow-sm"
+            aria-hidden="true"
+          >
+            {{ benefit.icon }}
+          </div>
+        </div>
+
+        <!-- Text -->
+        <div card-body class="text-center mt-2">
+          <h3
+            [id]="'benefit-' + $index"
+            class="text-lg font-bold text-primary mb-2"
+          >
+            {{ benefit.title }}
+          </h3>
+          <p class="text-sm text-base-content/70 leading-relaxed">
+            {{ benefit.description }}
+          </p>
+        </div>
+      </app-card>
+    } @empty {
+      <p class="text-center col-span-3 text-base-content/50">More benefits coming soon.</p>
+    }
+  </div>
+
+</section>
