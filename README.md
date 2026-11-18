@@ -10,15 +10,18 @@
 
 | Component | Description |
 |---|---|
-| `HeroSection` | Editorial DaisyUI `hero` layout — serif headline, atmospheric image, two CTA buttons |
+| `HeroSection` | Editorial DaisyUI `hero` layout — serif headline, atmospheric image, two CTA buttons. Image is hidden on mobile and shown on `lg+` screens for a focused mobile experience |
 | `BentoGrid` | 4-column responsive dashboard grid with live book data, stats, and a quick-search preview card |
-| `BookPreview` | Categorised book carousel with real-time pagination fetched from the OpenLibrary API |
+| `BookPreview` | Categorised book carousel with real-time pagination fetched from the OpenLibrary API. Cards are full-width on mobile and 3-column on `md+` using `calc()`-based widths |
+| `Benefits` | Standalone feature-highlight section — 3 `featured` cards with icon badges, an eyebrow label, and lift-on-hover animation |
+| `AccordionComponent` | Standalone FAQ section built with DaisyUI's `collapse` — signal-driven open/close state, fully keyboard-accessible |
 
 ### 🔎 Book Discovery
 
 - **Search page** powered by the OpenLibrary API with `switchMap` debouncing
 - **Native `<dialog>` modals** for book details with focus trapping and deep-link support via URL parameters
 - **Cover fallback pipe** — gracefully handles missing cover images
+- **Deep-linked detail pages** — every book card in the preview carousel links to `/books/search/:id` using the correct Open Library work ID
 
 ### 📬 Contact Form
 
@@ -40,7 +43,6 @@
 src/
 ├── app/
 │   ├── core/
-│   │   ├── models/          # Static data models (reviews, benefits, FAQs)
 │   │   ├── schemas/         # Zod schemas + inferred TypeScript types
 │   │   ├── services/        # HttpBookService, LoanService, FavouritesService
 │   │   └── tokens/          # Injection tokens (API_URL)
@@ -51,19 +53,21 @@ src/
 │   │   ├── contacts/        # Contact form
 │   │   ├── favorites/       # Favourites page
 │   │   ├── loans/           # Loans page
-│   │   ├── not-found/       # 404
+│   │   ├── not-found/       # 404 page (Tailwind + DaisyUI, no custom CSS)
 │   │   └── layouts/
 │   │       ├── homepage/
-│   │       │   ├── herosection/   # DaisyUI hero (image + CTAs)
-│   │       │   ├── bento-grid/    # Dashboard grid with live data
-│   │       │   └── book-preview/  # Categorised carousel with pagination
+│   │       │   ├── herosection/         # DaisyUI hero (image + CTAs)
+│   │       │   ├── bento-grid/          # Dashboard grid with live data
+│   │       │   ├── book-preview/        # Categorised carousel with pagination
+│   │       │   ├── benefits/            # Feature-highlight card grid (standalone)
+│   │       │   └── accordion-component/ # FAQ accordion (DaisyUI collapse, standalone)
 │   │       ├── main-layout/
 │   │       ├── auth-layout/
 │   │       └── book-layout/
 │   │
 │   └── shared/
-│       ├── components/      # Card, Button, Icon, Input, Navbar, Footer,
-│       │                    # BookSkeleton, LoadingSpinner, Tooltip
+│       ├── components/      # Card, Button, ButtonLink, Icon, Input,
+│       │                    # Navbar, Footer, BookSkeleton, LoadingSpinner, Tooltip
 │       ├── directives/      # ClickFeedback, Tooltip
 │       ├── pipes/           # CoverFallback
 │       ├── types/           # Shared TypeScript interfaces
@@ -99,6 +103,12 @@ src/
 protected selectedCategory = signal<'all' | 'fiction' | 'science' | 'classics'>('all');
 protected books = signal<BookSearchResult[]>([]);
 protected isLoading = signal(false);
+
+// AccordionComponent — single expanded index, toggled on click
+protected expandedIndex = signal<number | null>(null);
+protected toggleFaq(index: number): void {
+  this.expandedIndex.update(current => current === index ? null : index);
+}
 ```
 
 ### Parallel HTTP with `forkJoin`
@@ -135,12 +145,66 @@ return result.data.works.map(book => ({
 export const ButtonLinks: ButtonStyles = {
   base: 'btn whitespace-nowrap px-4 py-4 ...',
   variants: {
-    primary: 'btn-primary shadow-lg',
+    primary: 'btn-primary shadow-lg hover:bg-secondary',
     outline: 'btn-ghost',
     accent:  'btn-error text-white ...',
   }
 };
 ```
+
+### Static input bindings (no redundant brackets)
+
+All `input()`-based component inputs that receive **static string values** use the attribute form — no square brackets:
+
+```html
+<!-- ✅ Correct — static string, no JS evaluation needed -->
+<app-button-link variant="primary" routerLink="/books/search" ariaLabel="Browse">
+<app-card variant="featured" [titleId]="'benefit-' + $index">
+
+<!-- ✅ Correct — dynamic value, brackets required -->
+<app-card [titleId]="'benefit-' + $index">
+<app-button-link [routerLink]="['/books/search', book.key.split('/').pop()]">
+```
+
+### Responsive carousel widths with `calc()`
+
+```html
+<!-- 100% = carousel width, 2rem = total gap between 3 cards, ÷3 = each card's share -->
+<article class="carousel-item w-full px-2 md:w-[calc((100%-2rem)/3)]">
+```
+
+---
+
+## 🏠 Homepage Refactor (latest)
+
+The homepage has been significantly slimmed down. Benefits and FAQ sections that were previously inlined inside `homepage.html` and `homepage.ts` are now **dedicated standalone components** with their own data models:
+
+| Before | After |
+|---|---|
+| Benefits inlined in `homepage.html` with `CardComponent` | `<app-benefits />` — `Benefits` standalone component |
+| FAQ accordion inlined in `homepage.html` with `IconComponent` | `<app-accordion-component />` — `AccordionComponent` standalone |
+| `homepage.ts` imported `CardComponent`, `IconComponent` | `homepage.ts` imports only layout-level components |
+| Static data (`benefits`, `faqs`) owned by `Homepage` | Each component owns its own model file |
+
+This reduces `homepage.ts` from 28 to 15 lines and makes each section independently testable.
+
+---
+
+## 📱 Mobile UX Improvements (latest)
+
+| Area | Change |
+|---|---|
+| `HeroSection` | Hero image is `hidden` on mobile, `flex` on `lg+` |
+| `BookPreview` carousel | Cards are `w-full` on mobile, `md:w-[calc((100%-2rem)/3)]` on desktop |
+| `BookPreview` cover height | `h-48` on mobile → `h-64` on `md+` |
+| Category filter nav | `flex-nowrap` on mobile, `flex-wrap` on `md+` to avoid line breaks |
+| Skeleton items | Match carousel card widths for consistent loading state |
+
+---
+
+## 404 Page
+
+The not-found page is entirely utility-class driven — **zero custom CSS**. It uses a DaisyUI card (`bg-base-100`, `rounded-box`, `border-base-300`) with a `404` gradient text, a decorative top-border line, and two `app-button-link` actions pointing back to the homepage and projects.
 
 ---
 
@@ -171,6 +235,7 @@ Every interactive component is built with accessibility first:
 - Semantic HTML (`<article>`, `<nav>`, `<section aria-labelledby>`, `<header>`)
 - `aria-label`, `aria-describedby`, `aria-invalid`, `aria-current`, `aria-live`
 - Native `<dialog>` for modals (built-in focus trapping, `Escape` to close)
+- DaisyUI `collapse` for FAQ — keyboard-navigable via `<input type="checkbox">`
 - Screen-reader-only text via `.sr-only` where visual context is enough
 - `role="status"` on loading states, `role="alert"` on form errors
 
