@@ -44,7 +44,11 @@ export const ButtonLinks: ButtonStyles = {
   ].join(' '),
 
   variants: {
-    primary: 'btn-primary shadow-lg',
+    primary: [
+      'btn-primary',
+      'shadow-lg',
+      'hover:bg-secondary'
+    ].join(' '),
 
     accent: [
       'btn-error',

@@ -10,11 +10,12 @@ import { type BookSearchResult } from '../../../../core/schemas/book-api.schema'
 import { CardComponent } from '../../../../shared/components/card/card';
 import { BookSkeleton } from '../../../../shared/components/book-skeleton/book-skeleton';
 import { forkJoin, map } from 'rxjs';
+import { ButtonLink } from '../../../../shared/components/button-links/button-links';
 
 @Component({
   selector: 'app-book-preview',
   standalone: true,
-  imports: [CardComponent,BookSkeleton, RouterLink],
+  imports: [CardComponent, BookSkeleton, RouterLink, ButtonLink],
   templateUrl: './book-preview.html',
 })
 export class BookPreview implements OnInit{

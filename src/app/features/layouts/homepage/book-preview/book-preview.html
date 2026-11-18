@@ -99,7 +99,7 @@
                         />
                     } @else {
                         <span class="text-sm text-base-content/50">
-                        Cover unavailable
+                            Cover unavailable
                         </span>
                     }
                     </div>
@@ -113,13 +113,13 @@
                     </p>
                 </div>
 
-                <div card-footer>
-                    <a
-                    [routerLink]="['/books/search', book.key.split('/').pop()]"
-                    class="btn btn-outline btn-primary btn-sm w-full rounded-full"
+                <div card-footer class="flex justify-center py-3">
+                    <app-button-link
+                        [variant]="'primary'"
+                        [routerLink]="['/books/search', book.key.split('/').pop()]"
                     >
                     View details
-                    </a>
+                    </app-button-link>
                 </div>
                 </app-card>
             </article>
@@ -156,4 +156,13 @@
         </button>
     </div>
 
+    <!-- Button that redirect users to the /book route -->
+    <div class="w-full flex justify-center items-center p-5 mt-8">
+        <app-button-link
+            [variant]="'primary'"
+            routerLink="/books/search"
+        >
+            Search for books
+        </app-button-link>
+    </div>
 </section>
