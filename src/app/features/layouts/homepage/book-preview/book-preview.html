@@ -115,7 +115,7 @@
 
                 <div card-footer class="flex justify-center py-3">
                     <app-button-link
-                        [variant]="'primary'"
+                        variant="primary"
                         [routerLink]="['/books/search', book.key.split('/').pop()]"
                     >
                     View details
@@ -159,8 +159,9 @@
     <!-- Button that redirect users to the /book route -->
     <div class="w-full flex justify-center items-center p-5 mt-8">
         <app-button-link
-            [variant]="'primary'"
+            variant="primary"
             routerLink="/books/search"
+            ariaLabel="Browse the book collection"
         >
             Search for books
         </app-button-link>
