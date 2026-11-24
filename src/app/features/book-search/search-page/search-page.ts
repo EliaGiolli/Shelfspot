@@ -112,6 +112,12 @@ export class SearchPage {
   // Derive the array of books from the response
   books = computed(() => this.searchResponse().books);
 
+  // Derive the hasNextPage flag from the response
+  hasNextPage = computed(() => {
+    const { totalFound, page } = this.searchResponse();
+    return page * 12 < totalFound;
+  });
+
 
   // Metodi per la UI
   goToNext() { this.currentPage.update(p => p + 1); }

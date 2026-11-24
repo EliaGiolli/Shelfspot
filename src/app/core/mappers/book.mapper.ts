@@ -2,17 +2,20 @@ import { type Book } from '../../shared/types/book';
 import {
   type SearchDocDto,
   type SubjectWorkDto,
-  type WorkDto,
+  type OpenLibraryWorkResponseDto,
 } from '../schemas/book-api.schema';
 
+// extracts the work id from the key
 export function workIdFromKey(key: string): string {
   return key.replace(/^\/works\//, '');
 }
 
+// validates the cover id
 function validCoverId(id: number | undefined): number | undefined {
   return id !== undefined && id > 0 ? id : undefined;
 }
 
+// parses the publish year from the date
 function parsePublishYear(date: string | undefined): number | undefined {
   if (!date) {
     return undefined;
@@ -26,6 +29,7 @@ function parsePublishYear(date: string | undefined): number | undefined {
   return Number(match[0]);
 }
 
+// maps the optional fields to the Book type
 function withOptionalFields(
   book: Book,
   extras: {
@@ -46,6 +50,7 @@ function withOptionalFields(
   return book;
 }
 
+// maps the response to the Book type
 export function mapSearchResultToBook(doc: SearchDocDto): Book {
   return withOptionalFields(
     {
@@ -62,7 +67,8 @@ export function mapSearchResultToBook(doc: SearchDocDto): Book {
   );
 }
 
-function workDescriptionToString(description: WorkDto['description']): string | undefined {
+// maps the description to a string
+function workDescriptionToString(description: OpenLibraryWorkResponseDto['description']): string | undefined {
   if (description === undefined) {
     return undefined;
   }
@@ -70,7 +76,8 @@ function workDescriptionToString(description: WorkDto['description']): string | 
   return typeof description === 'string' ? description : description.value;
 }
 
-export function mapWorkToBook(work: WorkDto): Book {
+// maps the response to the Book type
+export function mapWorkToBook(work: OpenLibraryWorkResponseDto): Book {
   return withOptionalFields(
     {
       id: workIdFromKey(work.key),
@@ -87,6 +94,7 @@ export function mapWorkToBook(work: WorkDto): Book {
   );
 }
 
+// maps the response to the Book type
 export function mapSubjectWorkToBook(work: SubjectWorkDto): Book {
   return withOptionalFields(
     {

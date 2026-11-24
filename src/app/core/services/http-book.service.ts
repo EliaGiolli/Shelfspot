@@ -9,7 +9,7 @@ import { type Book, type BookSearchResponse } from "../../shared/types/book";
 import { 
     SearchResponseSchema,
     SubjectResponseSchema,
-    WorkDtoSchema,
+    OpenLibraryWorkResponseSchema,
 } from "../schemas/book-api.schema";
 import {
     mapSearchResultToBook,
@@ -82,7 +82,7 @@ export class HttpBookService {
     searchBookById(id: string): Observable<Book | null> {
         return this.http.get<unknown>(`${this.API_URL}/works/${id}.json`).pipe(
             map(rawResponse => {
-                const result = WorkDtoSchema.safeParse(rawResponse);
+                const result = OpenLibraryWorkResponseSchema.safeParse(rawResponse);
 
                 if (!result.success) {
                     console.error('Work schema validation failed:', result.error.format());

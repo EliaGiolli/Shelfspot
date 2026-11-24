@@ -110,7 +110,7 @@
 
         <button 
           (click)="goToNext()" 
-          [disabled]="isLoading() || books().length < 12"
+          [disabled]="isLoading() || !hasNextPage()"
           class="flex items-center gap-2 text-primary font-bold disabled:opacity-30 disabled:cursor-not-allowed group transition-colors hover:text-accent"
         >
           Next Page
