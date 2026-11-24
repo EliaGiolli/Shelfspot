@@ -14,10 +14,10 @@ import { CoverFallbackPipe } from '../../../shared/pipes/cover-fallback-pipe-pip
       
       @if (favService.favorites().length > 0) {
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          @for (book of favService.favorites(); track book.key) {
-            <app-card [titleId]="'title-' + book.key">
+          @for (book of favService.favorites(); track book.id) {
+            <app-card [titleId]="'title-' + book.id">
               <div card-header class="aspect-3/4 rounded-xl overflow-hidden">
-                <img [src]="book.cover_i | coverFallbackPipe:'M'" class="w-full h-full object-cover">
+                <img [src]="book.coverId | coverFallbackPipe:'M'" class="w-full h-full object-cover">
               </div>
               <div card-body>
                 <h3 class="font-bold truncate">{{ book.title }}</h3>

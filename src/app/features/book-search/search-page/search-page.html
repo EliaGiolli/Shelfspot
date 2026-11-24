@@ -60,22 +60,22 @@
     
     @if (books().length > 0) {
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        @for (book of books(); track book.key) {
-          <app-card [titleId]="'title-' + book.key" [variant]="'default'">
+        @for (book of books(); track book.id) {
+          <app-card [titleId]="'title-' + book.id" [variant]="'default'">
             <div card-header class="aspect-3/4 overflow-hidden rounded-xl bg-secondary/20 relative">
                <img 
-                [src]="book.cover_i | coverFallbackPipe:'M'" 
+                [src]="book.coverId | coverFallbackPipe:'M'" 
                 [alt]="'Cover of ' + book.title" 
                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                >
             </div>
 
             <div card-body>
-              <h3 [id]="'title-' + book.key" class="font-serif font-bold text-primary truncate leading-tight">
+              <h3 [id]="'title-' + book.id" class="font-serif font-bold text-primary truncate leading-tight">
                 {{ book.title }}
               </h3>
               <p class="text-sm text-primary/60 truncate italic mt-1">
-                {{ book.author_name?.join(', ') || 'Unknown Author' }}
+                {{ book.authors.join(', ') || 'Unknown Author' }}
               </p>
             </div>
 

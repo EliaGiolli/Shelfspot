@@ -1,45 +1,63 @@
 import { z } from 'zod';
 
-// Base schema with common fields for both
-const BaseBookSchema = z.object({
+// Open Library GET /search.json — original wire format
+export const SearchDocDtoSchema = z.object({
   key: z.string(),
   title: z.string(),
   author_name: z.array(z.string()).optional(),
   cover_i: z.number().optional(),
   first_publish_year: z.number().optional(),
+  subject: z.array(z.string()).optional(),
 });
+export type SearchDocDto = z.infer<typeof SearchDocDtoSchema>;
 
-// 1. Schema for the search results (Light)
-export const BookSearchResultSchema = BaseBookSchema;
-export type BookSearchResult = z.infer<typeof BookSearchResultSchema>;
-
-// 2. Schema for the book detail (Full)
-export const BookDetailSchema = BaseBookSchema.extend({
-  subject: z.array(z.string()).optional().default([]),
-  description: z.string().optional().or(z.object({ value: z.string() }).transform(d => d.value)),
-  numberOfPages: z.number().optional(),
-});
-export type BookDetail = z.infer<typeof BookDetailSchema>;
-
-// Schema for the search response
+// Open Library GET /search.json — represents the response from the search endpoint
 export const SearchResponseSchema = z.object({
-  docs: z.array(BookSearchResultSchema)
+  // represents the total number of results
+  numFound: z.number(),
+  // represents the start index of the results
+  start: z.number(),
+  // represents the array of search results
+  docs: z.array(SearchDocDtoSchema),
 });
 
-// Schema for the Subject
-const SubjectBookSchema = z.object({
+export type SearchResponseDto = z.infer<typeof SearchResponseSchema>;
+
+// Open Library GET /works/:id.json — original wire format
+const WorkDescriptionDtoSchema = z.union([
+  z.string(),
+  z.object({ value: z.string() }),
+]);
+
+export const WorkDtoSchema = z.object({
   key: z.string(),
   title: z.string(),
-  authors: z.array(
-    z.object({
-      key: z.string(),
-      name: z.string()
-    })
-  ).optional(),
-  cover_id: z.number().optional(),
-  first_publish_year: z.number().optional()
+  description: WorkDescriptionDtoSchema.optional(),
+  subjects: z.array(z.string()).optional(),
+  covers: z.array(z.number()).optional(),
+  authors: z.array(z.unknown()).optional(),
+  first_publish_date: z.string().optional(),
 });
+export type WorkDto = z.infer<typeof WorkDtoSchema>;
+
+// Open Library GET /subjects/:name.json — original wire format
+export const SubjectWorkDtoSchema = z.object({
+  key: z.string(),
+  title: z.string(),
+  authors: z
+    .array(
+      z.object({
+        key: z.string(),
+        name: z.string(),
+      })
+    )
+    .optional(),
+  cover_id: z.number().optional(),
+  first_publish_year: z.number().optional(),
+});
+export type SubjectWorkDto = z.infer<typeof SubjectWorkDtoSchema>;
 
 export const SubjectResponseSchema = z.object({
-  works: z.array(SubjectBookSchema)
+  works: z.array(SubjectWorkDtoSchema),
 });
+export type SubjectResponseDto = z.infer<typeof SubjectResponseSchema>;

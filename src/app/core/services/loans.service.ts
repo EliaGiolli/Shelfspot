@@ -1,34 +1,30 @@
-// src/app/core/services/loan.service.ts
 import { Injectable, signal, computed } from '@angular/core';
-import { BookDetail } from '../schemas/book-api.schema';
+import { type Book } from '../../shared/types/book';
 import { type Loan } from '../../shared/types/loans.types';
-
 
 @Injectable({ providedIn: 'root' })
 export class LoanService {
   private loansSignal = signal<Loan[]>([]);
 
-  // It exposes the signal as ReadOnly
   loans = this.loansSignal.asReadonly();
 
-  // Derived data: counts the books in loan
   loanCount = computed(() => this.loansSignal().length);
 
-  addLoan(book: BookDetail) {
-    if (this.isBorrowed(book.key)) return;
+  addLoan(book: Book) {
+    if (this.isBorrowed(book.id)) return;
 
     const newLoan: Loan = {
       id: Math.random().toString(36).substring(2),
       book,
       loanDate: new Date(),
-      dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000) // 14 days
+      dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000)
     };
 
     this.loansSignal.update(current => [...current, newLoan]);
   }
 
-  isBorrowed(bookKey: string): boolean {
-    return this.loansSignal().some(loan => loan.book.key === bookKey);
+  isBorrowed(bookId: string): boolean {
+    return this.loansSignal().some(loan => loan.book.id === bookId);
   }
 
   returnBook(loanId: string) {

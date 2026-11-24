@@ -2,57 +2,66 @@ import {
     Injectable, 
     inject,
 } from "@angular/core";
-// HTTP
 import { HttpClient } from "@angular/common/http";
-// RxJS and Operators
-import { map, Observable } from "rxjs";
-// Tokens
+import { catchError, map, Observable, of } from "rxjs";
 import { API_URL } from "../tokens/api.token";
-// Types and Schemas
-import { type ApiBookData } from "../../shared/types/api-book-data";
+import { type Book, type BookSearchResponse } from "../../shared/types/book";
 import { 
-    type BookSearchResult, 
     SearchResponseSchema,
     SubjectResponseSchema,
+    WorkDtoSchema,
 } from "../schemas/book-api.schema";
+import {
+    mapSearchResultToBook,
+    mapSubjectWorkToBook,
+    mapWorkToBook,
+} from "../mappers/book.mapper";
 
 @Injectable({ providedIn: 'root' })
 export class HttpBookService {
     private http = inject(HttpClient);
     private readonly API_URL = inject(API_URL);
 
-    // definition of the method that will be called by the component(s)
-    searchBooks(query: string, page: number = 1): Observable<BookSearchResult[]> {
-        const params = `?q=${encodeURIComponent(query)}&page=${page}`;
-        
-        return this.http.get<unknown>(`${this.API_URL}/search.json${params}`).pipe(
-            map(rawResponse => {
+    
+    searchBooks(query: string, page: number = 1): Observable<BookSearchResponse> {
+        const limit = 12;
+        const params = `?q=${encodeURIComponent(query)}&page=${page}&limit=${limit}`;
+    
+        return this.http.get<unknown>(
+        `${this.API_URL}/search.json${params}`
+        ).pipe(
+        map(rawResponse => {
             const result = SearchResponseSchema.safeParse(rawResponse);
-            
+    
             if (!result.success) {
-                console.error('Schema validation failed:', result.error.format());
-                return []; 
+            console.error(
+                'Search schema validation failed:',
+                result.error.format()
+            );
+    
+            throw new Error('Invalid Open Library search response');
             }
-            
-            return result.data.docs;
-            }),
-            map(books => books.slice(0, 12))
+    
+            return {
+            books: result.data.docs.map(mapSearchResultToBook),
+            totalFound: result.data.numFound,
+            page
+            };
+        })
         );
     }
+  
 
-    getBooksBySubject( subject: string, page: number = 1 ): Observable<BookSearchResult[]> {
+    // maps the response to the Book type
+    getBooksBySubject( subject: string, page: number = 1 ): Observable<Book[]> {
         const limit = 12;
-        // allows to prepare the pagination
         const offset = (page - 1) * limit;
-
         const params = `?limit=${limit}&offset=${offset}`;
 
         return this.http.get<unknown>(
                 `${this.API_URL}/subjects/${encodeURIComponent(subject)}.json${params}`
             )
             .pipe(
-                // converts authors in author_name and cover_id in cover_i
-                // this mantains one format for each component
                 map(rawResponse => {
                     const result = SubjectResponseSchema.safeParse(rawResponse);
 
@@ -64,26 +73,39 @@ export class HttpBookService {
                     return [];
                     }
 
-                    return result.data.works.map(book => ({
-                    key: book.key,
-                    title: book.title,
-                    author_name: book.authors?.map(author => author.name) ?? [],
-                    cover_i: book.cover_id,
-                    first_publish_year: book.first_publish_year
-                    }));
+                    return result.data.works.map(mapSubjectWorkToBook);
                 })
             );
     }
 
-    searchBookById(id:string):Observable<ApiBookData | null> {
-        return this.http.get<ApiBookData>(`${this.API_URL}/works/${id}.json`);
+    // maps the response to the Book type
+    searchBookById(id: string): Observable<Book | null> {
+        return this.http.get<unknown>(`${this.API_URL}/works/${id}.json`).pipe(
+            map(rawResponse => {
+                const result = WorkDtoSchema.safeParse(rawResponse);
+
+                if (!result.success) {
+                    console.error('Work schema validation failed:', result.error.format());
+                    return null;
+                }
+
+                return mapWorkToBook(result.data);
+            }),
+            catchError(error => {
+                console.error('Failed to load work:', error);
+                return of(null);
+            })
+        );
     }
 
-    //It returns only the first result
-    getFirstBookByQuery(query: string): Observable<BookSearchResult | null> {
-        return this.searchBooks(query)
-            .pipe(
-                map(books => books.length > 0 ? books[0] : null)
-            );
+    // maps the first book in the response to the Book type
+    getFirstBookByQuery(query: string): Observable<Book | null> {
+        return this.searchBooks(query).pipe(
+            map(response => response.books.length > 0
+                ? response.books[0]
+                : null
+            )
+        );
     }
+  
 }

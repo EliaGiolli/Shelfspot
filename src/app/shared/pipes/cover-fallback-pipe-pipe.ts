@@ -13,6 +13,6 @@ export class CoverFallbackPipe implements PipeTransform {
 }
 
 /**
- * The OpenLibrary API usually doesn't return the book cover (cover_i is null).
+ * The OpenLibrary API often omits a cover id.
  * Instead of overload the template with conditional logic, a custom Pipe can handle the fallback
  */
