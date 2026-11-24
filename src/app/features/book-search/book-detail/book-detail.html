@@ -1,0 +1,162 @@
+<section class="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
+
+  @let state = bookState();
+
+  <!-- Back navigation -->
+  <a
+    routerLink="/books/search"
+    class="mb-8 inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-primary/50 transition-colors hover:text-accent"
+  >
+    <app-icon name="arrow-left.svg" [size]="24" />
+    Back to catalog
+  </a>
+
+  <!-- Loading state -->
+  @if (state.status === 'loading') {
+    <div
+      class="grid animate-pulse grid-cols-1 overflow-hidden rounded-3xl bg-base-100 shadow-xl md:grid-cols-2"
+      role="status"
+      aria-label="Loading book details"
+    >
+      <div class="flex items-center justify-center bg-base-200 p-8 sm:p-12">
+        <div class="aspect-3/4 w-full max-w-[320px] rounded-2xl bg-base-300"></div>
+      </div>
+
+      <div class="flex flex-col gap-6 p-8 sm:p-12">
+        <div class="h-10 w-3/4 rounded-lg bg-base-300"></div>
+        <div class="h-5 w-1/2 rounded-lg bg-base-300"></div>
+        <div class="h-8 w-24 rounded-full bg-base-300"></div>
+        <div class="mt-6 h-4 w-full rounded bg-base-300"></div>
+        <div class="h-4 w-full rounded bg-base-300"></div>
+        <div class="h-4 w-3/4 rounded bg-base-300"></div>
+      </div>
+    </div>
+  }
+
+  <!-- Success state -->
+  @if (state.status === 'success') {
+    @let bookData = state.book;
+
+    <article class="grid grid-cols-1 overflow-hidden rounded-3xl bg-base-100 shadow-xl md:grid-cols-2">
+
+      <!-- Book cover -->
+      <div class="flex items-center justify-center bg-secondary/10 p-8 sm:p-12">
+        <div class="aspect-3/4 w-full max-w-[320px] overflow-hidden rounded-2xl shadow-2xl">
+          <img
+            [src]="bookData.coverId | coverFallbackPipe:'L'"
+            [alt]="'Cover of ' + bookData.title"
+            class="h-full w-full object-cover"
+          />
+        </div>
+      </div>
+
+      <!-- Book information -->
+      <div class="flex flex-col gap-6 p-6 sm:p-10 lg:p-12">
+
+        <header class="flex flex-col gap-2">
+          <h1 class="font-serif text-3xl font-bold leading-tight text-primary sm:text-4xl">
+            {{ bookData.title }}
+          </h1>
+
+          <p class="font-serif text-lg italic text-accent">
+            {{ bookData.authors.join(', ') || 'Unknown Author' }}
+          </p>
+        </header>
+
+        <!-- Publication information -->
+        <div class="flex flex-wrap gap-2">
+          <span class="rounded-full bg-primary/5 px-4 py-2 text-xs font-bold uppercase tracking-wide text-primary/60">
+            Year: {{ bookData.firstPublishYear || 'N/A' }}
+          </span>
+        </div>
+
+        <!-- Description -->
+        <section class="flex flex-col gap-3">
+          <h2 class="font-serif text-xl font-bold text-primary">
+            About this book
+          </h2>
+
+          <p class="text-sm leading-relaxed text-base-content/70">
+            {{ bookData.description || 'No description available for this work.' }}
+          </p>
+        </section>
+
+        <!-- Actions -->
+        <div class="mt-auto flex flex-wrap gap-3 border-t border-base-300 pt-6">
+
+          <app-button
+            variant="primary"
+            class="flex-1"
+            appClickFeedback
+            [disabled]="loanService.isBorrowed(bookData.id)"
+            (click)="loanService.addLoan(bookData)"
+          >
+            {{ loanService.isBorrowed(bookData.id) ? 'Already Borrowed' : 'Borrow Book' }}
+          </app-button>
+
+          <app-button
+            variant="outline"
+            appClickFeedback
+            (click)="favoriteService.toggleFavorite(bookData)"
+          >
+            <app-icon
+              [name]="favoriteService.isFavorite(bookData) ? 'badge-check.svg' : 'heart.svg'"
+              [size]="24"
+              [class.text-accent]="favoriteService.isFavorite(bookData)"
+            />
+          </app-button>
+
+        </div>
+      </div>
+    </article>
+  }
+
+  <!-- Not found state -->
+  @if (state.status === 'not-found') {
+    <div class="flex flex-col items-center gap-5 rounded-3xl bg-base-100 px-6 py-16 text-center shadow-xl">
+
+      <app-icon name="book-open.svg" [size]="56" />
+
+      <h1 class="font-serif text-3xl font-bold text-primary">
+        Book not found
+      </h1>
+
+      <p class="max-w-md text-base-content/70">
+        We couldn't find the book you're looking for. It may no longer be available or the requested ID may be incorrect.
+      </p>
+
+      <a
+        routerLink="/books/search"
+        class="btn btn-primary mt-3"
+      >
+        Back to catalog
+      </a>
+
+    </div>
+  }
+
+  <!-- Error state -->
+  @if (state.status === 'error') {
+    <div class="flex flex-col items-center gap-5 rounded-3xl bg-base-100 px-6 py-16 text-center shadow-xl">
+
+      <app-icon name="alert-circle.svg" [size]="56" />
+
+      <h1 class="font-serif text-3xl font-bold text-primary">
+        Something went wrong
+      </h1>
+
+      <p class="max-w-md text-base-content/70">
+        {{ state.message }}
+      </p>
+
+      <a
+        routerLink="/books/search"
+        class="btn btn-primary mt-3"
+      >
+        Back to catalog
+      </a>
+
+    </div>
+  }
+
+</section>

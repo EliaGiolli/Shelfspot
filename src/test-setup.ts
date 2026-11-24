@@ -1,4 +1,3 @@
-import '@analogjs/platform/testing/setup-vitest';
 import { TestBed } from '@angular/core/testing';
 import {
   BrowserTestingModule,
