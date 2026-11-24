@@ -13,7 +13,7 @@ import { LoanService } from "../../../core/services/loans.service";
       @for (item of loanService.loans(); track item.id) {
         <div class="p-4 bg-white border border-primary/5 rounded-2xl flex justify-between items-center shadow-sm">
           <div class="flex gap-4 items-center">
-            <img [src]="item.book.cover_i | coverFallbackPipe:'S'" class="w-12 h-16 object-cover rounded-lg">
+            <img [src]="item.book.coverId | coverFallbackPipe:'S'" class="w-12 h-16 object-cover rounded-lg">
             <div>
               <h3 class="font-bold">{{ item.book.title }}</h3>
               <p class="text-xs text-primary/40 italic">Return by: {{ item.dueDate | date }}</p>

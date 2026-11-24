@@ -6,7 +6,7 @@ import {
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { HttpBookService } from '../../../../core/services/http-book.service';
-import { type BookSearchResult } from '../../../../core/schemas/book-api.schema';
+import { type Book } from '../../../../shared/types/book';
 import { CardComponent } from '../../../../shared/components/card/card';
 import { BookSkeleton } from '../../../../shared/components/book-skeleton/book-skeleton';
 import { forkJoin, map } from 'rxjs';
@@ -21,7 +21,7 @@ import { ButtonLink } from '../../../../shared/components/button-links/button-li
 export class BookPreview implements OnInit{
   private httpBookService = inject(HttpBookService);
 
-  protected books = signal<BookSearchResult[]>([]);
+  protected books = signal<Book[]>([]);
   protected isLoading = signal(false);
   protected currentPage = signal(1);
 
@@ -84,7 +84,7 @@ export class BookPreview implements OnInit{
       next: (books) => {
         const uniqueBooks = [
           ...new Map(
-            books.map(book => [book.key, book] as const)
+            books.map(book => [book.id, book] as const)
           ).values()
         ];
 

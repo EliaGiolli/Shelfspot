@@ -72,7 +72,7 @@
     </div>
     } @else {
     <div class="carousel carousel-start w-full gap-4 rounded-box">
-        @for (book of books(); track book.key; let i = $index) {
+        @for (book of books(); track book.id; let i = $index) {
             <!-- With calc() I calculate the card's width so that they fit inside the available width -->
             <!-- 100% is the available with inside the carousel, 2rem is the total gap between cards -->
             <!-- By dividing by 3 I know the exact space each card will each card will have -->
@@ -93,9 +93,9 @@
 
                 <div card-body>
                     <div class="flex h-48 md:h-64 items-center justify-center overflow-hidden rounded-xl bg-base-200">
-                        @if (book.cover_i) {
+                        @if (book.coverId) {
                             <img
-                            [src]="'https://covers.openlibrary.org/b/id/' + book.cover_i + '-M.jpg'"
+                            [src]="'https://covers.openlibrary.org/b/id/' + book.coverId + '-M.jpg'"
                             [alt]="'Cover of ' + book.title"
                             class="h-full w-full object-contain"
                             loading="lazy"
@@ -108,18 +108,18 @@
                     </div>
 
                     <p class="mt-3 text-sm text-base-content/70">
-                    {{ book.author_name?.join(', ') || 'Unknown author' }}
+                    {{ book.authors.join(', ') || 'Unknown author' }}
                     </p>
 
                     <p class="text-xs text-base-content/50">
-                    First published: {{ book.first_publish_year || 'Unknown' }}
+                    First published: {{ book.firstPublishYear || 'Unknown' }}
                     </p>
                 </div>
 
                 <div card-footer class="flex justify-center py-3">
                     <app-button-link
                         variant="primary"
-                        [routerLink]="['/books/search', book.key.split('/').pop()]"
+                        [routerLink]="['/books/search', book.id]"
                     >
                     View details
                     </app-button-link>

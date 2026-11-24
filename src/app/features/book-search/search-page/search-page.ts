@@ -2,6 +2,7 @@ import {
   Component, 
   inject, 
   signal, 
+  computed,
 } from '@angular/core';
 import { 
   FormControl, 
@@ -31,7 +32,10 @@ import { Button } from '../../../shared/components/button/button';
 import { CardComponent } from '../../../shared/components/card/card';
 import { InputComponent } from '../../../shared/components/input/input';
 import { CoverFallbackPipe } from '../../../shared/pipes/cover-fallback-pipe-pipe';
-import { BookSearchResult } from '../../../core/schemas/book-api.schema';
+import {
+  type Book,
+  type BookSearchResponse
+} from '../../../shared/types/book';
 
 @Component({
   selector: 'app-search-page',
@@ -69,7 +73,8 @@ export class SearchPage {
   });
 
   // An Observable defines the stream of search
-  private books$ = combineLatest([
+  // Combines the value changes of the bookInput form control and the current page signal
+  private searchResponse$ = combineLatest([
     this.formGroup.controls.bookInput.valueChanges.pipe(
       startWith(this.formGroup.controls.bookInput.value),
       debounceTime(250),
@@ -80,20 +85,39 @@ export class SearchPage {
   ]).pipe(
     switchMap(([query, page]) => {
       if (query.trim().length <= 2) {
-        return of([]);
+        return of<BookSearchResponse>({
+          books: [],
+          totalFound: 0,
+          page
+        });
       }
 
       this.isLoading.set(true);
 
       return this.bookService.searchBooks(query, page).pipe(
-        // this allows the loading state is back in case of errors or wrong previous request
         finalize(() => this.isLoading.set(false))
       );
     })
   );
 
-  // if there isn't data, we use an empty array []
-  books = toSignal(this.books$, { initialValue: [] });
+  // Keep the entire response from the service
+  searchResponse = toSignal(this.searchResponse$, {
+    initialValue: {
+      books: [],
+      totalFound: 0,
+      page: 1
+    }
+  });
+
+  // Derive the array of books from the response
+  books = computed(() => this.searchResponse().books);
+
+  // Derive the hasNextPage flag from the response
+  hasNextPage = computed(() => {
+    const { totalFound, page } = this.searchResponse();
+    return page * 12 < totalFound;
+  });
+
 
   // Metodi per la UI
   goToNext() { this.currentPage.update(p => p + 1); }
@@ -103,11 +127,7 @@ export class SearchPage {
     this.formGroup.controls.bookInput.setValue(''); 
   }
 
-  viewDetails(book: BookSearchResult) {
-    // Puliamo la stringa '/works/OL12345W' per ottenere solo 'OL12345W'
-    const bookId = book.key.replace('/works/', '');
-    
-    // Navighiamo verso la rotta specifica
-    this.router.navigate(['/books/search', bookId]);
+  viewDetails(book: Book) {
+    this.router.navigate(['/books/search', book.id]);
   }
 }

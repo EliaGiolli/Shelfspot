@@ -1,8 +1,8 @@
-import { type BookDetail } from "../../core/schemas/book-api.schema";
+import { type Book } from "./book";
 
 export interface Loan {
     id: string;
-    book: BookDetail;
+    book: Book;
     loanDate: Date;
     dueDate: Date;
   }
