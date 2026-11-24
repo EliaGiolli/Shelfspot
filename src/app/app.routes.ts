@@ -1,4 +1,3 @@
-
 import { Routes } from '@angular/router';
 
 export const routes: Routes = [
@@ -25,7 +24,6 @@ export const routes: Routes = [
   },
   {
     path: 'books',
-    // Qui in futuro aggiungeremo: canActivate: [authGuard]
     loadComponent: () =>
       import('./features/layouts/book-layout/book-layout')
         .then(m => m.BookLayout),
@@ -37,12 +35,6 @@ export const routes: Routes = [
             .then(m => m.SearchPage)
       },
       {
-        path: 'search/:id',
-        loadComponent: () =>
-          import('./features/book-search/search-modal/search-modal')
-            .then(m => m.SearchModalComponent)
-      },
-      {
         path: 'favorites',
         loadComponent: () =>
           import('./features/favorites/favorite-page/favorite-page')
@@ -51,8 +43,8 @@ export const routes: Routes = [
       {
         path: ':bookId',
         loadComponent: () =>
-          import('./features/book-search/search-modal/search-modal')
-            .then(m => m.SearchModalComponent)
+          import('./features/book-search/book-detail/book-detail')
+            .then(m => m.BookDetailComponent)
       }
     ]
   },

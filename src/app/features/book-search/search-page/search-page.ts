@@ -175,6 +175,6 @@ export class SearchPage {
   }
 
   viewDetails(book: Book) {
-    this.router.navigate(['/books/search', book.id]);
+    this.router.navigate(['/books', book.id]);
   }
 }
