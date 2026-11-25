@@ -16,7 +16,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
   templateUrl: './sidebar.html',
 })
 export class Sidebar {
-  isCollapsed = signal(false);
+  isCollapsed = signal(true);
 
   menuItems = [
     { path: 'search', label: 'Search', icon: 'search.svg' },

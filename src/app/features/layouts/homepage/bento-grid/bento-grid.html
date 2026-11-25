@@ -1,14 +1,13 @@
 
 <section
-  class="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-4 h-auto md:h-[600px] my-20"
+  class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 lg:grid-rows-2 gap-4 h-auto lg:min-h-[600px] my-20"
   aria-label="Library Overview Dashboard"
 >
-
   <!-- Hero Card -->
   <app-card
     [titleId]="'hero-title'"
     variant="featured"
-    class="md:col-span-2 md:row-span-2 bg-primary/50 p-0 border-none shadow-xl relative overflow-hidden"
+    class="md:col-span-2 lg:row-span-2 bg-primary/50 p-0 border-none shadow-xl relative overflow-hidden"
   >
     <div card-body class="p-6 flex flex-col justify-center h-full text-secondary relative z-10">
       <h1 id="hero-title" class="text-3xl md:text-5xl font-serif font-bold leading-tight">
@@ -90,7 +89,7 @@
 
   <!-- Curated Picks -->
   <div
-    class="hidden md:flex md:row-span-2 bg-accent/20 rounded-3xl overflow-hidden relative group border border-primary/5"
+    class="hidden lg:flex lg:row-span-2 bg-accent/20 rounded-3xl overflow-hidden relative group border border-primary/5"
     role="img"
     aria-label="Atmospheric photo of a classic library with wooden shelves"
   >
@@ -128,5 +127,4 @@
       <app-icon name="user.svg" [size]="40" class="mt-4 opacity-90" aria-hidden="true" />
     </div>
   </app-card>
-
 </section>
