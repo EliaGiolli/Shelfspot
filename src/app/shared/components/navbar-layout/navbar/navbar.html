@@ -1,5 +1,5 @@
 
-<header class="sticky top-0 z-[1000] w-full border-b border-accent/20 bg-base-100 px-4 backdrop-blur-md sm:px-6">
+<header class="sticky top-0 z-1000 w-full border-b border-accent/20 bg-surface-elevated px-4 backdrop-blur-md sm:px-6 md:bg-base-100">
   <div class="relative mx-auto flex min-h-20 max-w-300 items-center justify-between gap-6">
 
     <!-- Brand -->
@@ -32,7 +32,7 @@
       [class.opacity-0]="!isMenuOpen()"
       [class.opacity-100]="isMenuOpen()"
       [class.overflow-y-auto]="isMenuOpen()"
-      class="absolute left-0 top-full z-50 flex w-full flex-col items-center overflow-hidden bg-surface/95 shadow-lg transition-[max-height,opacity,visibility] duration-300 ease-in-out md:visible md:static md:max-h-none md:w-auto md:flex-row md:gap-6 md:overflow-visible md:bg-transparent md:opacity-100 md:shadow-none"
+      class="absolute left-0 top-full z-50 flex w-full flex-col items-center overflow-hidden bg-surface-elevated border-b border-accent/20 shadow-lg transition-[max-height,opacity,visibility] duration-300 ease-in-out md:visible md:static md:max-h-none md:w-auto md:flex-row md:gap-6 md:overflow-visible md:bg-transparent md:opacity-100 md:shadow-none"
     >
       <app-button-link
         routerLink="/"
