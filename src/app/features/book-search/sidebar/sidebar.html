@@ -16,13 +16,12 @@
 
         <nav class="flex-1 mt-4 px-3 space-y-2">
             @for (item of menuItems; track item.path) {
-                <app-button-link 
+                <app-button-link
                     [routerLink]="item.path"
-                    routerLinkActive="bg-accent text-white"
+                    [activeClasses]="'bg-accent text-white'"
                     variant="outline"
-                    
                     [appTooltip]="item.label"
-                    [appTooltipEnabled]="isCollapsed()" 
+                    [appTooltipEnabled]="isCollapsed()"
                 >
                     <app-icon [name]="item.icon" [size]="40" class="min-w-6" />
                     

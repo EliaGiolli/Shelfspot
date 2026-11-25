@@ -1,16 +1,18 @@
 import { Component, computed, input } from '@angular/core';
-import { RouterLink, UrlTree } from '@angular/router';
+import { RouterLink, RouterLinkActive, UrlTree } from '@angular/router';
 import { ButtonVariant } from '../../types/custom-components-types';
 import { ButtonLinks } from '../../utils/btn-custom-variants';
 
 @Component({
   selector: 'app-button-link',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, RouterLinkActive],
   template: `
     <a
-      [class]="linkClasses()"
+      [class.!bg-accent]="false"
+      [class]="linkClasses() + ' ' + activeClasses()"
       [href]="disabled() ? null : href()"
+      [routerLinkActive]="activeClasses()"
       [routerLink]="disabled() || href() ? null : routerLink()"
       [attr.aria-label]="ariaLabel() || null"
       [attr.aria-disabled]="disabled() ? 'true' : null"
@@ -28,6 +30,7 @@ export class ButtonLink {
   href = input<string | null>(null);
   routerLink = input<string | any[] | UrlTree | null>(null);
   disabled = input(false);
+  activeClasses = input('');
   ariaLabel = input<string>();
 
   // This computation is part of the mimicking the behavior of clsx and CVA began inside the btn-custom-variants.ts file
