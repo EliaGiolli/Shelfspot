@@ -9,7 +9,7 @@ import { ButtonLink } from '../../button-links/button-links';
     <app-button-link
       variant="outline"
       routerLink="/"
-      aria-label="ShelfSpot, home"
+      [ariaLabel]="'ShelfSpot, home'"
     >
       <div class="flex items-center justify-center gap-2 text-center">
         <img

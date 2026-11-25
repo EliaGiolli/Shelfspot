@@ -1,6 +1,29 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Component } from '@angular/core';
 import { describe, it, expect, beforeEach } from 'vitest';
 import { CardComponent } from './card';
+import { CustomCard } from '../../utils/card-custom-variants';
+
+@Component({
+  standalone: true,
+  imports: [CardComponent],
+  template: `
+    <app-card titleId="test-card-title">
+      <div card-header>
+        <h2 id="test-card-title">Test title</h2>
+      </div>
+
+      <div card-body>
+        <p>Test body</p>
+      </div>
+
+      <div card-footer>
+        <button>Test action</button>
+      </div>
+    </app-card>
+  `
+})
+class TestHostComponent {}
 
 describe('CardComponent', () => {
   let fixture: ComponentFixture<CardComponent>;
@@ -33,17 +56,29 @@ describe('CardComponent', () => {
   });
 
   it('should render the header, body and footer content', () => {
-    const article = fixture.nativeElement.querySelector('article');
+    const hostFixture = TestBed.createComponent(TestHostComponent);
+    hostFixture.detectChanges();
 
-    expect(article.querySelector('[card-header]')).toBeTruthy();
-    expect(article.querySelector('[card-body]')).toBeTruthy();
-    expect(article.querySelector('[card-footer]')).toBeTruthy();
+    const article = hostFixture.nativeElement.querySelector('article');
+
+    expect(article.querySelector('[card-header] h2').textContent.trim())
+      .toBe('Test title');
+
+    expect(article.querySelector('[card-body] p').textContent.trim())
+      .toBe('Test body');
+
+    expect(article.querySelector('[card-footer] button').textContent.trim())
+      .toBe('Test action');
   });
 
-  it('should apply the default card variant', () => {
+  it('should apply the default card variant classes', () => {
     const article = fixture.nativeElement.querySelector('article');
 
-    expect(article.className).toContain('default');
+    const expectedClasses = CustomCard.variants.default.split(' ');
+
+    expectedClasses.forEach(className => {
+      expect(article.classList).toContain(className);
+    });
   });
 
   it('should update the card classes when the variant changes', () => {
@@ -52,6 +87,10 @@ describe('CardComponent', () => {
 
     const article = fixture.nativeElement.querySelector('article');
 
-    expect(article.className).toContain('compact');
+    const expectedClasses = CustomCard.variants.compact.split(' ');
+
+    expectedClasses.forEach(className => {
+      expect(article.classList).toContain(className);
+    });
   });
 });
