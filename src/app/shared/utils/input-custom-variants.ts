@@ -11,7 +11,7 @@ export const CustomInput: InputStyles = {
     'w-full',
     'rounded-xl',
     'transition-all duration-200',
-    'focus:outline-2 focus:outline-offset-2',
+    'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent',
     'disabled:cursor-not-allowed disabled:opacity-50'
   ].join(' '),
 
