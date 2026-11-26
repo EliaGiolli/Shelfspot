@@ -1,8 +1,10 @@
+
 import { defineConfig } from 'vitest/config';
+import angular from '@analogjs/vite-plugin-angular';
 
 export default defineConfig({
+  plugins: [angular()],
   test: {
-    // the jsdom environment allows us to test the browser APIs 
     environment: 'jsdom',
     setupFiles: ['./src/test-setup.ts'],
     pool: 'threads',

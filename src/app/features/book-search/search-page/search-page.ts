@@ -15,14 +15,15 @@ import {
   RouterOutlet,
   ActivatedRoute
 } from '@angular/router';
-import { of } from 'rxjs';
+import {Subject, of, EMPTY } from 'rxjs';
 import {
   debounceTime,
   distinctUntilChanged,
   switchMap,
-  finalize,
   map,
-  tap
+  tap,
+  catchError,
+  mergeWith,
 } from 'rxjs/operators';
 import {
   takeUntilDestroyed,
@@ -39,6 +40,7 @@ import {
   type Book,
   type BookSearchResponse
 } from '../../../shared/types/book';
+import type { ApiState } from '../../../shared/types/api-state';
 
 @Component({
   selector: 'app-search-page',
@@ -55,11 +57,16 @@ import {
   templateUrl: './search-page.html'
 })
 export class SearchPage {
+
+  private readonly retrySearchTrigger = new Subject<void>();
   private bookService = inject(HttpBookService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
 
-  isLoading = signal(false);
+  apiState = signal<ApiState<BookSearchResponse>>({
+    status: 'idle'
+  });
+
   currentPage = signal(1);
 
   formGroup = new FormGroup({
@@ -103,6 +110,16 @@ export class SearchPage {
       previous.page === current.page
     ),
 
+    // the stream receives either new updates from the URL params and a new event when the user clicks "retry"
+    mergeWith(
+      this.retrySearchTrigger.pipe(
+        map(() => ({
+          query: this.formGroup.controls.bookInput.value,
+          page: this.currentPage()
+        }))
+      )
+    ),
+
     tap(({ query, page }) => {
       // Synchronize the search input without triggering valueChanges.
       if (this.formGroup.controls.bookInput.value !== query) {
@@ -115,8 +132,11 @@ export class SearchPage {
       this.currentPage.set(page);
     }),
 
+    
     switchMap(({ query, page }) => {
       if (query.trim().length <= 2) {
+        this.apiState.set({ status: 'idle' });
+
         return of<BookSearchResponse>({
           books: [],
           totalFound: 0,
@@ -124,12 +144,35 @@ export class SearchPage {
         });
       }
 
-      this.isLoading.set(true);
+      this.apiState.set({ status: 'loading' });
 
       return this.bookService.searchBooks(query, page).pipe(
-        finalize(() => this.isLoading.set(false))
+        tap(response => {
+          if (response.books.length === 0) {
+            this.apiState.set({ status: 'empty' });
+            return;
+          }
+
+          this.apiState.set({
+            status: 'success',
+            data: response
+          });
+        }),
+        catchError((error: unknown) => {
+          console.error('Failed to search books.', error);
+
+          this.apiState.set({
+            status: 'error',
+            error: error instanceof Error
+              ? error.message
+              : 'An unexpected error occurred.'
+          });
+
+          return EMPTY;
+        })
       );
     })
+
   );
 
   // Keep the entire response from the service.
@@ -176,5 +219,9 @@ export class SearchPage {
 
   viewDetails(book: Book) {
     this.router.navigate(['/books', book.id]);
+  }
+
+  retrySearch(): void {
+   this.retrySearchTrigger.next();
   }
 }

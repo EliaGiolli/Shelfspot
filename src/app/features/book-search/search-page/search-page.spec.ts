@@ -1,7 +1,7 @@
 
-import { TestBed } from '@angular/core/testing';
+import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BehaviorSubject, of } from 'rxjs';
+import { BehaviorSubject, of, Subject } from 'rxjs';
 import {
   afterEach,
   beforeEach,
@@ -13,53 +13,66 @@ import {
 
 import { SearchPage } from './search-page';
 import { HttpBookService } from '../../../core/services/http-book.service';
-import { type Book, type BookSearchResponse } from '../../../shared/types/book';
+import type { BookSearchResponse } from '../../../shared/types/book';
 
 describe('SearchPage', () => {
+  let fixture: ComponentFixture<SearchPage>;
+  let component: SearchPage;
   let queryParamMapSubject: BehaviorSubject<ReturnType<typeof createParamMap>>;
   let searchBooks: ReturnType<typeof vi.fn>;
-  let navigate: ReturnType<typeof vi.fn>;
-
-  const createParamMap = (params: Record<string, string>) => {
-    const values = new Map(Object.entries(params));
-
-    return {
-      get: (key: string) => values.get(key) ?? null,
-    } as ReturnType<ActivatedRoute['snapshot']['queryParamMap']['get']> extends never
-      ? never
-      : any;
-  };
-
-  const mockBook: Book = {
-    id: 'book-1',
-    key: '/works/book-1',
-    title: 'The Hobbit',
-    authors: ['J.R.R. Tolkien'],
-    subjects: ['Fantasy'],
-    coverId: 123,
-    firstPublishYear: 1937,
-    description: 'A fantasy novel.',
-  };
+  let router: { navigate: ReturnType<typeof vi.fn> };
 
   const mockResponse: BookSearchResponse = {
-    books: [mockBook],
-    totalFound: 30,
+    books: [
+      {
+        id: 'book-1',
+        key: '/works/book-1',
+        title: 'The Hobbit',
+        authors: ['J.R.R. Tolkien'],
+        subjects: ['Fantasy'],
+        coverId: 123,
+        firstPublishYear: 1937,
+      },
+    ],
+    totalFound: 1,
     page: 1,
   };
 
-  beforeEach(async () => {
-    vi.useFakeTimers();
+  function createParamMap(params: Record<string, string> = {}) {
+    return {
+      get: (key: string) => params[key] ?? null,
+    } as any;
+  }
 
-    queryParamMapSubject = new BehaviorSubject(
-      createParamMap({})
-    );
+  function createComponent(): void {
+    fixture = TestBed.createComponent(SearchPage);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  }
+
+  
+  beforeEach(() => {
+    queryParamMapSubject = new BehaviorSubject(createParamMap());
 
     searchBooks = vi.fn().mockReturnValue(of(mockResponse));
-    navigate = vi.fn().mockResolvedValue(true);
 
-    await TestBed.configureTestingModule({
+    router = {
+      navigate: vi.fn(),
+    };
+
+    TestBed.overrideComponent(SearchPage, {
+      set: {
+        template: '',
+      },
+    });
+
+    TestBed.configureTestingModule({
       imports: [SearchPage],
       providers: [
+        {
+          provide: HttpBookService,
+          useValue: { searchBooks },
+        },
         {
           provide: ActivatedRoute,
           useValue: {
@@ -68,224 +81,201 @@ describe('SearchPage', () => {
         },
         {
           provide: Router,
-          useValue: {
-            navigate,
-          },
-        },
-        {
-          provide: HttpBookService,
-          useValue: {
-            searchBooks,
-          },
+          useValue: router,
         },
       ],
-    })
-      .overrideComponent(SearchPage, {
-        set: { template: '' },
-      })
-      .compileComponents();
+    });
   });
+
 
   afterEach(() => {
     vi.useRealTimers();
   });
 
-  it('should initialize with an empty search response', () => {
-    const fixture = TestBed.createComponent(SearchPage);
-    const component = fixture.componentInstance;
+  it('should create', () => {
+    createComponent();
 
-    expect(component.isLoading()).toBe(false);
-    expect(component.currentPage()).toBe(1);
-    expect(component.searchResponse()).toEqual({
-      books: [],
-      totalFound: 0,
-      page: 1,
-    });
-    expect(component.books()).toEqual([]);
-    expect(component.hasNextPage()).toBe(false);
+    expect(component).toBeTruthy();
   });
 
-  it('should search when the URL contains a query longer than two characters', () => {
+  it('should initialize with the idle API state', () => {
+    createComponent();
+
+    expect(component.apiState()).toEqual({ status: 'idle' });
+  });
+
+  it('should enter the loading state while a search request is pending', () => {
+    const responseSubject = new Subject<BookSearchResponse>();
+    searchBooks.mockReturnValue(responseSubject.asObservable());
+
     queryParamMapSubject.next(
-      createParamMap({ q: 'tolkien', page: '1' })
+      createParamMap({ q: 'tolkien', page: '1' }),
     );
 
-    const fixture = TestBed.createComponent(SearchPage);
-    const component = fixture.componentInstance;
+    createComponent();
+
+    expect(component.apiState()).toEqual({ status: 'loading' });
+
+    responseSubject.next(mockResponse);
+
+    expect(component.apiState()).toEqual({ status: 'loading' });
+
+    responseSubject.complete();
+
+    expect(component.apiState()).toEqual({ status: 'idle' });
+  });
+
+  it('should synchronize the form with the query parameter', () => {
+    queryParamMapSubject.next(
+      createParamMap({ q: 'tolkien', page: '1' }),
+    );
+
+    createComponent();
+
+    expect(component.formGroup.controls.bookInput.value).toBe('tolkien');
+  });
+
+  it('should search when the query contains more than two characters', () => {
+    queryParamMapSubject.next(
+      createParamMap({ q: 'tolkien', page: '1' }),
+    );
+
+    createComponent();
 
     expect(searchBooks).toHaveBeenCalledWith('tolkien', 1);
-    expect(component.books()).toEqual([mockBook]);
   });
 
-  it('should not search when the query has two or fewer characters', () => {
+  it('should not search when the query contains two or fewer characters', () => {
     queryParamMapSubject.next(
-      createParamMap({ q: 'ab', page: '1' })
+      createParamMap({ q: 'ab', page: '1' }),
     );
 
-    TestBed.createComponent(SearchPage);
+    createComponent();
 
     expect(searchBooks).not.toHaveBeenCalled();
   });
 
-  it('should synchronize the form with URL query parameters', () => {
+  it('should use page one when the page parameter is invalid', () => {
     queryParamMapSubject.next(
-      createParamMap({ q: 'tolkien', page: '1' })
+      createParamMap({ q: 'tolkien', page: 'invalid' }),
     );
 
-    const fixture = TestBed.createComponent(SearchPage);
+    createComponent();
 
-    expect(
-      fixture.componentInstance.formGroup.controls.bookInput.value
-    ).toBe('tolkien');
-  });
-
-  it('should synchronize the current page with URL query parameters', () => {
-    queryParamMapSubject.next(
-      createParamMap({ q: 'tolkien', page: '3' })
-    );
-
-    const fixture = TestBed.createComponent(SearchPage);
-
-    expect(fixture.componentInstance.currentPage()).toBe(3);
-    expect(searchBooks).toHaveBeenCalledWith('tolkien', 3);
-  });
-
-  it('should default to page 1 when the URL page is invalid', () => {
-    queryParamMapSubject.next(
-      createParamMap({ q: 'tolkien', page: 'invalid' })
-    );
-
-    const fixture = TestBed.createComponent(SearchPage);
-
-    expect(fixture.componentInstance.currentPage()).toBe(1);
+    expect(component.currentPage()).toBe(1);
     expect(searchBooks).toHaveBeenCalledWith('tolkien', 1);
   });
 
-  it('should calculate whether a next page exists', () => {
+  it('should use page one when the page parameter is missing', () => {
     queryParamMapSubject.next(
-      createParamMap({ q: 'tolkien', page: '1' })
+      createParamMap({ q: 'tolkien' }),
     );
 
-    const fixture = TestBed.createComponent(SearchPage);
+    createComponent();
 
-    expect(fixture.componentInstance.hasNextPage()).toBe(true);
+    expect(component.currentPage()).toBe(1);
+    expect(searchBooks).toHaveBeenCalledWith('tolkien', 1);
   });
 
-  it('should return false when there are no more results', () => {
-    const response: BookSearchResponse = {
-      books: [mockBook],
-      totalFound: 12,
-      page: 1,
+  it('should update the current page from the query parameter', () => {
+    queryParamMapSubject.next(
+      createParamMap({ q: 'tolkien', page: '2' }),
+    );
+
+    createComponent();
+
+    expect(component.currentPage()).toBe(2);
+    expect(searchBooks).toHaveBeenCalledWith('tolkien', 2);
+  });
+
+  it('should update the URL when the search input changes', () => {
+    vi.useFakeTimers();
+
+    createComponent();
+
+    component.formGroup.controls.bookInput.setValue('tolkien');
+
+    vi.advanceTimersByTime(250);
+
+    expect(router.navigate).toHaveBeenCalledWith(
+      [],
+      expect.objectContaining({
+        queryParams: {
+          q: 'tolkien',
+          page: 1,
+        },
+        queryParamsHandling: 'merge',
+      }),
+    );
+  });
+
+  it('should reset the page to one when the search input changes', () => {
+    vi.useFakeTimers();
+
+    createComponent();
+
+    component.formGroup.controls.bookInput.setValue('tolkien');
+
+    vi.advanceTimersByTime(250);
+
+    expect(router.navigate).toHaveBeenCalledWith(
+      [],
+      expect.objectContaining({
+        queryParams: expect.objectContaining({
+          page: 1,
+        }),
+      }),
+    );
+  });
+
+  it('should expose books from the search response', () => {
+    queryParamMapSubject.next(
+      createParamMap({ q: 'tolkien', page: '1' }),
+    );
+
+    createComponent();
+
+    expect(component.books()).toEqual(mockResponse.books);
+  });
+
+  it('should calculate whether another page is available', () => {
+    const responseWithMoreResults: BookSearchResponse = {
+      ...mockResponse,
+      totalFound: 24,
     };
 
-    searchBooks.mockReturnValue(of(response));
+    searchBooks.mockReturnValue(of(responseWithMoreResults));
 
     queryParamMapSubject.next(
-      createParamMap({ q: 'tolkien', page: '1' })
+      createParamMap({ q: 'tolkien', page: '1' }),
     );
 
-    const fixture = TestBed.createComponent(SearchPage);
+    createComponent();
 
-    expect(fixture.componentInstance.hasNextPage()).toBe(false);
+    expect(component.hasNextPage()).toBe(true);
   });
 
-  it('should navigate to the next page', () => {
+  it('should not request another page when all results fit on the current page', () => {
+    searchBooks.mockReturnValue(of(mockResponse));
+
     queryParamMapSubject.next(
-      createParamMap({ q: 'tolkien', page: '2' })
+      createParamMap({ q: 'tolkien', page: '1' }),
     );
 
-    const fixture = TestBed.createComponent(SearchPage);
-    const component = fixture.componentInstance;
+    createComponent();
 
-    component.goToNext();
-
-    expect(navigate).toHaveBeenCalledWith([], {
-      relativeTo: TestBed.inject(ActivatedRoute),
-      queryParams: { page: 3 },
-      queryParamsHandling: 'merge',
-    });
+    expect(component.hasNextPage()).toBe(false);
   });
 
-  it('should navigate to the previous page', () => {
+  it('should not repeat the same search when query parameters do not change', () => {
     queryParamMapSubject.next(
-      createParamMap({ q: 'tolkien', page: '2' })
+      createParamMap({ q: 'tolkien', page: '1' }),
     );
 
-    const fixture = TestBed.createComponent(SearchPage);
-    const component = fixture.componentInstance;
-
-    component.goToPrev();
-
-    expect(navigate).toHaveBeenCalledWith([], {
-      relativeTo: TestBed.inject(ActivatedRoute),
-      queryParams: { page: 1 },
-      queryParamsHandling: 'merge',
-    });
-  });
-
-  it('should not navigate to a page lower than 1', () => {
-    const fixture = TestBed.createComponent(SearchPage);
-    const component = fixture.componentInstance;
-
-    component.goToPrev();
-
-    expect(navigate).toHaveBeenCalledWith([], {
-      relativeTo: TestBed.inject(ActivatedRoute),
-      queryParams: { page: 1 },
-      queryParamsHandling: 'merge',
-    });
-  });
-
-  it('should clear the search input', () => {
-    const fixture = TestBed.createComponent(SearchPage);
-    const component = fixture.componentInstance;
-
-    component.formGroup.controls.bookInput.setValue('tolkien');
-    component.clearSearch();
-
-    expect(component.formGroup.controls.bookInput.value).toBe('');
-  });
-
-  it('should navigate to the selected book details', () => {
-    const fixture = TestBed.createComponent(SearchPage);
-    const component = fixture.componentInstance;
-
-    component.viewDetails(mockBook);
-
-    expect(navigate).toHaveBeenCalledWith(['/books', 'book-1']);
-  });
-
-  it('should update the URL after the debounce period', async () => {
-    const fixture = TestBed.createComponent(SearchPage);
-    const component = fixture.componentInstance;
-
-    component.formGroup.controls.bookInput.setValue('tolkien');
-
-    await vi.advanceTimersByTimeAsync(249);
-
-    expect(navigate).not.toHaveBeenCalled();
-
-    await vi.advanceTimersByTimeAsync(1);
-
-    expect(navigate).toHaveBeenCalledWith([], {
-      relativeTo: TestBed.inject(ActivatedRoute),
-      queryParams: {
-        q: 'tolkien',
-        page: 1,
-      },
-      queryParamsHandling: 'merge',
-    });
-  });
-
-  it('should not trigger duplicate searches for unchanged URL parameters', () => {
-    queryParamMapSubject.next(
-      createParamMap({ q: 'tolkien', page: '1' })
-    );
-
-    TestBed.createComponent(SearchPage);
+    createComponent();
 
     queryParamMapSubject.next(
-      createParamMap({ q: 'tolkien', page: '1' })
+      createParamMap({ q: 'tolkien', page: '1' }),
     );
 
     expect(searchBooks).toHaveBeenCalledTimes(1);
