@@ -4,6 +4,7 @@ import { provideRouter, Router } from '@angular/router';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 import { BentoGrid } from './bento-grid';
+import { LOANS_REPOSITORY } from '../../../../core/tokens/loans-repository,token';
 
 describe('BentoGrid', () => {
   let component: BentoGrid;
@@ -14,7 +15,16 @@ describe('BentoGrid', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [BentoGrid],
-      providers: [provideRouter([])],
+      providers: [
+        provideRouter([]),
+        {
+          provide: LOANS_REPOSITORY,
+          useValue: {
+            getAll: vi.fn().mockResolvedValue([]),
+            saveAll: vi.fn().mockResolvedValue(undefined),
+          },
+        },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(BentoGrid);

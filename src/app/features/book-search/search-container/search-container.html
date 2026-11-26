@@ -1,0 +1,13 @@
+<app-search-page
+  [initialQuery]="routeQuery()"
+  [apiState]="apiState()"
+  [books]="books()"
+  [currentPage]="currentPage()"
+  [hasNextPage]="hasNextPage()"
+  (search)="submitSearch($event)"
+  (clearSearch)="clearSearch()"
+  (retry)="retrySearch()"
+  (nextPage)="goToNext()"
+  (previousPage)="goToPrev()"
+  (viewDetails)="viewDetails($event)"
+/>

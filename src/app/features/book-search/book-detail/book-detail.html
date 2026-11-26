@@ -1,3 +1,4 @@
+
 <section class="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
 
   @let state = bookState();
@@ -149,12 +150,22 @@
         {{ state.message }}
       </p>
 
-      <a
-        routerLink="/books/search"
-        class="btn btn-primary mt-3"
-      >
-        Back to catalog
-      </a>
+      <div class="flex flex-wrap justify-center gap-3 mt-3">
+        <app-button
+          variant="primary"
+          (click)="retryBookLoad()"
+          ariaLabel="Retry loading book details"
+        >
+          Retry
+        </app-button>
+
+        <a
+          routerLink="/books/search"
+          class="btn btn-outline"
+        >
+          Back to catalog
+        </a>
+      </div>
 
     </div>
   }

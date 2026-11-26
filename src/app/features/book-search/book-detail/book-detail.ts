@@ -1,3 +1,4 @@
+
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -8,7 +9,9 @@ import {
   map,
   of,
   startWith,
-  switchMap
+  switchMap,
+  Subject,
+  mergeWith
 } from 'rxjs';
 
 // Services
@@ -20,7 +23,7 @@ import { LoanService } from '../../../core/services/loans.service';
 import { ApiError } from '../../../core/errors/api-error';
 
 // Types
-import { type Book } from '../../../shared/types/book';
+import type { Book } from '../../../shared/types/book';
 
 // Custom Components
 import { IconComponent } from '../../../shared/components/icon/icon';
@@ -55,12 +58,21 @@ export class BookDetailComponent {
   public favoriteService = inject(FavoriteService);
   public loanService = inject(LoanService);
 
+  private readonly retryTrigger = new Subject<void>();
+
   // Read the book ID and load its details.
   bookState = toSignal(
     this.route.paramMap.pipe(
       map(params => params.get('bookId')),
       filter((id): id is string => id !== null),
       distinctUntilChanged(),
+
+      mergeWith(
+        this.retryTrigger.pipe(
+          map(() => this.route.snapshot.paramMap.get('bookId')),
+          filter((id): id is string => id !== null)
+        )
+      ),
 
       switchMap(id =>
         this.bookService.searchBookById(id).pipe(
@@ -95,4 +107,8 @@ export class BookDetailComponent {
       initialValue: { status: 'loading' } as BookDetailState
     }
   );
+
+  retryBookLoad(): void {
+    this.retryTrigger.next();
+  }
 }
