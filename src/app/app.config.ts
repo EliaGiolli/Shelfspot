@@ -7,6 +7,8 @@ import { routes } from './app.routes';
 import { httpErrorInterceptor } from './core/interceptors/http-error.interceptor';
 import { FAVORITES_REPOSITORY } from './core/tokens/favorites-repository.token';
 import { LocalStorageFavoritesRepository } from './features/favorites/repository/local-storage-favorites.repository';
+import { LOANS_REPOSITORY } from './core/tokens/loans-repository,token';
+import { LocalStorageLoansRepository } from './features/loans/repository/local-storage-loans.repository';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -22,6 +24,10 @@ export const appConfig: ApplicationConfig = {
     {
       provide: FAVORITES_REPOSITORY,
       useClass: LocalStorageFavoritesRepository
-    }
+    },
+    {
+      provide: LOANS_REPOSITORY,
+      useClass: LocalStorageLoansRepository,
+    },
   ]
 };
