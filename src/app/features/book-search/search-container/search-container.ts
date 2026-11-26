@@ -38,14 +38,14 @@ import type {
   Book,
   BookSearchResponse
 } from '../../../shared/types/book';
-
 import type { ApiState } from '../../../shared/types/api-state';
+
 
 @Component({
   selector: 'app-search-container',
   standalone: true,
   imports: [
-    SearchPage
+    SearchPage,
   ],
   templateUrl: './search-container.html'
 })

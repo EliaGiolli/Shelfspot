@@ -77,13 +77,18 @@ export class SearchBookInput {
   });
 
   constructor() {
-    // Synchronize the initial query with the form.
+    // Synchronize the initial query with the form.    
     effect(() => {
+      const initialQuery = this.initialQuery();
+
       this.searchForm.controls.query.setValue(
-        this.initialQuery(),
+        initialQuery,
         { emitEvent: false }
       );
-    });
+
+      this.query.set(initialQuery);
+});
+
 
     // Keep the query signal synchronized with the form value.
     this.searchForm.controls.query.valueChanges.pipe(

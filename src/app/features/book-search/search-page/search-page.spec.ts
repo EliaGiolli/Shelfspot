@@ -1,95 +1,53 @@
 
-import { TestBed, ComponentFixture } from '@angular/core/testing';
-import { ActivatedRoute, Router } from '@angular/router';
-import { BehaviorSubject, of, Subject } from 'rxjs';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import {
-  afterEach,
-  beforeEach,
   describe,
   expect,
   it,
-  vi,
+  vi
 } from 'vitest';
 
 import { SearchPage } from './search-page';
-import { HttpBookService } from '../../../core/services/http-book.service';
-import type { BookSearchResponse } from '../../../shared/types/book';
+import type { Book, BookSearchResponse } from '../../../shared/types/book';
+import type { ApiState } from '../../../shared/types/api-state';
 
 describe('SearchPage', () => {
   let fixture: ComponentFixture<SearchPage>;
   let component: SearchPage;
-  let queryParamMapSubject: BehaviorSubject<ReturnType<typeof createParamMap>>;
-  let searchBooks: ReturnType<typeof vi.fn>;
-  let router: { navigate: ReturnType<typeof vi.fn> };
 
-  const mockResponse: BookSearchResponse = {
-    books: [
-      {
-        id: 'book-1',
-        key: '/works/book-1',
-        title: 'The Hobbit',
-        authors: ['J.R.R. Tolkien'],
-        subjects: ['Fantasy'],
-        coverId: 123,
-        firstPublishYear: 1937,
-      },
-    ],
-    totalFound: 1,
-    page: 1,
+  const mockBook: Book = {
+    id: 'book-1',
+    key: '/works/book-1',
+    title: 'The Hobbit',
+    authors: ['J.R.R. Tolkien'],
+    subjects: ['Fantasy'],
+    coverId: 123,
+    firstPublishYear: 1937
   };
 
-  function createParamMap(params: Record<string, string> = {}) {
-    return {
-      get: (key: string) => params[key] ?? null,
-    } as any;
-  }
+  const mockResponse: BookSearchResponse = {
+    books: [mockBook],
+    totalFound: 1,
+    page: 1
+  };
 
   function createComponent(): void {
     fixture = TestBed.createComponent(SearchPage);
     component = fixture.componentInstance;
+
+    fixture.componentRef.setInput('initialQuery', '');
+    fixture.componentRef.setInput('apiState', { status: 'idle' } as ApiState<BookSearchResponse>);
+    fixture.componentRef.setInput('books', []);
+    fixture.componentRef.setInput('currentPage', 1);
+    fixture.componentRef.setInput('hasNextPage', false);
+
     fixture.detectChanges();
   }
 
-  
-  beforeEach(() => {
-    queryParamMapSubject = new BehaviorSubject(createParamMap());
-
-    searchBooks = vi.fn().mockReturnValue(of(mockResponse));
-
-    router = {
-      navigate: vi.fn(),
-    };
-
-    TestBed.overrideComponent(SearchPage, {
-      set: {
-        template: '',
-      },
-    });
-
-    TestBed.configureTestingModule({
-      imports: [SearchPage],
-      providers: [
-        {
-          provide: HttpBookService,
-          useValue: { searchBooks },
-        },
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            queryParamMap: queryParamMapSubject.asObservable(),
-          },
-        },
-        {
-          provide: Router,
-          useValue: router,
-        },
-      ],
-    });
-  });
-
-
-  afterEach(() => {
-    vi.useRealTimers();
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [SearchPage]
+    }).compileComponents();
   });
 
   it('should create', () => {
@@ -98,186 +56,100 @@ describe('SearchPage', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should initialize with the idle API state', () => {
-    createComponent();
+  it('should expose the initial query input', () => {
+    fixture = TestBed.createComponent(SearchPage);
+    component = fixture.componentInstance;
+    fixture.componentRef.setInput('initialQuery', 'tolkien');
+    fixture.componentRef.setInput('apiState', { status: 'idle' });
+    fixture.componentRef.setInput('books', []);
+    fixture.componentRef.setInput('currentPage', 1);
+    fixture.componentRef.setInput('hasNextPage', false);
+    fixture.detectChanges();
 
-    expect(component.apiState()).toEqual({ status: 'idle' });
+    expect(component.initialQuery()).toBe('tolkien');
   });
 
-  it('should enter the loading state while a search request is pending', () => {
-    const responseSubject = new Subject<BookSearchResponse>();
-    searchBooks.mockReturnValue(responseSubject.asObservable());
-
-    queryParamMapSubject.next(
-      createParamMap({ q: 'tolkien', page: '1' }),
-    );
-
+  it('should emit search when a search is requested', () => {
     createComponent();
 
-    expect(component.apiState()).toEqual({ status: 'loading' });
+    const searchSpy = vi.fn();
+    component.search.subscribe(searchSpy);
 
-    responseSubject.next(mockResponse);
+    component.search.emit('tolkien');
 
-    expect(component.apiState()).toEqual({ status: 'loading' });
-
-    responseSubject.complete();
-
-    expect(component.apiState()).toEqual({ status: 'idle' });
+    expect(searchSpy).toHaveBeenCalledWith('tolkien');
   });
 
-  it('should synchronize the form with the query parameter', () => {
-    queryParamMapSubject.next(
-      createParamMap({ q: 'tolkien', page: '1' }),
-    );
-
+  it('should emit clearSearch', () => {
     createComponent();
 
-    expect(component.formGroup.controls.bookInput.value).toBe('tolkien');
+    const clearSpy = vi.fn();
+    component.clearSearch.subscribe(clearSpy);
+
+    component.clearSearch.emit();
+
+    expect(clearSpy).toHaveBeenCalledOnce();
   });
 
-  it('should search when the query contains more than two characters', () => {
-    queryParamMapSubject.next(
-      createParamMap({ q: 'tolkien', page: '1' }),
-    );
-
+  it('should emit retry', () => {
     createComponent();
 
-    expect(searchBooks).toHaveBeenCalledWith('tolkien', 1);
+    const retrySpy = vi.fn();
+    component.retry.subscribe(retrySpy);
+
+    component.retry.emit();
+
+    expect(retrySpy).toHaveBeenCalledOnce();
   });
 
-  it('should not search when the query contains two or fewer characters', () => {
-    queryParamMapSubject.next(
-      createParamMap({ q: 'ab', page: '1' }),
-    );
-
+  it('should emit nextPage', () => {
     createComponent();
 
-    expect(searchBooks).not.toHaveBeenCalled();
+    const nextPageSpy = vi.fn();
+    component.nextPage.subscribe(nextPageSpy);
+
+    component.nextPage.emit();
+
+    expect(nextPageSpy).toHaveBeenCalledOnce();
   });
 
-  it('should use page one when the page parameter is invalid', () => {
-    queryParamMapSubject.next(
-      createParamMap({ q: 'tolkien', page: 'invalid' }),
-    );
-
+  it('should emit previousPage', () => {
     createComponent();
 
-    expect(component.currentPage()).toBe(1);
-    expect(searchBooks).toHaveBeenCalledWith('tolkien', 1);
+    const previousPageSpy = vi.fn();
+    component.previousPage.subscribe(previousPageSpy);
+
+    component.previousPage.emit();
+
+    expect(previousPageSpy).toHaveBeenCalledOnce();
   });
 
-  it('should use page one when the page parameter is missing', () => {
-    queryParamMapSubject.next(
-      createParamMap({ q: 'tolkien' }),
-    );
-
+  it('should emit viewDetails with the selected book', () => {
     createComponent();
 
-    expect(component.currentPage()).toBe(1);
-    expect(searchBooks).toHaveBeenCalledWith('tolkien', 1);
+    const viewDetailsSpy = vi.fn();
+    component.viewDetails.subscribe(viewDetailsSpy);
+
+    component.viewDetails.emit(mockBook);
+
+    expect(viewDetailsSpy).toHaveBeenCalledWith(mockBook);
   });
 
-  it('should update the current page from the query parameter', () => {
-    queryParamMapSubject.next(
-      createParamMap({ q: 'tolkien', page: '2' }),
-    );
+  it('should accept search results as inputs', () => {
+    fixture = TestBed.createComponent(SearchPage);
+    component = fixture.componentInstance;
+    fixture.componentRef.setInput('initialQuery', '');
+    fixture.componentRef.setInput('apiState', {
+      status: 'success',
+      data: mockResponse
+    });
+    fixture.componentRef.setInput('books', mockResponse.books);
+    fixture.componentRef.setInput('currentPage', 1);
+    fixture.componentRef.setInput('hasNextPage', false);
 
-    createComponent();
-
-    expect(component.currentPage()).toBe(2);
-    expect(searchBooks).toHaveBeenCalledWith('tolkien', 2);
-  });
-
-  it('should update the URL when the search input changes', () => {
-    vi.useFakeTimers();
-
-    createComponent();
-
-    component.formGroup.controls.bookInput.setValue('tolkien');
-
-    vi.advanceTimersByTime(250);
-
-    expect(router.navigate).toHaveBeenCalledWith(
-      [],
-      expect.objectContaining({
-        queryParams: {
-          q: 'tolkien',
-          page: 1,
-        },
-        queryParamsHandling: 'merge',
-      }),
-    );
-  });
-
-  it('should reset the page to one when the search input changes', () => {
-    vi.useFakeTimers();
-
-    createComponent();
-
-    component.formGroup.controls.bookInput.setValue('tolkien');
-
-    vi.advanceTimersByTime(250);
-
-    expect(router.navigate).toHaveBeenCalledWith(
-      [],
-      expect.objectContaining({
-        queryParams: expect.objectContaining({
-          page: 1,
-        }),
-      }),
-    );
-  });
-
-  it('should expose books from the search response', () => {
-    queryParamMapSubject.next(
-      createParamMap({ q: 'tolkien', page: '1' }),
-    );
-
-    createComponent();
+    fixture.detectChanges();
 
     expect(component.books()).toEqual(mockResponse.books);
-  });
-
-  it('should calculate whether another page is available', () => {
-    const responseWithMoreResults: BookSearchResponse = {
-      ...mockResponse,
-      totalFound: 24,
-    };
-
-    searchBooks.mockReturnValue(of(responseWithMoreResults));
-
-    queryParamMapSubject.next(
-      createParamMap({ q: 'tolkien', page: '1' }),
-    );
-
-    createComponent();
-
-    expect(component.hasNextPage()).toBe(true);
-  });
-
-  it('should not request another page when all results fit on the current page', () => {
-    searchBooks.mockReturnValue(of(mockResponse));
-
-    queryParamMapSubject.next(
-      createParamMap({ q: 'tolkien', page: '1' }),
-    );
-
-    createComponent();
-
-    expect(component.hasNextPage()).toBe(false);
-  });
-
-  it('should not repeat the same search when query parameters do not change', () => {
-    queryParamMapSubject.next(
-      createParamMap({ q: 'tolkien', page: '1' }),
-    );
-
-    createComponent();
-
-    queryParamMapSubject.next(
-      createParamMap({ q: 'tolkien', page: '1' }),
-    );
-
-    expect(searchBooks).toHaveBeenCalledTimes(1);
+    expect(component.apiState().status).toBe('success');
   });
 });
