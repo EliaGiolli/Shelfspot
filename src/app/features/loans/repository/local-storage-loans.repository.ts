@@ -1,4 +1,3 @@
-
 import { Injectable } from '@angular/core';
 import type { Loan } from '../../../shared/types/loans.types';
 import type { LoansRepository } from './loans.repository';
@@ -13,21 +12,36 @@ const STORAGE_KEY = 'shelfspot_loans';
 })
 export class LocalStorageLoansRepository implements LoansRepository {
   async getAll(): Promise<Loan[]> {
-    const data = localStorage.getItem(STORAGE_KEY);
+    try {
+      const data = localStorage.getItem(STORAGE_KEY);
 
-    if (data === null) {
-      return [];
+      if (data === null) {
+        return [];
+      }
+
+      const parsed: unknown = JSON.parse(data);
+      const validated = PersistedLoansSchema.parse(parsed);
+
+      return deserializeLoans(validated);
+    } catch (error) {
+      throw new Error(
+        'Failed to read or validate stored loans.',
+        { cause: error }
+      );
     }
-
-    const parsed: unknown = JSON.parse(data);
-    const validated = PersistedLoansSchema.parse(parsed);
-
-    return deserializeLoans(validated);
   }
 
   async saveAll(loans: Loan[]): Promise<void> {
-    const serialized = serializeLoans(loans);
+    try {
+      const serialized = serializeLoans(loans);
+      const validated = PersistedLoansSchema.parse(serialized);
 
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(serialized));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(validated));
+    } catch (error) {
+      throw new Error(
+        'Failed to save loans to localStorage.',
+        { cause: error }
+      );
+    }
   }
 }
