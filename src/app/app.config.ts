@@ -1,21 +1,27 @@
+
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 
 import { routes } from './app.routes';
 import { httpErrorInterceptor } from './core/interceptors/http-error.interceptor';
+import { FAVORITES_REPOSITORY } from './core/tokens/favorites-repository.token';
+import { LocalStorageFavoritesRepository } from './features/favorites/repository/local-storage-favorites.repository';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(
-      routes, 
+      routes,
       withComponentInputBinding()
     ),
     provideHttpClient(
       withFetch(),
-      // adds the httpErrorInterceptor to the http client
       withInterceptors([httpErrorInterceptor])
-    )
+    ),
+    {
+      provide: FAVORITES_REPOSITORY,
+      useClass: LocalStorageFavoritesRepository
+    }
   ]
 };

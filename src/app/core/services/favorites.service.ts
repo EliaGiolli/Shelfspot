@@ -1,49 +1,57 @@
-import { Injectable, signal } from "@angular/core";
-import { type Book } from "../../shared/types/book";
+import { Inject, Injectable, signal } from '@angular/core';
+import type { Book } from '../../shared/types/book';
+import { type FavoritesRepository } from '../../features/favorites/repository/favorites.repository';
+import { FAVORITES_REPOSITORY } from '../tokens/favorites-repository.token';
 
 @Injectable({ providedIn: 'root' })
 export class FavoriteService {
-  private favoritesSignal = signal<Book[]>(this.loadFromStorage());
+  private readonly favoritesSignal = signal<Book[]>([]);
+  private readonly initialization: Promise<void>;
+  private pendingOperation: Promise<void> = Promise.resolve();
 
-  favorites = this.favoritesSignal.asReadonly();
+  readonly favorites = this.favoritesSignal.asReadonly();
+  readonly isLoaded = signal(false);
 
-  toggleFavorite(book: Book) {
-    this.favoritesSignal.update(list => {
-      const exists = list.find(b => b.id === book.id);
-      const newList = exists ? list.filter(b => b.id !== book.id) : [...list, book];
-      localStorage.setItem('shelfspot_favs', JSON.stringify(newList));
-      return newList;
-    });
+  constructor(
+    @Inject(FAVORITES_REPOSITORY)
+    private readonly repository: FavoritesRepository
+  ) {
+    this.initialization = this.loadFavorites();
   }
 
-  private loadFromStorage(): Book[] {
-    const data = localStorage.getItem('shelfspot_favs');
-    if (!data) {
-      return [];
-    }
-
+  private async loadFavorites(): Promise<void> {
     try {
-      const parsed = JSON.parse(data);
-      if (!Array.isArray(parsed)) {
-        return [];
-      }
-
-      return parsed.filter(isStoredBook);
-    } catch {
-      return [];
+      const favorites = await this.repository.getAll();
+      this.favoritesSignal.set(favorites);
+    } catch (error) {
+      console.error('Failed to load favorites.', error);
+      this.favoritesSignal.set([]);
+    } finally {
+      this.isLoaded.set(true);
     }
+  }
+
+  toggleFavorite(book: Book): void {
+    this.pendingOperation = this.pendingOperation
+      .then(async () => {
+        await this.initialization;
+
+        const current = this.favoritesSignal();
+        const exists = current.some(item => item.id === book.id);
+
+        const updated = exists
+          ? current.filter(item => item.id !== book.id)
+          : [...current, book];
+
+        await this.repository.saveAll(updated);
+        this.favoritesSignal.set(updated);
+      })
+      .catch(error => {
+        console.error('Failed to update favorites.', error);
+      });
   }
 
   isFavorite(book: Book): boolean {
-    return this.favorites().some(b => b.id === book.id);
+    return this.favoritesSignal().some(item => item.id === book.id);
   }
-}
-
-function isStoredBook(value: unknown): value is Book {
-  if (typeof value !== 'object' || value === null) {
-    return false;
-  }
-
-  const book = value as Book;
-  return typeof book.id === 'string' && Array.isArray(book.authors);
 }
