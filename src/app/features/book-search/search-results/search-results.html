@@ -1,0 +1,116 @@
+@let state = apiState();
+
+<section
+  class="w-full"
+  role="region"
+  aria-live="polite"
+  aria-label="Search results"
+>
+  @if (state.status === 'error') {
+    <div class="text-center py-20" role="alert">
+      <p class="font-serif text-xl text-primary mb-2">
+        Something went wrong.
+      </p>
+
+      <p class="text-primary/60 mb-6">
+        {{ state.error }}
+      </p>
+
+      <app-button
+        variant="primary"
+        (click)="retry.emit()"
+        ariaLabel="Retry book search"
+      >
+        Retry Search
+      </app-button>
+    </div>
+
+  } @else if (state.status === 'empty') {
+    <div
+      class="text-center py-20 text-primary/40 italic font-serif"
+      role="status"
+    >
+      No books found for your search. Try another title?
+    </div>
+
+  } @else if (books().length > 0) {
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      @for (book of books(); track book.id) {
+        <app-card [titleId]="'title-' + book.id" variant="default">
+          <div
+            card-header
+            class="aspect-3/4 overflow-hidden rounded-xl bg-secondary/20 relative"
+          >
+            <img
+              [src]="book.coverId | coverFallbackPipe:'M'"
+              [alt]="'Cover of ' + book.title"
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            >
+          </div>
+
+          <div card-body>
+            <h3
+              [id]="'title-' + book.id"
+              class="font-serif font-bold text-primary truncate leading-tight"
+            >
+              {{ book.title }}
+            </h3>
+
+            <p class="text-sm text-primary/60 truncate italic mt-1">
+              {{ book.authors.join(', ') || 'Unknown Author' }}
+            </p>
+          </div>
+
+          <div card-footer>
+            <app-button
+              variant="primary"
+              class="w-full"
+              [ariaLabel]="'View details for ' + book.title"
+              [disabled]="state.status === 'loading'"
+              (click)="viewDetails.emit(book)"
+            >
+              View Details
+            </app-button>
+          </div>
+        </app-card>
+      }
+    </div>
+
+    <nav
+      class="flex justify-between items-center mt-12 py-6 border-t border-primary/5 w-full"
+      aria-label="Pagination"
+    >
+      <button
+        (click)="previousPage.emit()"
+        [disabled]="currentPage() === 1 || state.status === 'loading'"
+        class="flex items-center gap-2 text-primary font-bold disabled:opacity-30 disabled:cursor-not-allowed group transition-colors hover:text-accent"
+      >
+        <app-icon
+          name="arrow-left.svg"
+          [size]="40"
+          class="group-hover:-translate-x-1 transition-transform"
+          aria-hidden="true"
+        />
+        Previous Page
+      </button>
+
+      <span class="font-serif italic text-primary/60" aria-current="page">
+        Page {{ currentPage() }}
+      </span>
+
+      <button
+        (click)="nextPage.emit()"
+        [disabled]="state.status === 'loading' || !hasNextPage()"
+        class="flex items-center gap-2 text-primary font-bold disabled:opacity-30 disabled:cursor-not-allowed group transition-colors hover:text-accent"
+      >
+        Next Page
+        <app-icon
+          name="arrow-right.svg"
+          [size]="40"
+          class="group-hover:translate-x-1 transition-transform"
+          aria-hidden="true"
+        />
+      </button>
+    </nav>
+  }
+</section>
