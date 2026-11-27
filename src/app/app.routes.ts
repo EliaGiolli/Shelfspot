@@ -32,8 +32,8 @@ export const routes: Routes = [
       {
         path: 'search',
         loadComponent: () =>
-          import('./features/book-search/search-page/search-page')
-            .then(m => m.SearchPage)
+          import('./features/book-search/search-container/search-container')
+            .then(m => m.SearchContainer)
       },
       {
         path: 'favorites',

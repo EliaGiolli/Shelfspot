@@ -2,7 +2,6 @@ import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { IconComponent } from '../../../shared/components/icon/icon';
 import { ButtonLink } from '../../../shared/components/button-links/button-links';
-import { Button } from '../../../shared/components/button/button';
 import { TooltipDirective } from '../../../shared/directives/tooltip.directive';
 import { BOOK_NAV_ITEMS } from '../../../shared/config/navigation.config';
 
@@ -13,7 +12,6 @@ import { BOOK_NAV_ITEMS } from '../../../shared/config/navigation.config';
     RouterOutlet,
     IconComponent,
     ButtonLink,
-    Button,
     TooltipDirective,
   ],
   templateUrl: './book-layout.html',

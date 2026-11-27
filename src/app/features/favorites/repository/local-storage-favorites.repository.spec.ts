@@ -4,13 +4,27 @@ import { LocalStorageFavoritesRepository } from './local-storage-favorites.repos
 
 describe('LocalStorageFavoritesRepository', () => {
   let repository: LocalStorageFavoritesRepository;
+  let storage: Map<string, string>;
 
   beforeEach(() => {
-    localStorage.clear();
+    storage = new Map<string, string>();
+    vi.stubGlobal('localStorage', {
+      getItem: (key: string) => storage.get(key) ?? null,
+      setItem: (key: string, value: string) => {
+        storage.set(key, value);
+      },
+      removeItem: (key: string) => {
+        storage.delete(key);
+      },
+      clear: () => {
+        storage.clear();
+      },
+    });
     repository = new LocalStorageFavoritesRepository();
   });
 
   afterEach(() => {
+    vi.unstubAllGlobals();
     vi.restoreAllMocks();
   });
 
@@ -19,7 +33,15 @@ describe('LocalStorageFavoritesRepository', () => {
   });
 
   it('should read and parse stored favorites', async () => {
-    const storedFavorites = [{ id: 'book-1', title: 'Test book' }];
+    const storedFavorites: Book[] = [
+      {
+        id: 'book-1',
+        key: '/works/OL1W',
+        title: 'Test book',
+        authors: ['Test Author'],
+        subjects: ['Fiction'],
+      },
+    ];
     localStorage.setItem('shelfspot_favs', JSON.stringify(storedFavorites));
 
     await expect(repository.getAll()).resolves.toEqual(storedFavorites);

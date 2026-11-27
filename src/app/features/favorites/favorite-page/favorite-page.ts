@@ -28,7 +28,9 @@ export class FavoritePage {
   readonly favService = inject(FavoriteService);
 
   private readonly removeButtons =
-    viewChildren<ElementRef<HTMLButtonElement>>('removeButton');
+    viewChildren<Button, ElementRef<HTMLElement>>('removeButton', {
+      read: ElementRef,
+    });
 
   private readonly emptyStateHeading =
     viewChild<ElementRef<HTMLHeadingElement>>('emptyStateHeading');
@@ -54,7 +56,10 @@ export class FavoritePage {
           remainingButtons.length - 1
         );
 
-        remainingButtons[nextIndex].nativeElement.focus();
+        remainingButtons[nextIndex]
+          .nativeElement
+          .querySelector('button')
+          ?.focus();
         return;
       }
 
