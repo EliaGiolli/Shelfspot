@@ -88,7 +88,6 @@
           <app-button
             variant="primary"
             class="flex-1"
-            appClickFeedback
             [disabled]="loanService.isBorrowed(bookData.id)"
             (click)="loanService.addLoan(bookData)"
           >
@@ -97,7 +96,6 @@
 
           <app-button
             variant="outline"
-            appClickFeedback
             (click)="favoriteService.toggleFavorite(bookData)"
           >
             <app-icon

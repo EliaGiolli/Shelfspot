@@ -31,7 +31,6 @@ import { Button } from '../../../shared/components/button/button';
 
 // Pipes and Directives
 import { CoverFallbackPipe } from '../../../shared/pipes/cover-fallback-pipe-pipe';
-import { ClickFeedbackDirective } from '../../../shared/directives/click-feedback.directive';
 
 type BookDetailState =
   | { status: 'loading' }
@@ -46,7 +45,6 @@ type BookDetailState =
     IconComponent,
     Button,
     CoverFallbackPipe,
-    ClickFeedbackDirective,
     RouterLink
   ],
   templateUrl: './book-detail.html'
