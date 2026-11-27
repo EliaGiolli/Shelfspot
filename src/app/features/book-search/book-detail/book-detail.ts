@@ -1,4 +1,4 @@
-
+import { AppLiveRegionDirective } from '../../../shared/directives/app-live-region.directive';
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -45,7 +45,8 @@ type BookDetailState =
     IconComponent,
     Button,
     CoverFallbackPipe,
-    RouterLink
+    RouterLink,
+    AppLiveRegionDirective,
   ],
   templateUrl: './book-detail.html'
 })

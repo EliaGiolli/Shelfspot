@@ -1,4 +1,4 @@
-
+import { AppLiveRegionDirective } from '../../../shared/directives/app-live-region.directive';
 import { Component, inject } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -18,13 +18,17 @@ import { getLoanDeadline } from '../helpers/loan-status';
     RouterLink,
     CoverFallbackPipe,
     Button,
-    IconComponent
+    IconComponent,
+    AppLiveRegionDirective
   ],
   templateUrl: './loans-page.html'
 })
 export class LoansPage {
+[x: string]: any;
   readonly loanService = inject(LoanService);
-
+  protected getAbsoluteDays(days: number): number {
+  return Math.abs(days);
+}
   readonly getLoanDeadline = getLoanDeadline;
 
   isValidDate(date: Date | null | undefined): boolean {

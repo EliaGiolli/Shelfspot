@@ -1,65 +1,52 @@
-<section class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
 
-  <!-- Page heading -->
+<section class="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
+
   <header class="mb-10">
-    <p class="mb-2 text-sm font-bold uppercase tracking-[0.2em] text-accent">
-      Your reading activity
-    </p>
-
-    <h1 class="font-serif text-4xl font-bold text-primary sm:text-5xl">
-      Your <span class="text-accent">Loans</span>
+    <h1 class="font-serif text-4xl font-bold text-primary">
+      My Loans
     </h1>
-
-    <p class="mt-3 text-sm text-primary/60">
-      Keep track of your borrowed books and return dates.
+    <p class="mt-2 text-base-content/60">
+      Keep track of your borrowed books and their return dates.
     </p>
   </header>
 
   <!-- Loading state -->
   @if (!loanService.isLoaded()) {
     <div
-      class="flex flex-col items-center justify-center rounded-3xl bg-base-100 px-6 py-20 text-center"
+      class="flex flex-col items-center justify-center gap-4 py-20"
       role="status"
-      aria-live="polite"
+      aria-label="Loading your loans"
     >
-      <span class="loading loading-spinner loading-lg text-accent"></span>
-
-      <p class="mt-5 font-serif text-lg font-bold text-primary">
+      <span class="loading loading-spinner loading-lg text-primary"></span>
+      <p class="text-sm text-base-content/60">
         Loading your loans...
       </p>
-
-      <p class="mt-2 text-sm text-primary/60">
-        Please wait while we retrieve your borrowed books.
-      </p>
     </div>
+  }
 
   <!-- Error state -->
-  } @else if (loanService.loadError()) {
+  @else if (loanService.loadError()) {
     <div
-      class="flex flex-col items-center justify-center rounded-3xl border border-error/20 bg-base-100 px-6 py-20 text-center"
+      class="flex flex-col items-center gap-5 rounded-3xl bg-base-100 px-6 py-16 text-center shadow-xl"
       role="alert"
     >
-      <app-icon
-        name="alert-circle.svg"
-        [size]="56"
-        class="text-error"
-      />
+      <app-icon name="alert-circle.svg" [size]="56" />
 
-      <h2 class="mt-6 font-serif text-2xl font-bold text-primary">
+      <h2 class="font-serif text-2xl font-bold text-primary">
         Unable to load your loans
       </h2>
 
-      <p class="mt-3 max-w-md text-sm leading-relaxed text-primary/60">
+      <p class="max-w-md text-base-content/70">
         {{ loanService.loadError() }}
       </p>
 
-      <div class="mt-6 flex flex-wrap justify-center gap-3">
+      <div class="mt-3 flex flex-wrap justify-center gap-3">
         <app-button
           variant="primary"
-          (click)="retryLoading()"
-          ariaLabel="Retry loading your loans"
+          (click)="loanService.retryLoad()"
+          ariaLabel="Retry loading loans"
         >
-          Try again
+          Retry
         </app-button>
 
         <a
@@ -70,140 +57,133 @@
         </a>
       </div>
     </div>
+  }
 
-  <!-- Empty state -->
-  } @else if (loanService.loans().length === 0) {
-    <div
-      class="flex flex-col items-center justify-center rounded-3xl border border-dashed border-secondary/30 bg-base-100 px-6 py-20 text-center"
+  <!-- Loaded state -->
+  @else {
+
+    <!-- Loan operation feedback -->
+    <p
+      class="mb-4 text-sm"
+      [class.text-success]="loanService.actionStatus() === 'success'"
+      [class.text-error]="loanService.actionStatus() === 'error'"
+      [appLiveRegion]="loanService.actionStatus() === 'error' ? 'assertive' : 'polite'"
     >
-      <app-icon
-        name="book-open.svg"
-        [size]="56"
-        class="text-primary/40"
-      />
+      {{ loanService.actionStatus() === 'idle' ? '' : loanService.actionMessage() }}
+    </p>
 
-      <h2 class="mt-6 font-serif text-2xl font-bold text-primary">
-        No active loans
-      </h2>
+    <!-- Empty state -->
+    @if (loanService.loans().length === 0) {
+      <div class="flex flex-col items-center gap-5 rounded-3xl bg-base-100 px-6 py-16 text-center shadow-xl">
 
-      <p class="mt-3 max-w-md text-sm leading-relaxed text-primary/60">
-        You don't have any borrowed books at the moment.
-        Explore the catalog and borrow a book to see it here.
-      </p>
+        <app-icon name="book-open.svg" [size]="56" />
 
-      <a
-        routerLink="/books/search"
-        class="btn btn-primary mt-6"
-      >
-        Explore books
-      </a>
-    </div>
+        <h2 class="font-serif text-2xl font-bold text-primary">
+          No books borrowed yet
+        </h2>
 
-  <!-- Success state -->
-  } @else {
-    <div class="mb-6 flex items-center justify-between">
-      <p class="text-sm text-primary/60">
-        You currently have
-        <strong class="text-primary">
-          {{ loanService.loanCount() }}
-        </strong>
-        active loans.
-      </p>
-    </div>
+        <p class="max-w-md text-base-content/70">
+          Your borrowed books will appear here. Explore the catalog and find your next read.
+        </p>
 
-    <div class="grid gap-4">
-      @for (item of loanService.loans(); track item.id) {
-        <article
-          class="flex flex-col gap-4 rounded-2xl border border-primary/5 bg-base-100 p-4 shadow-sm transition-shadow hover:shadow-md sm:flex-row sm:items-center sm:justify-between"
+        <a
+          routerLink="/books/search"
+          class="btn btn-primary mt-3"
         >
-          <!-- Book information -->
-          <div class="flex min-w-0 items-center gap-4">
-            <img
-              [src]="item.book.coverId | coverFallbackPipe:'S'"
-              [alt]="'Cover of ' + item.book.title"
-              class="h-20 w-14 shrink-0 rounded-lg bg-secondary/10 object-cover"
-              loading="lazy"
-            />
+          Explore books
+        </a>
 
-            <div class="min-w-0">
-              <h2 class="truncate font-serif text-lg font-bold text-primary">
-                {{ item.book.title || 'Untitled book' }}
-              </h2>
+      </div>
+    }
 
-              <p class="mt-1 text-sm text-primary/60">
-                {{ item.book.authors.length
-                  ? item.book.authors.join(', ')
-                  : 'Unknown Author' }}
-              </p>
+    <!-- Loans list -->
+    @else {
+      <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
 
-              <!-- Borrowed date -->
-              <p class="mt-2 text-xs text-primary/50">
-                Borrowed:
-                @if (isValidDate(item.loanDate)) {
-                  {{ item.loanDate | date:'mediumDate' }}
-                } @else {
-                  Date unavailable
-                }
-              </p>
+        @for (item of loanService.loans(); track item.id) {
+          <article class="flex flex-col overflow-hidden rounded-2xl bg-base-100 shadow-lg transition-shadow hover:shadow-xl">
 
-              <!-- Due date -->
-              <p class="text-xs text-primary/50">
-                Return by:
-                @if (isValidDate(item.dueDate)) {
-                  {{ item.dueDate | date:'mediumDate' }}
-                } @else {
-                  Date unavailable
-                }
-              </p>
-
-              <!-- Loan deadline -->
-              @if (isValidDate(item.dueDate)) {
-                @let deadline = getLoanDeadline(item.dueDate);
-
-                @if (deadline.status === 'active') {
-                  <span
-                    class="mt-2 inline-flex rounded-full bg-success/10 px-3 py-1 text-xs font-semibold text-success"
-                  >
-                    Due in {{ deadline.daysRemaining }} days
-                  </span>
-                } @else if (deadline.status === 'due-soon') {
-                  <span
-                    class="mt-2 inline-flex rounded-full bg-warning/10 px-3 py-1 text-xs font-semibold text-warning"
-                  >
-                    @if (deadline.daysRemaining === 0) {
-                      Due today
-                    } @else {
-                      Due in {{ deadline.daysRemaining }} days
-                    }
-                  </span>
-                } @else {
-                  <span
-                    class="mt-2 inline-flex rounded-full bg-error/10 px-3 py-1 text-xs font-semibold text-error"
-                  >
-                    Overdue by {{ -deadline.daysRemaining }} days
-                  </span>
-                }
-              } @else {
-                <span
-                  class="mt-2 inline-flex rounded-full bg-base-200 px-3 py-1 text-xs font-semibold text-base-content/60"
-                >
-                  Return date unavailable
-                </span>
-              }
+            <!-- Book cover -->
+            <div class="flex h-64 items-center justify-center bg-secondary/10 p-6">
+              <img
+                [src]="item.book.coverId | coverFallbackPipe:'M'"
+                [alt]="'Cover of ' + (item.book.title || 'Unknown title')"
+                class="h-full max-w-full rounded-lg object-contain shadow-md"
+                loading="lazy"
+              />
             </div>
-          </div>
 
-          <!-- Return action -->
-          <app-button
-            variant="outline"
-            [ariaLabel]="'Return ' + item.book.title"
-            (click)="loanService.returnBook(item.id)"
-          >
-            Return
-          </app-button>
-        </article>
-      }
-    </div>
+            <!-- Loan information -->
+            <div class="flex flex-1 flex-col gap-4 p-6">
+
+              <div>
+                <h2 class="font-serif text-xl font-bold text-primary">
+                  {{ item.book.title || 'Unknown title' }}
+                </h2>
+
+                <p class="mt-1 text-sm italic text-base-content/60">
+                  {{ item.book.authors.join(', ') || 'Unknown Author' }}
+                </p>
+              </div>
+
+              <div class="flex flex-col gap-2 text-sm">
+
+                <p class="text-base-content/70">
+                  Borrowed:
+                  <span class="font-semibold text-base-content">
+                    {{ item.loanDate | date:'mediumDate' }}
+                  </span>
+                </p>
+
+                <p class="text-base-content/70">
+                  Return date:
+                  <span class="font-semibold text-base-content">
+                    {{ item.dueDate | date:'mediumDate' }}
+                  </span>
+                </p>
+
+                @if (item.dueDate) {
+                  @let deadline = getLoanDeadline(item.dueDate);
+
+                  <div class="mt-1">
+                    @if (deadline.status === 'active') {
+                      <span class="badge badge-success badge-outline">
+                        Due in {{ deadline.daysRemaining }} days
+                      </span>
+                    }
+
+                    @else if (deadline.status === 'due-soon') {
+                      <span class="badge badge-warning badge-outline">
+                        {{ deadline.daysRemaining === 0 ? 'Due today' : 'Due in ' + deadline.daysRemaining + ' days' }}
+                      </span>
+                    }
+
+                    @else {
+                      <span class="badge badge-error badge-outline">
+                        Overdue by {{ getAbsoluteDays(deadline.daysRemaining) }} days
+                      </span>
+                    }
+                  </div>
+                }
+              </div>
+
+              <div class="mt-auto border-t border-base-300 pt-4">
+                <app-button
+                  variant="outline"
+                  class="w-full"
+                  [ariaLabel]="'Return ' + (item.book.title || 'book')"
+                  (click)="loanService.returnBook(item.id)"
+                >
+                  Return Book
+                </app-button>
+              </div>
+
+            </div>
+          </article>
+        }
+
+      </div>
+    }
   }
 
 </section>
