@@ -1,18 +1,17 @@
-
 import { TestBed } from '@angular/core/testing';
 import {
-  afterEach,
-  beforeEach,
   describe,
-  expect,
   it,
-  vi,
+  expect,
+  beforeEach,
+  vi
 } from 'vitest';
 
 import { LoanService } from './loans.service';
+import { LOANS_REPOSITORY } from '../tokens/loans-repository,token';
+
 import type { Book } from '../../shared/types/book';
 import type { Loan } from '../../shared/types/loans.types';
-import { LOANS_REPOSITORY } from '../tokens/loans-repository,token';
 
 describe('LoanService', () => {
   let service: LoanService;
@@ -24,23 +23,24 @@ describe('LoanService', () => {
 
   const mockBook: Book = {
     id: 'book-1',
-    key: '/works/book-1',
+    key: '/works/OL123W',
     title: 'The Hobbit',
     authors: ['J.R.R. Tolkien'],
-    subjects: ['Fantasy'],
     coverId: 123,
     firstPublishYear: 1937,
-    description: 'A fantasy novel.',
+    subjects: ['Fantasy']
   };
 
   const mockLoan: Loan = {
     id: 'loan-1',
     book: mockBook,
-    loanDate: new Date('2026-01-01T10:00:00.000Z'),
-    dueDate: new Date('2026-01-15T10:00:00.000Z'),
+    loanDate: new Date(2026, 10, 1),
+    dueDate: new Date(2026, 11, 1)
   };
 
-  function recreateService(): void {
+  const createService = (): LoanService => {
+    repositoryMock.getAll.mockClear();
+    repositoryMock.saveAll.mockClear();
     TestBed.resetTestingModule();
 
     TestBed.configureTestingModule({
@@ -48,59 +48,137 @@ describe('LoanService', () => {
         LoanService,
         {
           provide: LOANS_REPOSITORY,
-          useValue: repositoryMock,
-        },
-      ],
+          useValue: repositoryMock
+        }
+      ]
     });
 
-    service = TestBed.inject(LoanService);
-  }
+    return TestBed.inject(LoanService);
+  };
+
+  const waitForLoading = async (): Promise<void> => {
+    await vi.waitFor(() => {
+      expect(service.isLoaded()).toBe(true);
+    });
+  };
 
   beforeEach(() => {
     repositoryMock = {
       getAll: vi.fn().mockResolvedValue([]),
-      saveAll: vi.fn().mockResolvedValue(undefined),
+      saveAll: vi.fn().mockResolvedValue(undefined)
     };
 
-    recreateService();
+    service = createService();
   });
 
-  afterEach(() => {
-    TestBed.resetTestingModule();
-    vi.restoreAllMocks();
-    vi.useRealTimers();
-  });
+  // Initialization
 
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should initialize with an empty loans list', async () => {
-    await vi.waitFor(() => {
-      expect(service.isLoaded()).toBe(true);
-    });
-
+  it('should initialize with an empty loans list', () => {
     expect(service.loans()).toEqual([]);
-    expect(service.loanCount()).toBe(0);
   });
 
-  it('should load saved loans from the repository', async () => {
+  it('should initialize with isLoaded set to false when loading is pending', () => {
+    repositoryMock.getAll.mockReturnValue(
+      new Promise<Loan[]>(() => {})
+    );
+
+    service = createService();
+
+    expect(service.isLoaded()).toBe(false);
+  });
+
+  it('should load loans from the repository', async () => {
     repositoryMock.getAll.mockResolvedValue([mockLoan]);
 
-    recreateService();
+    service = createService();
 
-    await vi.waitFor(() => {
-      expect(service.loans()).toEqual([mockLoan]);
-    });
+    await waitForLoading();
+
+    expect(service.loans()).toEqual([mockLoan]);
+    expect(repositoryMock.getAll).toHaveBeenCalledOnce();
   });
 
-  it('should expose the loaded state', async () => {
-    await vi.waitFor(() => {
-      expect(service.isLoaded()).toBe(true);
-    });
+  it('should update loanCount after loading', async () => {
+    repositoryMock.getAll.mockResolvedValue([mockLoan]);
+
+    service = createService();
+
+    await waitForLoading();
+
+    expect(service.loanCount()).toBe(1);
   });
+
+  it('should handle repository loading errors', async () => {
+    repositoryMock.getAll.mockRejectedValue(
+      new Error('Storage unavailable')
+    );
+
+    service = createService();
+
+    await waitForLoading();
+
+    expect(service.loans()).toEqual([]);
+    expect(service.loadError()).toBe(
+      'Unable to load your loans. Please try again.'
+    );
+  });
+
+  it('should expose no loading error after successful initialization', async () => {
+    repositoryMock.getAll.mockResolvedValue([mockLoan]);
+
+    service = createService();
+
+    await waitForLoading();
+
+    expect(service.loadError()).toBeNull();
+  });
+
+  // Retry
+
+  it('should retry loading loans', async () => {
+    repositoryMock.getAll
+      .mockRejectedValueOnce(new Error('Storage unavailable'))
+      .mockResolvedValueOnce([mockLoan]);
+
+    service = createService();
+
+    await waitForLoading();
+
+    expect(service.loadError()).not.toBeNull();
+
+    await service.retryLoad();
+
+    expect(service.loadError()).toBeNull();
+    expect(service.loans()).toEqual([mockLoan]);
+    expect(repositoryMock.getAll).toHaveBeenCalledTimes(2);
+  });
+
+  it('should clear previous loans when a retry fails', async () => {
+    repositoryMock.getAll
+      .mockResolvedValueOnce([mockLoan])
+      .mockRejectedValueOnce(new Error('Storage unavailable'));
+
+    service = createService();
+
+    await waitForLoading();
+
+    expect(service.loans()).toEqual([mockLoan]);
+
+    await service.retryLoad();
+
+    expect(service.loans()).toEqual([]);
+    expect(service.loadError()).not.toBeNull();
+  });
+
+  // Adding loans
 
   it('should add a new loan', async () => {
+    await waitForLoading();
+
     service.addLoan(mockBook);
 
     await vi.waitFor(() => {
@@ -108,44 +186,27 @@ describe('LoanService', () => {
     });
 
     expect(service.loans()[0].book).toEqual(mockBook);
+    expect(repositoryMock.saveAll).toHaveBeenCalledOnce();
   });
 
-  it('should persist a new loan through the repository', async () => {
+  it('should not add a duplicate loan', async () => {
+    repositoryMock.getAll.mockResolvedValue([mockLoan]);
+
+    service = createService();
+
+    await waitForLoading();
+
     service.addLoan(mockBook);
 
-    await vi.waitFor(() => {
-      expect(repositoryMock.saveAll).toHaveBeenCalled();
-    });
+    await Promise.resolve();
 
-    expect(repositoryMock.saveAll).toHaveBeenCalledWith([
-      expect.objectContaining({
-        book: mockBook,
-      }),
-    ]);
+    expect(service.loans()).toHaveLength(1);
+    expect(repositoryMock.saveAll).not.toHaveBeenCalled();
   });
 
-  it('should generate an ID for a new loan', async () => {
-    service.addLoan(mockBook);
+  it('should set the due date 30 calendar days after the loan date', async () => {
+    await waitForLoading();
 
-    await vi.waitFor(() => {
-      expect(service.loans()).toHaveLength(1);
-    });
-
-    expect(service.loans()[0].id).toEqual(expect.any(String));
-    expect(service.loans()[0].id.length).toBeGreaterThan(0);
-  });
-
-  it('should set the loan date when a book is borrowed', async () => {
-    service.addLoan(mockBook);
-
-    await vi.waitFor(() => {
-      expect(service.loans()).toHaveLength(1);
-    });
-
-    expect(service.loans()[0].loanDate).toBeInstanceOf(Date);
-  });
-
-  it('should set the due date 14 days after the loan date', async () => {
     service.addLoan(mockBook);
 
     await vi.waitFor(() => {
@@ -153,36 +214,27 @@ describe('LoanService', () => {
     });
 
     const loan = service.loans()[0];
-    const expectedDuration = 14 * 24 * 60 * 60 * 1000;
 
-    expect(loan.dueDate.getTime() - loan.loanDate.getTime())
-      .toBe(expectedDuration);
+    const expectedDueDate = new Date(loan.loanDate);
+    expectedDueDate.setDate(expectedDueDate.getDate() + 30);
+
+    expect(loan.dueDate).toEqual(expectedDueDate);
   });
 
-  it('should identify a borrowed book', async () => {
-    service.addLoan(mockBook);
+  it('should expose whether a book is borrowed', async () => {
+    repositoryMock.getAll.mockResolvedValue([mockLoan]);
 
-    await vi.waitFor(() => {
-      expect(service.isBorrowed(mockBook.id)).toBe(true);
-    });
+    service = createService();
+
+    await waitForLoading();
+
+    expect(service.isBorrowed('book-1')).toBe(true);
+    expect(service.isBorrowed('book-2')).toBe(false);
   });
 
-  it('should return false when a book is not borrowed', () => {
-    expect(service.isBorrowed(mockBook.id)).toBe(false);
-  });
+  it('should update loanCount after adding a loan', async () => {
+    await waitForLoading();
 
-  it('should prevent borrowing the same book twice', async () => {
-    service.addLoan(mockBook);
-    service.addLoan(mockBook);
-
-    await vi.waitFor(() => {
-      expect(service.loans()).toHaveLength(1);
-    });
-
-    expect(repositoryMock.saveAll).toHaveBeenCalledTimes(1);
-  });
-
-  it('should update loanCount when a loan is added', async () => {
     service.addLoan(mockBook);
 
     await vi.waitFor(() => {
@@ -190,140 +242,114 @@ describe('LoanService', () => {
     });
   });
 
-  it('should return a book and remove its loan', async () => {
+  it('should not update loans if saving a new loan fails', async () => {
+    repositoryMock.saveAll.mockRejectedValue(
+      new Error('Storage unavailable')
+    );
+
+    await waitForLoading();
+
     service.addLoan(mockBook);
 
     await vi.waitFor(() => {
-      expect(service.loans()).toHaveLength(1);
+      expect(repositoryMock.saveAll).toHaveBeenCalledOnce();
     });
 
-    const loanId = service.loans()[0].id;
-
-    service.returnBook(loanId);
-
-    await vi.waitFor(() => {
-      expect(service.loans()).toEqual([]);
-    });
-
-    expect(service.loanCount()).toBe(0);
-    expect(service.isBorrowed(mockBook.id)).toBe(false);
+    expect(service.loans()).toEqual([]);
   });
 
-  it('should persist the removal of a loan', async () => {
+  it('should not add a loan if initial loading failed', async () => {
+    repositoryMock.getAll.mockRejectedValue(
+      new Error('Storage unavailable')
+    );
+
+    service = createService();
+
+    await waitForLoading();
+
     service.addLoan(mockBook);
 
-    await vi.waitFor(() => {
-      expect(service.loans()).toHaveLength(1);
-    });
+    await Promise.resolve();
 
-    service.returnBook(service.loans()[0].id);
-
-    await vi.waitFor(() => {
-      expect(repositoryMock.saveAll).toHaveBeenLastCalledWith([]);
-    });
+    expect(service.loans()).toEqual([]);
+    expect(repositoryMock.saveAll).not.toHaveBeenCalled();
   });
 
-  it('should not change the loans list when returning an unknown loan ID', async () => {
-    service.addLoan(mockBook);
+  // Returning loans
 
-    await vi.waitFor(() => {
-      expect(service.loans()).toHaveLength(1);
-    });
+  it('should return a book', async () => {
+    repositoryMock.getAll.mockResolvedValue([mockLoan]);
 
-    const loansBeforeReturn = service.loans();
+    service = createService();
 
-    service.returnBook('unknown-id');
+    await waitForLoading();
 
-    await vi.waitFor(() => {
-      expect(repositoryMock.saveAll).toHaveBeenCalledTimes(2);
-    });
-
-    expect(service.loans()).toEqual(loansBeforeReturn);
-  });
-
-  it('should allow borrowing a book again after it has been returned', async () => {
-    service.addLoan(mockBook);
-
-    await vi.waitFor(() => {
-      expect(service.loans()).toHaveLength(1);
-    });
-
-    service.returnBook(service.loans()[0].id);
+    service.returnBook('loan-1');
 
     await vi.waitFor(() => {
       expect(service.loans()).toHaveLength(0);
     });
 
-    service.addLoan(mockBook);
-
-    await vi.waitFor(() => {
-      expect(service.loans()).toHaveLength(1);
-    });
-
-    expect(service.isBorrowed(mockBook.id)).toBe(true);
+    expect(repositoryMock.saveAll).toHaveBeenCalledWith([]);
   });
 
-  it('should preserve the order of consecutive operations', async () => {
-    const secondBook: Book = {
-      ...mockBook,
-      id: 'book-2',
-      title: 'The Lord of the Rings',
-    };
+  it('should update loanCount after returning a book', async () => {
+    repositoryMock.getAll.mockResolvedValue([mockLoan]);
 
-    service.addLoan(mockBook);
-    service.addLoan(secondBook);
+    service = createService();
 
-    await vi.waitFor(() => {
-      expect(service.loans()).toHaveLength(2);
-    });
+    await waitForLoading();
 
-    expect(service.loans().map(loan => loan.book.id)).toEqual([
-      'book-1',
-      'book-2',
-    ]);
-
-    expect(repositoryMock.saveAll).toHaveBeenLastCalledWith(
-      expect.arrayContaining([
-        expect.objectContaining({ book: mockBook }),
-        expect.objectContaining({ book: secondBook }),
-      ])
-    );
-  });
-
-  it('should handle repository loading errors', async () => {
-    const consoleError = vi
-      .spyOn(console, 'error')
-      .mockImplementation(() => {});
-
-    repositoryMock.getAll.mockRejectedValue(
-      new Error('Storage error')
-    );
-
-    recreateService();
+    service.returnBook('loan-1');
 
     await vi.waitFor(() => {
-      expect(service.isLoaded()).toBe(true);
+      expect(service.loanCount()).toBe(0);
     });
-
-    expect(service.loans()).toEqual([]);
-    expect(consoleError).toHaveBeenCalled();
   });
 
-  it('should handle repository saving errors', async () => {
-    const consoleError = vi
-      .spyOn(console, 'error')
-      .mockImplementation(() => {});
+  it('should not save when returning an unknown loan ID', async () => {
+    await waitForLoading();
+
+    service.returnBook('unknown-loan');
+
+    await Promise.resolve();
+
+    expect(repositoryMock.saveAll).not.toHaveBeenCalled();
+  });
+
+  it('should preserve loans if returning a book fails to save', async () => {
+    repositoryMock.getAll.mockResolvedValue([mockLoan]);
+
+    service = createService();
+
+    await waitForLoading();
 
     repositoryMock.saveAll.mockRejectedValue(
-      new Error('Storage error')
+      new Error('Storage unavailable')
     );
 
-    service.addLoan(mockBook);
+    service.returnBook('loan-1');
 
     await vi.waitFor(() => {
-      expect(consoleError).toHaveBeenCalled();
+      expect(repositoryMock.saveAll).toHaveBeenCalledOnce();
     });
 
-    expect(service.loans()).toEqual([]);
+    expect(service.loans()).toEqual([mockLoan]);
+  });
+
+  it('should not return a book if initial loading failed', async () => {
+    repositoryMock.getAll.mockRejectedValue(
+      new Error('Storage unavailable')
+    );
+
+    service = createService();
+
+    await waitForLoading();
+
+    service.returnBook('loan-1');
+
+    await Promise.resolve();
+
+    expect(repositoryMock.saveAll).not.toHaveBeenCalled();
   });
 });

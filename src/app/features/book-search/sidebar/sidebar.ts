@@ -18,11 +18,13 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 export class Sidebar {
   isCollapsed = signal(true);
 
+  
   menuItems = [
-    { path: 'search', label: 'Search', icon: 'search.svg' },
-    { path: 'loans', label: 'Loans', icon: 'book-open.svg' },
-    { path: 'favorites', label: 'Favorites', icon: 'heart.svg' },
+    { path: '/books/search', label: 'Search', icon: 'search.svg' },
+    { path: '/loans', label: 'Loans', icon: 'book-open.svg' },
+    { path: '/books/favorites', label: 'Favorites', icon: 'heart.svg' },
   ];
+
 
   toggleSidebar() {
     this.isCollapsed.update(v => !v);

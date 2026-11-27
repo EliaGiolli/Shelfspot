@@ -1,39 +1,37 @@
-import { Component, inject, signal } from "@angular/core";
-import { CoverFallbackPipe } from '../../../shared/pipes/cover-fallback-pipe-pipe';
+
+import { Component, inject } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { Button } from "../../../shared/components/button/button";
-import { LoanService } from "../../../core/services/loans.service";
+import { RouterLink } from '@angular/router';
+
+import { CoverFallbackPipe } from '../../../shared/pipes/cover-fallback-pipe-pipe';
+import { Button } from '../../../shared/components/button/button';
+import { IconComponent } from '../../../shared/components/icon/icon';
+
+import { LoanService } from '../../../core/services/loans.service';
+import { getLoanDeadline } from '../helpers/loan-status';
 
 @Component({
   selector: 'app-loans-page',
   standalone: true,
-  imports: [CoverFallbackPipe, DatePipe, Button],
-  template: `
-    <div class="grid gap-4">
-      @for (item of loanService.loans(); track item.id) {
-        <div class="p-4 bg-white border border-primary/5 rounded-2xl flex justify-between items-center shadow-sm">
-          <div class="flex gap-4 items-center">
-            <img [src]="item.book.coverId | coverFallbackPipe:'S'" class="w-12 h-16 object-cover rounded-lg">
-            <div>
-              <h3 class="font-bold">{{ item.book.title }}</h3>
-              <p class="text-xs text-primary/40 italic">Return by: {{ item.dueDate | date }}</p>
-            </div>
-          </div>
-          <app-button 
-            [variant]="'outline'" 
-            (click)="loanService.returnBook(item.id)">
-              Return
-          </app-button>
-        </div>
-      } @empty {
-        <section class="p-8 max-w-7xl mx-auto">
-          <p class="italic text-primary/30 ">You have no active loans.</p>
-        </section>
-      }
-    </div>
-  `
+  imports: [
+    DatePipe,
+    RouterLink,
+    CoverFallbackPipe,
+    Button,
+    IconComponent
+  ],
+  templateUrl: './loans-page.html'
 })
 export class LoansPage {
-  public loanService = inject(LoanService);
+  readonly loanService = inject(LoanService);
 
+  readonly getLoanDeadline = getLoanDeadline;
+
+  isValidDate(date: Date | null | undefined): boolean {
+    return date instanceof Date && !Number.isNaN(date.getTime());
+  }
+
+  retryLoading(): void {
+    void this.loanService.retryLoad();
+  }
 }
