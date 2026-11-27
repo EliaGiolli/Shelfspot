@@ -11,11 +11,18 @@ import { CardComponent } from '../../../../shared/components/card/card';
 import { BookSkeleton } from '../../../../shared/components/book-skeleton/book-skeleton';
 import { forkJoin, map } from 'rxjs';
 import { ButtonLink } from '../../../../shared/components/button-links/button-links';
+import { Button } from '../../../../shared/components/button/button';
 
 @Component({
   selector: 'app-book-preview',
   standalone: true,
-  imports: [CardComponent, BookSkeleton, RouterLink, ButtonLink],
+  imports: [
+    CardComponent, 
+    BookSkeleton, 
+    RouterLink, 
+    ButtonLink, 
+    Button
+  ],
   templateUrl: './book-preview.html',
 })
 export class BookPreview implements OnInit{

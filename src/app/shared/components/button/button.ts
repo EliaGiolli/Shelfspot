@@ -13,6 +13,7 @@ import { CustomButton } from '../../utils/btn-custom-variants';
       [disabled]="disabled()"
       [attr.aria-label]="ariaLabel() || null"
       [attr.aria-pressed]="ariaPressed() ?? null"
+      [attr.aria-expanded]="ariaExpanded() ?? null"
     >
       <ng-content></ng-content>
     </button>
@@ -27,6 +28,7 @@ export class Button {
   disabled = input(false);
   ariaLabel = input<string>();
   ariaPressed = input<boolean | undefined>(undefined);
+  ariaExpanded = input<boolean | undefined>(undefined);
 
   protected buttonClasses = computed(() =>
     `${CustomButton.base} ${CustomButton.variants[this.variant()]}`

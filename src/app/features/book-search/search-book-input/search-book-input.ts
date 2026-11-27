@@ -17,6 +17,7 @@ import { startWith } from 'rxjs';
 
 import { InputComponent } from '../../../shared/components/input/input';
 import { Button } from '../../../shared/components/button/button';
+import { AppLiveRegionDirective } from '../../../shared/directives/app-live-region.directive';
 
 @Component({
   selector: 'app-search-book-input',
@@ -24,7 +25,8 @@ import { Button } from '../../../shared/components/button/button';
   imports: [
     ReactiveFormsModule,
     InputComponent,
-    Button
+    Button,
+    AppLiveRegionDirective
   ],
   template: `
     <form
@@ -41,6 +43,7 @@ import { Button } from '../../../shared/components/button/button';
           placeholder="Search by title or author..."
           ariaLabel="Search books by title or author"
           id="book-search-input"
+          ariaDescribedBy="search-validation-message"
         />
 
         <app-button
@@ -53,13 +56,18 @@ import { Button } from '../../../shared/components/button/button';
         </app-button>
       </div>
 
-      @if (query().trim().length > 0 && !canSearch()) {
-        <p class="text-xs text-primary/50 mt-2" aria-live="polite">
+      <p
+        id="search-validation-message"
+        class="text-xs text-primary/50 mt-2"
+        [class.invisible]="query().trim().length === 0 || canSearch()"
+        appLiveRegion="polite"
+      >
+        @if (query().trim().length > 0 && !canSearch()) {
           Enter at least 3 characters to search.
-        </p>
-      }
+        }
+      </p>
     </form>
-`
+  `
 })
 export class SearchBookInput {
   initialQuery = input('');
@@ -77,7 +85,7 @@ export class SearchBookInput {
   });
 
   constructor() {
-    // Synchronize the initial query with the form.    
+    // Synchronize the initial query with the form.
     effect(() => {
       const initialQuery = this.initialQuery();
 
@@ -87,8 +95,7 @@ export class SearchBookInput {
       );
 
       this.query.set(initialQuery);
-});
-
+    });
 
     // Keep the query signal synchronized with the form value.
     this.searchForm.controls.query.valueChanges.pipe(

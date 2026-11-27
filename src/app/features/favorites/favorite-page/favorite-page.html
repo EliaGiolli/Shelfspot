@@ -41,7 +41,11 @@
       class="flex flex-col items-center justify-center rounded-3xl border border-error/20 bg-base-100 px-6 py-20 text-center"
       role="alert"
     >
-      <app-icon name="alert-circle.svg" [size]="48" />
+      <app-icon
+        name="alert-circle.svg"
+        [size]="48"
+        [decorative]="true"
+      />
 
       <h2 class="mt-6 font-serif text-2xl font-bold text-primary">
         Unable to load your favorites
@@ -102,12 +106,18 @@
           <!-- Actions -->
           <div card-footer>
             <app-button
+              #removeButton
               variant="outline"
+              [disabled]="favService.favoriteActionStatus() === 'loading'"
               [ariaLabel]="'Remove ' + book.title + ' from favorites'"
-              (click)="favService.toggleFavorite(book)"
+              (click)="removeFavorite(book.id)"
             >
               <span class="inline-flex items-center gap-2">
-                <app-icon name="heart.svg" [size]="18" />
+                <app-icon
+                  name="heart.svg"
+                  [size]="18"
+                  [decorative]="true"
+                />
                 Remove favorite
               </span>
             </app-button>
@@ -127,9 +137,14 @@
       <app-icon
         name="book-open.svg"
         [size]="56"
+        [decorative]="true"
       />
 
-      <h2 class="mt-6 font-serif text-2xl font-bold text-primary">
+      <h2
+        #emptyStateHeading
+        tabindex="-1"
+        class="mt-6 font-serif text-2xl font-bold text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+      >
         Your collection is empty
       </h2>
 

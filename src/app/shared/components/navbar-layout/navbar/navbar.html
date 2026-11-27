@@ -1,7 +1,6 @@
 
 <header class="sticky top-0 z-1000 w-full border-b border-accent/20 bg-surface-elevated px-4 backdrop-blur-md sm:px-6 md:bg-base-100">
   <div class="relative mx-auto flex min-h-20 max-w-300 items-center justify-between gap-6">
-
     <!-- Brand -->
     <app-logo 
       [size]="40"
@@ -9,6 +8,7 @@
 
     <!-- Mobile menu button -->
     <button
+      #menuButton
       type="button"
       (click)="toggleMenu()"
       class="inline-flex cursor-pointer items-center justify-center rounded-lg p-2 text-secondary-brown transition-colors hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent md:hidden"
@@ -19,6 +19,7 @@
       <app-icon
         [name]="isMenuOpen() ? CLOSE_ICON : MENU_ICON"
         [size]="36"
+        aria-hidden="true"
       />
     </button>
 
@@ -38,7 +39,7 @@
         routerLink="/"
         routerLinkActive="!text-accent"
         [routerLinkActiveOptions]="{ exact: true }"
-        (click)="isMenuOpen.set(false)"
+        (click)="closeMenu()"
         variant="outline"
       >
         Homepage
@@ -48,7 +49,7 @@
         variant="outline"
         routerLink="/books/search"
         routerLinkActive="!text-accent"
-        (click)="isMenuOpen.set(false)"
+        (click)="closeMenu()"
       >
         Search Books
       </app-button-link>
@@ -57,7 +58,7 @@
         variant="outline"
         routerLink="/books/favorites"
         routerLinkActive="!text-accent"
-        (click)="isMenuOpen.set(false)"
+        (click)="closeMenu()"
       >
         Favorites
       </app-button-link>
@@ -66,7 +67,7 @@
         variant="outline"
         routerLink="/books/loans"
         routerLinkActive="!text-accent"
-        (click)="isMenuOpen.set(false)"
+        (click)="closeMenu()"
       >
         Loans
       </app-button-link>
@@ -75,7 +76,7 @@
         variant="outline"
         routerLink="/contacts"
         routerLinkActive="!text-accent"
-        (click)="isMenuOpen.set(false)"
+        (click)="closeMenu()"
       >
         Contacts
       </app-button-link>

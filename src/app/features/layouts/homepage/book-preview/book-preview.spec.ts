@@ -1,4 +1,3 @@
-
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
@@ -6,6 +5,8 @@ import { NEVER, of, throwError } from 'rxjs';
 
 import { BookPreview } from './book-preview';
 import { HttpBookService } from '../../../../core/services/http-book.service';
+
+import type { Book } from '../../../../shared/types/book';
 
 describe('BookPreview', () => {
   let component: BookPreview;
@@ -36,15 +37,23 @@ describe('BookPreview', () => {
   };
 
   const getCategoryButton = (category: string): HTMLButtonElement => {
-    const button = getElements<HTMLButtonElement>('nav button').find(
-      item => item.textContent?.trim() === category,
-    );
+    const button = getElements<HTMLButtonElement>(
+      'nav[aria-label="Filter books by category"] app-button button',
+    ).find(item => item.textContent?.trim() === category);
 
     if (!button) {
       throw new Error(`Category button "${category}" not found`);
     }
 
     return button;
+  };
+
+  const getPaginationButton = (
+    label: 'Go to previous page' | 'Go to next page',
+  ): HTMLButtonElement => {
+    return getElement<HTMLButtonElement>(
+      `nav[aria-label="Book recommendations pagination"] button[aria-label="${label}"]`,
+    );
   };
 
   beforeEach(async () => {
@@ -73,12 +82,10 @@ describe('BookPreview', () => {
       expect(component).toBeTruthy();
     });
 
-    it('should initialize with the default category', () => {
-      const selectedButton = getElement<HTMLButtonElement>(
-        'nav button.btn-primary',
-      );
+    it('should initialize with the default category selected', () => {
+      const selectedButton = getCategoryButton('All');
 
-      expect(selectedButton.textContent?.trim()).toBe('All');
+      expect(selectedButton.getAttribute('aria-pressed')).toBe('true');
     });
 
     it('should initialize on the first page', () => {
@@ -114,7 +121,9 @@ describe('BookPreview', () => {
 
   describe('Category filters', () => {
     it('should display all category filters', () => {
-      const buttons = getElements<HTMLButtonElement>('nav button');
+      const buttons = getElements<HTMLButtonElement>(
+        'nav[aria-label="Filter books by category"] app-button button',
+      );
 
       expect(buttons).toHaveLength(4);
 
@@ -123,14 +132,30 @@ describe('BookPreview', () => {
       ).toEqual(['All', 'Narrative', 'Science', 'Classics']);
     });
 
-    it('should select the Science category', () => {
-      const scienceButton = getCategoryButton('Science');
+    it('should expose the selected category through aria-pressed', () => {
+      const buttons = getElements<HTMLButtonElement>(
+        'nav[aria-label="Filter books by category"] app-button button',
+      );
 
-      scienceButton.click();
+      const selectedButtons = buttons.filter(
+        button => button.getAttribute('aria-pressed') === 'true',
+      );
+
+      expect(selectedButtons).toHaveLength(1);
+      expect(selectedButtons[0].textContent?.trim()).toBe('All');
+    });
+
+    it('should select the Science category', () => {
+      getCategoryButton('Science').click();
       fixture.detectChanges();
 
-      expect(scienceButton.classList.contains('btn-primary')).toBe(true);
-      expect(scienceButton.classList.contains('btn-outline')).toBe(false);
+      expect(getCategoryButton('Science').getAttribute('aria-pressed')).toBe(
+        'true',
+      );
+
+      expect(getCategoryButton('All').getAttribute('aria-pressed')).toBe(
+        'false',
+      );
     });
 
     it('should load books from the selected category', () => {
@@ -153,10 +178,7 @@ describe('BookPreview', () => {
     });
 
     it('should reset pagination when changing category', () => {
-      getElement<HTMLButtonElement>(
-        'button[aria-label="Next page"]',
-      ).click();
-
+      getPaginationButton('Go to next page').click();
       fixture.detectChanges();
 
       getCategoryButton('Science').click();
@@ -173,22 +195,48 @@ describe('BookPreview', () => {
         1,
       );
     });
+
+    it('should use buttons with type button for category filters', () => {
+      const buttons = getElements<HTMLButtonElement>(
+        'nav[aria-label="Filter books by category"] app-button button',
+      );
+
+      expect(buttons.every(button => button.type === 'button')).toBe(true);
+    });
   });
 
   describe('Pagination', () => {
-    it('should disable the previous button on the first page', () => {
-      const previousButton = getElement<HTMLButtonElement>(
-        'button[aria-label="Previous page"]',
+    it('should expose an accessible pagination navigation region', () => {
+      const navigation = getElement<HTMLElement>(
+        'nav[aria-label="Book recommendations pagination"]',
       );
+
+      expect(navigation).toBeTruthy();
+    });
+
+    it('should disable the previous button on the first page', () => {
+      const previousButton = getPaginationButton('Go to previous page');
 
       expect(previousButton.disabled).toBe(true);
     });
 
-    it('should move to the next page', () => {
-      getElement<HTMLButtonElement>(
-        'button[aria-label="Next page"]',
-      ).click();
+    it('should provide accessible labels for pagination buttons', () => {
+      expect(
+        getPaginationButton('Go to previous page').getAttribute('aria-label'),
+      ).toBe('Go to previous page');
 
+      expect(
+        getPaginationButton('Go to next page').getAttribute('aria-label'),
+      ).toBe('Go to next page');
+    });
+
+    it('should use buttons with type button for pagination', () => {
+      expect(getPaginationButton('Go to previous page').type).toBe('button');
+      expect(getPaginationButton('Go to next page').type).toBe('button');
+    });
+
+    it('should move to the next page', () => {
+      getPaginationButton('Go to next page').click();
       fixture.detectChanges();
 
       const currentPage = getElement<HTMLElement>(
@@ -204,16 +252,10 @@ describe('BookPreview', () => {
     });
 
     it('should move back to the previous page', () => {
-      getElement<HTMLButtonElement>(
-        'button[aria-label="Next page"]',
-      ).click();
-
+      getPaginationButton('Go to next page').click();
       fixture.detectChanges();
 
-      getElement<HTMLButtonElement>(
-        'button[aria-label="Previous page"]',
-      ).click();
-
+      getPaginationButton('Go to previous page').click();
       fixture.detectChanges();
 
       const currentPage = getElement<HTMLElement>(
@@ -231,13 +273,38 @@ describe('BookPreview', () => {
     it('should not navigate to a page before the first one', () => {
       const initialCalls = bookService.getBooksBySubject.mock.calls.length;
 
-      getElement<HTMLButtonElement>(
-        'button[aria-label="Previous page"]',
-      ).click();
+      getPaginationButton('Go to previous page').click();
 
       expect(bookService.getBooksBySubject).toHaveBeenCalledTimes(
         initialCalls,
       );
+    });
+
+    it('should identify the current page accessibly', () => {
+      const currentPage = getElement<HTMLElement>(
+        '[aria-current="page"]',
+      );
+
+      expect(currentPage.tagName.toLowerCase()).toBe('span');
+      expect(currentPage.textContent?.trim()).toBe('1');
+    });
+  });
+
+  describe('Carousel accessibility', () => {
+    it('should expose the book carousel as a named region', () => {
+      const carousel = getElement<HTMLElement>(
+        '[role="region"][aria-label="Book recommendations"]',
+      );
+
+      expect(carousel).toBeTruthy();
+    });
+
+    it('should make the carousel keyboard focusable', () => {
+      const carousel = getElement<HTMLElement>(
+        '[aria-label="Book recommendations"]',
+      );
+
+      expect(carousel.getAttribute('tabindex')).toBe('0');
     });
   });
 
@@ -253,6 +320,9 @@ describe('BookPreview', () => {
       );
 
       expect(loadingIndicator).toBeTruthy();
+      expect(loadingIndicator.getAttribute('aria-label')).toBe(
+        'Loading books',
+      );
     });
 
     it('should disable pagination while books are loading', () => {
@@ -261,21 +331,19 @@ describe('BookPreview', () => {
       getCategoryButton('Science').click();
       fixture.detectChanges();
 
-      const nextButton = getElement<HTMLButtonElement>(
-        'button[aria-label="Next page"]',
-      );
-
-      expect(nextButton.disabled).toBe(true);
+      expect(getPaginationButton('Go to next page').disabled).toBe(true);
+      expect(getPaginationButton('Go to previous page').disabled).toBe(true);
     });
   });
 
   describe('Empty state', () => {
     it('should display a message when no books are available', () => {
-      const emptyMessage = getElements<HTMLParagraphElement>('p').find(
-        paragraph =>
-          paragraph.textContent?.includes(
-            'No books available in this category.',
-          ),
+      const emptyMessage = getElements<HTMLParagraphElement>(
+        '[role="status"]',
+      ).find(paragraph =>
+        paragraph.textContent?.includes(
+          'No books available in this category.',
+        ),
       );
 
       expect(emptyMessage).toBeTruthy();
@@ -284,7 +352,7 @@ describe('BookPreview', () => {
     it('should hide the loading indicator after an empty response', () => {
       const loadingIndicator = (
         fixture.nativeElement as HTMLElement
-      ).querySelector('[role="status"]');
+      ).querySelector('[aria-label="Loading books"]');
 
       expect(loadingIndicator).toBeNull();
     });
@@ -305,7 +373,7 @@ describe('BookPreview', () => {
 
       const loadingIndicator = (
         fixture.nativeElement as HTMLElement
-      ).querySelector('[role="status"]');
+      ).querySelector('[aria-label="Loading books"]');
 
       expect(loadingIndicator).toBeNull();
       expect(consoleError).toHaveBeenCalled();
@@ -325,11 +393,12 @@ describe('BookPreview', () => {
       getCategoryButton('Science').click();
       fixture.detectChanges();
 
-      const emptyMessage = getElements<HTMLParagraphElement>('p').find(
-        paragraph =>
-          paragraph.textContent?.includes(
-            'No books available in this category.',
-          ),
+      const emptyMessage = getElements<HTMLParagraphElement>(
+        '[role="status"]',
+      ).find(paragraph =>
+        paragraph.textContent?.includes(
+          'No books available in this category.',
+        ),
       );
 
       expect(emptyMessage).toBeTruthy();
@@ -345,6 +414,33 @@ describe('BookPreview', () => {
       );
 
       expect(searchLink).toBeTruthy();
+    });
+
+    
+    it('should provide accessible text for book detail links', () => {
+      const mockBook: Book = {
+        id: 'OL123W',
+        key: '/works/OL123W',
+        title: 'Dune',
+        authors: ['Frank Herbert'],
+        coverId: 123,
+        firstPublishYear: 1965,
+        subjects: ['Science Fiction'],
+      };
+
+      bookService.getBooksBySubject.mockReturnValue(of([mockBook]));
+
+      getCategoryButton('Science').click();
+      fixture.detectChanges();
+
+      const detailLinks = getElements<HTMLAnchorElement>(
+        'app-button-link a[aria-label^="View details for "]',
+      );
+
+      expect(detailLinks).toHaveLength(1);
+      expect(detailLinks[0].getAttribute('aria-label')).toBe(
+        'View details for Dune',
+      );
     });
   });
 });

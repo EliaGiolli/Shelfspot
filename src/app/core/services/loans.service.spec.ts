@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { describe, expect, it, beforeEach, vi } from 'vitest';
 
 import { LoanService } from './loans.service';
-import { LOANS_REPOSITORY } from '../tokens/loans-repository,token';
+import { LOANS_REPOSITORY } from '../tokens/loans-repository.token';
 
 import { AppError } from '../errors/app-error';
 

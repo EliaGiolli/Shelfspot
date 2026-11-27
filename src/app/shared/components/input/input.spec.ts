@@ -174,4 +174,16 @@ describe('InputComponent', () => {
 
     expect(input.disabled).toBe(false);
   });
+
+  it('should set aria-describedby when provided', () => {
+    const fixture = TestBed.createComponent(InputComponent);
+    fixture.componentRef.setInput('ariaDescribedBy', 'search-validation-message');
+    fixture.detectChanges();
+
+    const input = fixture.nativeElement.querySelector('input');
+
+    expect(input.getAttribute('aria-describedby')).toBe(
+      'search-validation-message'
+    );
+  });
 });

@@ -1,3 +1,4 @@
+
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SearchBookInput } from './search-book-input';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
@@ -99,6 +100,33 @@ describe('SearchBookInput', () => {
       expect(fixture.nativeElement.textContent).not.toContain(
         'Enter at least 3 characters to search.'
       );
+    });
+  });
+
+  describe('accessibility', () => {
+    it('should associate the input with the validation message', () => {
+      expect(inputElement.getAttribute('aria-describedby')).toBe(
+        'search-validation-message'
+      );
+    });
+
+    it('should expose the validation message as a polite live region', () => {
+      const message = fixture.nativeElement.querySelector(
+        '#search-validation-message'
+      );
+
+      expect(message).toBeTruthy();
+      expect(message.getAttribute('role')).toBe('status');
+      expect(message.getAttribute('aria-live')).toBe('polite');
+    });
+
+    it('should keep the validation message container in the DOM when empty', () => {
+      const message = fixture.nativeElement.querySelector(
+        '#search-validation-message'
+      );
+
+      expect(message).toBeTruthy();
+      expect(message.textContent.trim()).toBe('');
     });
   });
 

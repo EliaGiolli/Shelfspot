@@ -1,3 +1,4 @@
+
 <section class="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
 
   @let state = bookState();
@@ -5,9 +6,9 @@
   <!-- Back navigation -->
   <a
     routerLink="/books/search"
-    class="mb-8 inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-primary/50 transition-colors hover:text-accent"
+    class="mb-8 inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-primary/50 transition-colors hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
   >
-    <app-icon name="arrow-left.svg" [size]="24" />
+    <app-icon name="arrow-left.svg" [size]="24" aria-hidden="true" />
     Back to catalog
   </a>
 
@@ -84,17 +85,34 @@
         <!-- Actions -->
         <div class="mt-auto flex flex-wrap gap-3 border-t border-base-300 pt-6">
 
+          <!-- Borrow button -->
           <app-button
             variant="primary"
             class="flex-1"
-            [disabled]="loanService.isBorrowed(bookData.id)"
+            [disabled]="
+              loanService.isBorrowed(bookData.id) ||
+              loanService.actionStatus() === 'loading'
+            "
+            [ariaLabel]="
+              loanService.actionStatus() === 'loading'
+                ? 'Processing loan for ' + bookData.title
+                : loanService.isBorrowed(bookData.id)
+                  ? bookData.title + ' is already borrowed'
+                  : 'Borrow ' + bookData.title
+            "
             (click)="loanService.addLoan(bookData)"
           >
-            {{ loanService.isBorrowed(bookData.id) ? 'Already Borrowed' : 'Borrow Book' }}
+            {{ loanService.actionStatus() === 'loading'
+              ? 'Processing...'
+              : loanService.isBorrowed(bookData.id)
+                ? 'Already Borrowed'
+                : 'Borrow Book' }}
           </app-button>
 
+          <!-- Favorite button -->
           <app-button
             variant="outline"
+            [disabled]="favoriteService.favoriteActionStatus() === 'loading'"
             [ariaLabel]="favoriteService.isFavorite(bookData)
               ? 'Remove ' + bookData.title + ' from favorites'
               : 'Add ' + bookData.title + ' to favorites'"
@@ -105,6 +123,7 @@
               [name]="favoriteService.isFavorite(bookData) ? 'badge-check.svg' : 'heart.svg'"
               [size]="24"
               [class.text-accent]="favoriteService.isFavorite(bookData)"
+              aria-hidden="true"
             />
           </app-button>
 
@@ -138,7 +157,7 @@
   @if (state.status === 'not-found') {
     <div class="flex flex-col items-center gap-5 rounded-3xl bg-base-100 px-6 py-16 text-center shadow-xl">
 
-      <app-icon name="book-open.svg" [size]="56" />
+      <app-icon name="book-open.svg" [size]="56" aria-hidden="true" />
 
       <h1 class="font-serif text-3xl font-bold text-primary">
         Book not found
@@ -150,7 +169,7 @@
 
       <a
         routerLink="/books/search"
-        class="btn btn-primary mt-3"
+        class="btn btn-primary mt-3 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
       >
         Back to catalog
       </a>
@@ -162,13 +181,13 @@
   @if (state.status === 'error') {
     <div class="flex flex-col items-center gap-5 rounded-3xl bg-base-100 px-6 py-16 text-center shadow-xl">
 
-      <app-icon name="alert-circle.svg" [size]="56" />
+      <app-icon name="alert-circle.svg" [size]="56" aria-hidden="true" />
 
       <h1 class="font-serif text-3xl font-bold text-primary">
         Something went wrong
       </h1>
 
-      <p class="max-w-md text-base-content/70">
+      <p class="max-w-md text-base-content/70" role="alert">
         {{ state.message }}
       </p>
 
@@ -183,7 +202,7 @@
 
         <a
           routerLink="/books/search"
-          class="btn btn-outline"
+          class="btn btn-outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
         >
           Back to catalog
         </a>

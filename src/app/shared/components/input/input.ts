@@ -1,3 +1,4 @@
+
 import {
   Component,
   computed,
@@ -23,6 +24,7 @@ import { CustomInput } from '../../utils/input-custom-variants';
       [type]="type()"
       [placeholder]="placeholder()"
       [attr.aria-label]="ariaLabel() || null"
+      [attr.aria-describedby]="ariaDescribedBy() || null"
       [disabled]="isDisabled()"
       [value]="value()"
       (input)="onInput($event)"
@@ -43,6 +45,7 @@ export class InputComponent implements ControlValueAccessor {
   id = input<string>();
   placeholder = input('');
   ariaLabel = input<string>();
+  ariaDescribedBy = input<string>();
 
   protected value = signal('');
   protected isDisabled = signal(false);

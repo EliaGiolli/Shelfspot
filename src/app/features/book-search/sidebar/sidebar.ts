@@ -3,12 +3,14 @@ import { IconComponent } from '../../../shared/components/icon/icon';
 import { ButtonLink } from '../../../shared/components/button-links/button-links';
 import { TooltipDirective } from '../../../shared/directives/tooltip.directive';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Button } from '../../../shared/components/button/button';
 
 @Component({
   selector: 'app-sidebar',
   imports: [
     IconComponent,
     ButtonLink,
+    Button,
     TooltipDirective,
     RouterLink, 
     RouterLinkActive, 

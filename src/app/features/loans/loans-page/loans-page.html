@@ -5,6 +5,7 @@
     <h1 class="font-serif text-4xl font-bold text-primary">
       My Loans
     </h1>
+
     <p class="mt-2 text-base-content/60">
       Keep track of your borrowed books and their return dates.
     </p>
@@ -17,7 +18,11 @@
       role="status"
       aria-label="Loading your loans"
     >
-      <span class="loading loading-spinner loading-lg text-primary"></span>
+      <span
+        class="loading loading-spinner loading-lg text-primary"
+        aria-hidden="true"
+      ></span>
+
       <p class="text-sm text-base-content/60">
         Loading your loans...
       </p>
@@ -30,7 +35,11 @@
       class="flex flex-col items-center gap-5 rounded-3xl bg-base-100 px-6 py-16 text-center shadow-xl"
       role="alert"
     >
-      <app-icon name="alert-circle.svg" [size]="56" />
+      <app-icon
+        name="alert-circle.svg"
+        [size]="56"
+        [decorative]="true"
+      />
 
       <h2 class="font-serif text-2xl font-bold text-primary">
         Unable to load your loans
@@ -43,7 +52,7 @@
       <div class="mt-3 flex flex-wrap justify-center gap-3">
         <app-button
           variant="primary"
-          (click)="loanService.retryLoad()"
+          (click)="retryLoading()"
           ariaLabel="Retry loading loans"
         >
           Retry
@@ -51,7 +60,7 @@
 
         <a
           routerLink="/books/search"
-          class="btn btn-outline"
+          class="btn btn-outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
         >
           Back to catalog
         </a>
@@ -76,9 +85,18 @@
     @if (loanService.loans().length === 0) {
       <div class="flex flex-col items-center gap-5 rounded-3xl bg-base-100 px-6 py-16 text-center shadow-xl">
 
-        <app-icon name="book-open.svg" [size]="56" />
+        <app-icon
+          name="book-open.svg"
+          [size]="56"
+          [decorative]="true"
+        />
 
-        <h2 class="font-serif text-2xl font-bold text-primary">
+        <h2
+          #emptyStateHeading
+          id="empty-loans-heading"
+          tabindex="-1"
+          class="font-serif text-2xl font-bold text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+        >
           No books borrowed yet
         </h2>
 
@@ -88,7 +106,7 @@
 
         <a
           routerLink="/books/search"
-          class="btn btn-primary mt-3"
+          class="btn btn-primary mt-3 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
         >
           Explore books
         </a>
@@ -142,7 +160,7 @@
                   </span>
                 </p>
 
-                @if (item.dueDate) {
+                @if (isValidDate(item.dueDate)) {
                   @let deadline = getLoanDeadline(item.dueDate);
 
                   <div class="mt-1">
@@ -154,7 +172,9 @@
 
                     @else if (deadline.status === 'due-soon') {
                       <span class="badge badge-warning badge-outline">
-                        {{ deadline.daysRemaining === 0 ? 'Due today' : 'Due in ' + deadline.daysRemaining + ' days' }}
+                        {{ deadline.daysRemaining === 0
+                          ? 'Due today'
+                          : 'Due in ' + deadline.daysRemaining + ' days' }}
                       </span>
                     }
 
@@ -167,14 +187,19 @@
                 }
               </div>
 
+              <!-- Return action -->
               <div class="mt-auto border-t border-base-300 pt-4">
                 <app-button
+                  #returnButton
                   variant="outline"
                   class="w-full"
+                  [disabled]="loanService.actionStatus() === 'loading'"
                   [ariaLabel]="'Return ' + (item.book.title || 'book')"
-                  (click)="loanService.returnBook(item.id)"
+                  (click)="returnLoan(item.id)"
                 >
-                  Return Book
+                  {{ loanService.actionStatus() === 'loading'
+                    ? 'Processing...'
+                    : 'Return Book' }}
                 </app-button>
               </div>
 

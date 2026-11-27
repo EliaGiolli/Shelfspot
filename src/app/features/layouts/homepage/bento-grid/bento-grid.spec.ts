@@ -4,7 +4,7 @@ import { provideRouter, Router } from '@angular/router';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 import { BentoGrid } from './bento-grid';
-import { LOANS_REPOSITORY } from '../../../../core/tokens/loans-repository,token';
+import { LOANS_REPOSITORY } from '../../../../core/tokens/loans-repository.token';
 
 describe('BentoGrid', () => {
   let component: BentoGrid;

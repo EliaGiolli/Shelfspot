@@ -14,11 +14,13 @@ describe('FavoritePage', () => {
   let favoritesSignal: ReturnType<typeof signal<Book[]>>;
   let isLoadedSignal: ReturnType<typeof signal<boolean>>;
   let loadErrorSignal: ReturnType<typeof signal<string | null>>;
+  let favoriteActionStatusSignal: ReturnType<typeof signal<string>>;
 
   let favoriteServiceMock: {
     favorites: ReturnType<typeof favoritesSignal.asReadonly>;
     isLoaded: ReturnType<typeof isLoadedSignal.asReadonly>;
     loadError: ReturnType<typeof loadErrorSignal.asReadonly>;
+    favoriteActionStatus: ReturnType<typeof favoriteActionStatusSignal.asReadonly>;
     toggleFavorite: ReturnType<typeof vi.fn>;
   };
 
@@ -46,12 +48,14 @@ describe('FavoritePage', () => {
     favoritesSignal = signal<Book[]>([]);
     isLoadedSignal = signal(true);
     loadErrorSignal = signal<string | null>(null);
+    favoriteActionStatusSignal = signal('idle');
 
     favoriteServiceMock = {
       favorites: favoritesSignal.asReadonly(),
       isLoaded: isLoadedSignal.asReadonly(),
       loadError: loadErrorSignal.asReadonly(),
-      toggleFavorite: vi.fn(),
+      favoriteActionStatus: favoriteActionStatusSignal.asReadonly(),
+      toggleFavorite: vi.fn().mockResolvedValue(true),
     };
 
     await TestBed.configureTestingModule({
@@ -79,7 +83,6 @@ describe('FavoritePage', () => {
   describe('loading state', () => {
     it('should display loading state while favorites are loading', () => {
       isLoadedSignal.set(false);
-
       fixture.detectChanges();
 
       expect(fixture.nativeElement.textContent)
@@ -88,7 +91,6 @@ describe('FavoritePage', () => {
 
     it('should not display the empty state while loading', () => {
       isLoadedSignal.set(false);
-
       fixture.detectChanges();
 
       expect(fixture.nativeElement.textContent)
@@ -97,7 +99,6 @@ describe('FavoritePage', () => {
 
     it('should display a loading spinner', () => {
       isLoadedSignal.set(false);
-
       fixture.detectChanges();
 
       const spinner: HTMLElement | null =
@@ -112,7 +113,6 @@ describe('FavoritePage', () => {
       loadErrorSignal.set(
         'Unable to load your favorites. Please try again.',
       );
-
       fixture.detectChanges();
 
       expect(fixture.nativeElement.textContent)
@@ -121,7 +121,6 @@ describe('FavoritePage', () => {
 
     it('should display the actual loading error message', () => {
       loadErrorSignal.set('Storage unavailable');
-
       fixture.detectChanges();
 
       expect(fixture.nativeElement.textContent)
@@ -130,7 +129,6 @@ describe('FavoritePage', () => {
 
     it('should expose the error through an alert role', () => {
       loadErrorSignal.set('Storage unavailable');
-
       fixture.detectChanges();
 
       const alert: HTMLElement | null =
@@ -141,7 +139,6 @@ describe('FavoritePage', () => {
 
     it('should not display the empty state when loading fails', () => {
       loadErrorSignal.set('Storage unavailable');
-
       fixture.detectChanges();
 
       expect(fixture.nativeElement.textContent)
@@ -154,7 +151,6 @@ describe('FavoritePage', () => {
       favoritesSignal.set([]);
       isLoadedSignal.set(true);
       loadErrorSignal.set(null);
-
       fixture.detectChanges();
 
       expect(fixture.nativeElement.textContent)
@@ -163,31 +159,38 @@ describe('FavoritePage', () => {
 
     it('should display the empty state description', () => {
       favoritesSignal.set([]);
-
       fixture.detectChanges();
 
       expect(fixture.nativeElement.textContent)
         .toContain('You haven\'t added any favorites yet.');
     });
 
-    it('should display the book icon in the empty state', () => {
+    it('should make the empty state heading programmatically focusable', () => {
       favoritesSignal.set([]);
-
       fixture.detectChanges();
 
-      const emptyState = fixture.nativeElement.querySelector(
-        'h2',
+      const heading: HTMLHeadingElement | null =
+        fixture.nativeElement.querySelector('#empty-state-heading');
+
+      expect(heading).not.toBeNull();
+      expect(heading?.getAttribute('tabindex')).toBe('-1');
+    });
+
+    it('should display the empty state icon', () => {
+      favoritesSignal.set([]);
+      fixture.detectChanges();
+
+      const emptyStateIcon = fixture.nativeElement.querySelector(
+        'app-icon[name="book-open.svg"]',
       );
 
-      expect(emptyState?.textContent)
-        .toContain('Your collection is empty');
+      expect(emptyStateIcon).not.toBeNull();
     });
   });
 
   describe('favorites grid', () => {
     it('should display favorite books', () => {
       favoritesSignal.set([mockBook]);
-
       fixture.detectChanges();
 
       expect(fixture.nativeElement.textContent).toContain('Dune');
@@ -197,7 +200,6 @@ describe('FavoritePage', () => {
 
     it('should display multiple favorite books', () => {
       favoritesSignal.set([mockBook, anotherBook]);
-
       fixture.detectChanges();
 
       expect(fixture.nativeElement.textContent).toContain('Dune');
@@ -207,7 +209,6 @@ describe('FavoritePage', () => {
 
     it('should display book covers with descriptive alt text', () => {
       favoritesSignal.set([mockBook, anotherBook]);
-
       fixture.detectChanges();
 
       const covers: NodeListOf<HTMLImageElement> =
@@ -222,7 +223,6 @@ describe('FavoritePage', () => {
 
     it('should lazy-load book cover images', () => {
       favoritesSignal.set([mockBook]);
-
       fixture.detectChanges();
 
       const cover: HTMLImageElement | null =
@@ -235,7 +235,6 @@ describe('FavoritePage', () => {
 
     it('should display the publication year when available', () => {
       favoritesSignal.set([mockBook]);
-
       fixture.detectChanges();
 
       expect(fixture.nativeElement.textContent).toContain('1965');
@@ -248,7 +247,6 @@ describe('FavoritePage', () => {
       };
 
       favoritesSignal.set([bookWithoutYear]);
-
       fixture.detectChanges();
 
       const yearElements: NodeListOf<HTMLElement> =
@@ -266,7 +264,6 @@ describe('FavoritePage', () => {
       };
 
       favoritesSignal.set([bookWithoutAuthors]);
-
       fixture.detectChanges();
 
       expect(fixture.nativeElement.textContent)
@@ -277,7 +274,6 @@ describe('FavoritePage', () => {
   describe('favorite actions', () => {
     it('should display a remove favorite button for each book', () => {
       favoritesSignal.set([mockBook, anotherBook]);
-
       fixture.detectChanges();
 
       const buttons: NodeListOf<HTMLButtonElement> =
@@ -288,7 +284,6 @@ describe('FavoritePage', () => {
 
     it('should provide an accessible label for the remove button', () => {
       favoritesSignal.set([mockBook]);
-
       fixture.detectChanges();
 
       const button: HTMLButtonElement | null =
@@ -300,7 +295,6 @@ describe('FavoritePage', () => {
 
     it('should call toggleFavorite when the remove button is clicked', () => {
       favoritesSignal.set([mockBook]);
-
       fixture.detectChanges();
 
       const button: HTMLButtonElement =
@@ -310,6 +304,128 @@ describe('FavoritePage', () => {
 
       expect(favoriteServiceMock.toggleFavorite)
         .toHaveBeenCalledWith(mockBook);
+    });
+
+    it('should disable remove buttons while a favorite operation is loading', () => {
+      favoritesSignal.set([mockBook]);
+      favoriteActionStatusSignal.set('loading');
+      fixture.detectChanges();
+
+      const button: HTMLButtonElement =
+        fixture.nativeElement.querySelector('app-button button');
+
+      expect(button.disabled).toBe(true);
+    });
+
+    it('should enable remove buttons when no favorite operation is loading', () => {
+      favoritesSignal.set([mockBook]);
+      favoriteActionStatusSignal.set('idle');
+      fixture.detectChanges();
+
+      const button: HTMLButtonElement =
+        fixture.nativeElement.querySelector('app-button button');
+
+      expect(button.disabled).toBe(false);
+    });
+
+    it('should move focus to the next book after removing a favorite', async () => {
+      favoritesSignal.set([mockBook, anotherBook]);
+
+      favoriteServiceMock.toggleFavorite.mockImplementation(async () => {
+        favoritesSignal.set([anotherBook]);
+        return true;
+      });
+
+      fixture.detectChanges();
+
+      const firstButton: HTMLButtonElement =
+        fixture.nativeElement.querySelector('app-button button');
+
+      firstButton.focus();
+      firstButton.click();
+
+      await fixture.whenStable();
+      fixture.detectChanges();
+
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+
+      const remainingButton: HTMLButtonElement =
+        fixture.nativeElement.querySelector('app-button button');
+
+      expect(document.activeElement).toBe(remainingButton);
+    });
+
+    it('should move focus to the previous book when removing the last favorite', async () => {
+      favoritesSignal.set([mockBook, anotherBook]);
+
+      favoriteServiceMock.toggleFavorite.mockImplementation(async () => {
+        favoritesSignal.set([mockBook]);
+        return true;
+      });
+
+      fixture.detectChanges();
+
+      const buttons: NodeListOf<HTMLButtonElement> =
+        fixture.nativeElement.querySelectorAll('app-button button');
+
+      buttons[1].focus();
+      buttons[1].click();
+
+      await fixture.whenStable();
+      fixture.detectChanges();
+
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+
+      const remainingButton: HTMLButtonElement =
+        fixture.nativeElement.querySelector('app-button button');
+
+      expect(document.activeElement).toBe(remainingButton);
+    });
+
+    it('should move focus to the empty state heading when removing the last favorite', async () => {
+      favoritesSignal.set([mockBook]);
+
+      favoriteServiceMock.toggleFavorite.mockImplementation(async () => {
+        favoritesSignal.set([]);
+        return true;
+      });
+
+      fixture.detectChanges();
+
+      const button: HTMLButtonElement =
+        fixture.nativeElement.querySelector('app-button button');
+
+      button.focus();
+      button.click();
+
+      await fixture.whenStable();
+      fixture.detectChanges();
+
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+
+      const heading: HTMLHeadingElement =
+        fixture.nativeElement.querySelector('#empty-state-heading');
+
+      expect(document.activeElement).toBe(heading);
+    });
+
+    it('should not move focus when removing a favorite fails', async () => {
+      favoritesSignal.set([mockBook, anotherBook]);
+
+      favoriteServiceMock.toggleFavorite.mockResolvedValue(false);
+
+      fixture.detectChanges();
+
+      const firstButton: HTMLButtonElement =
+        fixture.nativeElement.querySelector('app-button button');
+
+      firstButton.focus();
+      firstButton.click();
+
+      await fixture.whenStable();
+      fixture.detectChanges();
+
+      expect(document.activeElement).toBe(firstButton);
     });
   });
 

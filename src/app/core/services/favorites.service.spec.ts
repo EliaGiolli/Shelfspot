@@ -8,10 +8,10 @@ import { FAVORITES_REPOSITORY } from '../tokens/favorites-repository.token';
 import { AppError } from '../errors/app-error';
 
 import type { Book } from '../../shared/types/book';
-import type { FavoritesRepository } from '../../features/favorites/repository/favorites.repository';
 
 describe('FavoriteService', () => {
   let service: FavoriteService;
+
   let repositoryMock: {
     getAll: ReturnType<typeof vi.fn>;
     saveAll: ReturnType<typeof vi.fn>;
@@ -26,6 +26,9 @@ describe('FavoriteService', () => {
   };
 
   function createService(): FavoriteService {
+    repositoryMock.getAll.mockClear();
+    repositoryMock.saveAll.mockClear();
+
     TestBed.resetTestingModule();
 
     TestBed.configureTestingModule({
@@ -55,9 +58,9 @@ describe('FavoriteService', () => {
   });
 
   it('should initialize with an empty favorites list', async () => {
-    await Promise.resolve();
-
-    expect(service.favorites()).toEqual([]);
+    await vi.waitFor(() => {
+      expect(service.favorites()).toEqual([]);
+    });
   });
 
   it('should load favorites from the repository', async () => {
@@ -176,8 +179,10 @@ describe('FavoriteService', () => {
     const operation = service.toggleFavorite(mockBook);
 
     await vi.waitFor(() => {
-      expect(service.favoriteActionStatus()).toBe('loading');
+      expect(resolveSave).toBeTypeOf('function');
     });
+
+    expect(service.favoriteActionStatus()).toBe('loading');
 
     resolveSave();
     await operation;

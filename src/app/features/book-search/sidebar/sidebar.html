@@ -9,9 +9,17 @@
         @if (!isCollapsed()) {
             <span class="font-serif font-bold text-xl md:text-2xl text-accent italic">ShelfSpot</span>
         }
-        <button (click)="toggleSidebar()" class="p-2 hover:bg-secondary/10 rounded-lg transition-colors">
-            <app-icon [name]="isCollapsed() ? 'menu.svg' : 'arrow-left.svg'" [size]="45" />
-        </button>
+            <app-button
+                variant="outline"
+                [ariaLabel]="isCollapsed() ? 'Expand sidebar' : 'Collapse sidebar'"
+                [attr.aria-expanded]="!isCollapsed()"
+                (click)="toggleSidebar()"
+            >
+                <app-icon
+                    [name]="isCollapsed() ? 'menu.svg' : 'arrow-left.svg'"
+                    [size]="45"
+                />
+            </app-button>
         </div>
 
         <nav class="flex-1 mt-4 px-3 space-y-2">

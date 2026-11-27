@@ -5,7 +5,7 @@ import type { Book } from '../../shared/types/book';
 import type { Loan } from '../../shared/types/loans.types';
 
 import { AppError } from '../errors/app-error';
-import { LOANS_REPOSITORY } from '../tokens/loans-repository,token';
+import { LOANS_REPOSITORY } from '../tokens/loans-repository.token';
 import type { LoansRepository } from '../../features/loans/repository/loans.repository';
 
 export type LoanActionStatus = 'idle' | 'loading' | 'success' | 'error';
