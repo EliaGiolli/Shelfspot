@@ -1,19 +1,37 @@
 import { Component, signal } from '@angular/core';
-import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterOutlet } from '@angular/router';
 import { IconComponent } from '../../../shared/components/icon/icon';
-import { CommonModule } from '@angular/common';
+import { ButtonLink } from '../../../shared/components/button-links/button-links';
 import { TooltipDirective } from '../../../shared/directives/tooltip.directive';
-import { Sidebar } from '../../book-search/sidebar/sidebar';
+import { BOOK_NAV_ITEMS } from '../../../shared/config/navigation.config';
 
 @Component({
   selector: 'app-book-layout',
   standalone: true,
   imports: [
-    RouterOutlet, 
-    CommonModule,
-    Sidebar
+    RouterOutlet,
+    IconComponent,
+    ButtonLink,
+    TooltipDirective,
   ],
   templateUrl: './book-layout.html',
-  styleUrl: './book-layout.css',
 })
-export class BookLayout {}
+export class BookLayout {
+  isCollapsed = signal(true);
+  isDrawerOpen = signal(false);
+
+  readonly menuItems = BOOK_NAV_ITEMS;
+
+  toggleSidebar(): void {
+    this.isCollapsed.update((collapsed) => !collapsed);
+  }
+
+  onDrawerToggle(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.isDrawerOpen.set(input.checked);
+  }
+
+  closeDrawer(): void {
+    this.isDrawerOpen.set(false);
+  }
+}

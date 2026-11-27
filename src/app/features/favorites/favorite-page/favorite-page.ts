@@ -1,38 +1,69 @@
-import { Component, inject } from '@angular/core';
+
+import {
+  Component,
+  ElementRef,
+  inject,
+  viewChild,
+  viewChildren,
+} from '@angular/core';
+
 import { FavoriteService } from '../../../core/services/favorites.service';
 import { CardComponent } from '../../../shared/components/card/card';
-import { CommonModule } from '@angular/common';
+import { Button } from '../../../shared/components/button/button';
+import { IconComponent } from '../../../shared/components/icon/icon';
 import { CoverFallbackPipe } from '../../../shared/pipes/cover-fallback-pipe-pipe';
 
 @Component({
   selector: 'app-favorites',
   standalone: true,
-  imports: [CommonModule, CardComponent, CoverFallbackPipe],
-  template: `
-    <section class="p-8 max-w-7xl mx-auto">
-      <h1 class="text-4xl font-serif font-bold text-primary mb-10">Your <span class="text-accent">Library</span></h1>
-      
-      @if (favService.favorites().length > 0) {
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          @for (book of favService.favorites(); track book.id) {
-            <app-card [titleId]="'title-' + book.id">
-              <div card-header class="aspect-3/4 rounded-xl overflow-hidden">
-                <img [src]="book.coverId | coverFallbackPipe:'M'" class="w-full h-full object-cover">
-              </div>
-              <div card-body>
-                <h3 class="font-bold truncate">{{ book.title }}</h3>
-              </div>
-            </app-card>
-          }
-        </div>
-      } @else {
-        <div class="text-center py-20 italic text-primary/40">
-          Your collection is empty. Start exploring the hub!
-        </div>
-      }
-    </section>
-  `
+  imports: [
+    CardComponent,
+    Button,
+    IconComponent,
+    CoverFallbackPipe
+  ],
+  templateUrl: './favorite-page.html'
 })
 export class FavoritePage {
-  favService = inject(FavoriteService);
+  readonly favService = inject(FavoriteService);
+
+  private readonly removeButtons =
+    viewChildren<Button, ElementRef<HTMLElement>>('removeButton', {
+      read: ElementRef,
+    });
+
+  private readonly emptyStateHeading =
+    viewChild<ElementRef<HTMLHeadingElement>>('emptyStateHeading');
+
+  async removeFavorite(bookId: string): Promise<void> {
+    const favorites = this.favService.favorites();
+    const currentIndex = favorites.findIndex(book => book.id === bookId);
+
+    if (currentIndex === -1) return;
+
+    const book = favorites[currentIndex];
+
+    const success = await this.favService.toggleFavorite(book);
+
+    if (!success) return;
+
+    requestAnimationFrame(() => {
+      const remainingButtons = this.removeButtons();
+
+      if (remainingButtons.length > 0) {
+        const nextIndex = Math.min(
+          currentIndex,
+          remainingButtons.length - 1
+        );
+
+        remainingButtons[nextIndex]
+          .nativeElement
+          .querySelector('button')
+          ?.focus();
+        return;
+      }
+
+      this.emptyStateHeading()?.nativeElement.focus();
+    });
+  }
 }

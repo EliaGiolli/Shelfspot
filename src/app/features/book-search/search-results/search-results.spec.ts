@@ -51,6 +51,22 @@ describe('SearchResults', () => {
     fixture.detectChanges();
   }
 
+  function getPaginationButtons(): HTMLButtonElement[] {
+    return Array.from(
+      fixture.nativeElement.querySelectorAll(
+        'nav[aria-label="Search results pagination"] app-button button'
+      )
+    );
+  }
+
+  function getDetailsButtons(): HTMLButtonElement[] {
+    return Array.from(
+      fixture.nativeElement.querySelectorAll(
+        'app-card app-button button'
+      )
+    );
+  }
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [SearchResults]
@@ -59,9 +75,7 @@ describe('SearchResults', () => {
     fixture = TestBed.createComponent(SearchResults);
     component = fixture.componentInstance;
 
-    setInputs(
-      { status: 'idle' }
-    );
+    setInputs({ status: 'idle' });
   });
 
   it('should create', () => {
@@ -119,9 +133,12 @@ describe('SearchResults', () => {
         mockBooks
       );
 
-      const buttons = fixture.nativeElement.querySelectorAll('app-button');
+      const buttons = getDetailsButtons();
 
-      expect(buttons.length).toBe(2);
+      expect(buttons).toHaveLength(2);
+      expect(buttons.every(button =>
+        button.textContent?.includes('View Details')
+      )).toBe(true);
     });
 
     it('should display the correct cover alt text', () => {
@@ -152,22 +169,46 @@ describe('SearchResults', () => {
       expect(content).toContain('Network error');
     });
 
+    it('should display an accessible alert when the API state is error', () => {
+      setInputs({
+        status: 'error',
+        error: 'Network error'
+      });
+
+      const alert = fixture.nativeElement.querySelector('[role="alert"]');
+
+      expect(alert).toBeTruthy();
+    });
+
     it('should display a retry button when the API state is error', () => {
       setInputs({
         status: 'error',
         error: 'Network error'
       });
 
-      const button = fixture.nativeElement.querySelector('app-button');
+      const button: HTMLButtonElement =
+        fixture.nativeElement.querySelector('app-button button');
 
       expect(button).toBeTruthy();
       expect(button.textContent).toContain('Retry Search');
+      expect(button.getAttribute('aria-label')).toBe('Retry book search');
     });
 
     it('should display an empty state when no books are found', () => {
       setInputs({ status: 'empty' });
 
       expect(fixture.nativeElement.textContent).toContain(
+        'No books found for your search.'
+      );
+    });
+
+    it('should expose the empty state through a status announcement', () => {
+      setInputs({ status: 'empty' });
+
+      const status = fixture.nativeElement.querySelector('[role="status"]');
+
+      expect(status).toBeTruthy();
+      expect(status.textContent).toContain(
         'No books found for your search.'
       );
     });
@@ -184,11 +225,9 @@ describe('SearchResults', () => {
         mockBooks
       );
 
-      const buttons: HTMLButtonElement[] = Array.from(
-        fixture.nativeElement.querySelectorAll('app-button button')
-      );
+      const buttons = getDetailsButtons();
 
-      expect(buttons.length).toBe(2);
+      expect(buttons).toHaveLength(2);
       expect(buttons.every(button => button.disabled)).toBe(true);
     });
   });
@@ -224,9 +263,7 @@ describe('SearchResults', () => {
         mockBooks
       );
 
-      const buttons: HTMLButtonElement[] = Array.from(
-        fixture.nativeElement.querySelectorAll('app-button button')
-      );
+      const buttons = getDetailsButtons();
 
       buttons[0].click();
 
@@ -244,7 +281,12 @@ describe('SearchResults', () => {
         true
       );
 
-      expect(fixture.nativeElement.textContent).toContain('Page 2');
+      const currentPage = fixture.nativeElement.querySelector(
+        '[aria-current="page"]'
+      );
+
+      expect(currentPage).toBeTruthy();
+      expect(currentPage.textContent.trim()).toBe('Current page: 2');
     });
 
     it('should disable previous page when on the first page', () => {
@@ -255,9 +297,7 @@ describe('SearchResults', () => {
         true
       );
 
-      const buttons: HTMLButtonElement[] = Array.from(
-        fixture.nativeElement.querySelectorAll('nav button')
-      );
+      const buttons = getPaginationButtons();
 
       expect(buttons[0].disabled).toBe(true);
     });
@@ -270,9 +310,7 @@ describe('SearchResults', () => {
         false
       );
 
-      const buttons: HTMLButtonElement[] = Array.from(
-        fixture.nativeElement.querySelectorAll('nav button')
-      );
+      const buttons = getPaginationButtons();
 
       expect(buttons[1].disabled).toBe(true);
     });
@@ -285,9 +323,7 @@ describe('SearchResults', () => {
         true
       );
 
-      const buttons: HTMLButtonElement[] = Array.from(
-        fixture.nativeElement.querySelectorAll('nav button')
-      );
+      const buttons = getPaginationButtons();
 
       expect(buttons[1].disabled).toBe(false);
     });
@@ -300,11 +336,29 @@ describe('SearchResults', () => {
         true
       );
 
-      const buttons: HTMLButtonElement[] = Array.from(
-        fixture.nativeElement.querySelectorAll('nav button')
+      const buttons = getPaginationButtons();
+
+      expect(buttons).toHaveLength(2);
+      expect(buttons.every(button => button.disabled)).toBe(true);
+    });
+
+    it('should expose accessible labels for pagination buttons', () => {
+      setInputs(
+        { status: 'success', data: mockResponse },
+        mockBooks,
+        2,
+        true
       );
 
-      expect(buttons.every(button => button.disabled)).toBe(true);
+      const buttons = getPaginationButtons();
+
+      expect(buttons[0].getAttribute('aria-label')).toBe(
+        'Go to previous page'
+      );
+
+      expect(buttons[1].getAttribute('aria-label')).toBe(
+        'Go to next page'
+      );
     });
 
     it('should emit previousPage when the previous button is clicked', () => {
@@ -319,9 +373,7 @@ describe('SearchResults', () => {
         true
       );
 
-      const buttons: HTMLButtonElement[] = Array.from(
-        fixture.nativeElement.querySelectorAll('nav button')
-      );
+      const buttons = getPaginationButtons();
 
       buttons[0].click();
 
@@ -340,9 +392,7 @@ describe('SearchResults', () => {
         true
       );
 
-      const buttons: HTMLButtonElement[] = Array.from(
-        fixture.nativeElement.querySelectorAll('nav button')
-      );
+      const buttons = getPaginationButtons();
 
       buttons[1].click();
 

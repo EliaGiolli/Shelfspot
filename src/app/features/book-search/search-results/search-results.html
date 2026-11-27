@@ -3,7 +3,6 @@
 <section
   class="w-full"
   role="region"
-  aria-live="polite"
   aria-label="Search results"
 >
   @if (state.status === 'error') {
@@ -17,9 +16,10 @@
       </p>
 
       <app-button
+        type="button"
         variant="primary"
-        (click)="retry.emit()"
         ariaLabel="Retry book search"
+        (click)="retry.emit()"
       >
         Retry Search
       </app-button>
@@ -36,7 +36,10 @@
   } @else if (books().length > 0) {
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
       @for (book of books(); track book.id) {
-        <app-card [titleId]="'title-' + book.id" variant="default">
+        <app-card
+          [titleId]="'title-' + book.id"
+          variant="default"
+        >
           <div
             card-header
             class="aspect-3/4 overflow-hidden rounded-xl bg-secondary/20 relative"
@@ -63,6 +66,7 @@
 
           <div card-footer>
             <app-button
+              type="button"
               variant="primary"
               class="w-full"
               [ariaLabel]="'View details for ' + book.title"
@@ -78,39 +82,44 @@
 
     <nav
       class="flex justify-between items-center mt-12 py-6 border-t border-primary/5 w-full"
-      aria-label="Pagination"
+      aria-label="Search results pagination"
     >
-      <button
-        (click)="previousPage.emit()"
+      <app-button
+        type="button"
+        variant="outline"
         [disabled]="currentPage() === 1 || state.status === 'loading'"
-        class="flex items-center gap-2 text-primary font-bold disabled:opacity-30 disabled:cursor-not-allowed group transition-colors hover:text-accent"
+        ariaLabel="Go to previous page"
+        (click)="previousPage.emit()"
       >
         <app-icon
           name="arrow-left.svg"
-          [size]="40"
-          class="group-hover:-translate-x-1 transition-transform"
+          [size]="24"
           aria-hidden="true"
         />
         Previous Page
-      </button>
+      </app-button>
 
-      <span class="font-serif italic text-primary/60" aria-current="page">
-        Page {{ currentPage() }}
+      <span
+        class="font-serif italic text-primary/60"
+        aria-current="page"
+      >
+        Current page: {{ currentPage() }}
       </span>
 
-      <button
-        (click)="nextPage.emit()"
+      <app-button
+        type="button"
+        variant="outline"
         [disabled]="state.status === 'loading' || !hasNextPage()"
-        class="flex items-center gap-2 text-primary font-bold disabled:opacity-30 disabled:cursor-not-allowed group transition-colors hover:text-accent"
+        ariaLabel="Go to next page"
+        (click)="nextPage.emit()"
       >
         Next Page
         <app-icon
           name="arrow-right.svg"
-          [size]="40"
-          class="group-hover:translate-x-1 transition-transform"
+          [size]="24"
           aria-hidden="true"
         />
-      </button>
+      </app-button>
     </nav>
   }
 </section>

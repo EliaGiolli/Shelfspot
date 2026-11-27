@@ -1,3 +1,4 @@
+
 <section
   class="my-24 mx-auto max-w-7xl px-4"
   aria-labelledby="book-preview-title"
@@ -16,157 +17,173 @@
   </header>
 
   <!-- Category filters -->
-    <nav
-        class="mb-8 flex flex-wrap md:flex-wrap justify-center gap-2 md:gap-3"
-        aria-label="Filter books by category"
+  <nav
+    class="mb-8 flex flex-wrap justify-center gap-2 md:gap-3"
+    aria-label="Filter books by category"
+  >
+    <app-button
+      type="button"
+      variant="primary"
+      [ariaPressed]="selectedCategory() === 'all'"
+      (click)="selectCategory('all')"
     >
-        <button
-            class="btn rounded-full"
-            [class.btn-primary]="selectedCategory() === 'all'"
-            [class.btn-outline]="selectedCategory() !== 'all'"
-            (click)="selectCategory('all')"
-        >
-            All
-        </button>
+      All
+    </app-button>
 
-        <button
-            class="btn rounded-full"
-            [class.btn-primary]="selectedCategory() === 'fiction'"
-            [class.btn-outline]="selectedCategory() !== 'fiction'"
-            (click)="selectCategory('fiction')"
-        >
-            Narrative
-        </button>
+    <app-button
+      type="button"
+      variant="outline"
+      [ariaPressed]="selectedCategory() === 'fiction'"
+      (click)="selectCategory('fiction')"
+    >
+      Narrative
+    </app-button>
 
-        <button
-            class="btn rounded-full"
-            [class.btn-primary]="selectedCategory() === 'science'"
-            [class.btn-outline]="selectedCategory() !== 'science'"
-            (click)="selectCategory('science')"
-        >
-            Science
-        </button>
+    <app-button
+      type="button"
+      variant="outline"
+      [ariaPressed]="selectedCategory() === 'science'"
+      (click)="selectCategory('science')"
+    >
+      Science
+    </app-button>
 
-        <button
-            class="btn rounded-full"
-            [class.btn-primary]="selectedCategory() === 'classics'"
-            [class.btn-outline]="selectedCategory() !== 'classics'"
-            (click)="selectCategory('classics')"
-        >
-            Classics
-        </button>
-    </nav>
+    <app-button
+      type="button"
+      variant="outline"
+      [ariaPressed]="selectedCategory() === 'classics'"
+      (click)="selectCategory('classics')"
+    >
+      Classics
+    </app-button>
+  </nav>
 
   <!-- Books carousel -->
   @if (isLoading()) {
     <div
-        class="carousel carousel-start w-full gap-4 rounded-box"
-        role="status"
-        aria-label="Loading books"
+      class="carousel carousel-start w-full gap-4 rounded-box"
+      role="status"
+      aria-label="Loading books"
+      aria-live="polite"
     >
-        @for (item of [1, 2, 3]; track item) {
+      @for (item of [1, 2, 3]; track item) {
         <div class="carousel-item w-full px-2 md:w-[calc((100%-2rem)/3)]">
-            <app-book-skeleton />
+          <app-book-skeleton />
         </div>
-        }
+      }
     </div>
-    } @else {
-    <div class="carousel carousel-start w-full gap-4 rounded-box">
-        @for (book of books(); track book.id; let i = $index) {
-            <!-- With calc() I calculate the card's width so that they fit inside the available width -->
-            <!-- 100% is the available with inside the carousel, 2rem is the total gap between cards -->
-            <!-- By dividing by 3 I know the exact space each card will each card will have -->
-            <article class="carousel-item w-full px-2 md:w-[calc((100%-2rem)/3)]">
-                <app-card
-                [titleId]="'preview-book-title-' + i"
-                variant="compact"
-                class="w-full"
-                >
-                <div card-header>
-                    <h3
-                    [id]="'preview-book-title-' + i"
-                    class="line-clamp-2 font-serif text-lg font-bold text-primary"
-                    >
-                    {{ book.title }}
-                    </h3>
-                </div>
+  } @else {
+    <div
+      class="carousel carousel-start w-full gap-4 rounded-box"
+      role="region"
+      aria-label="Book recommendations"
+      tabindex="0"
+    >
+      @for (book of books(); track book.id; let i = $index) {
+        <article class="carousel-item w-full px-2 md:w-[calc((100%-2rem)/3)]">
+          <app-card
+            [titleId]="'preview-book-title-' + i"
+            variant="compact"
+            class="w-full"
+          >
+            <div card-header>
+              <h3
+                [id]="'preview-book-title-' + i"
+                class="line-clamp-2 font-serif text-lg font-bold text-primary"
+              >
+                {{ book.title }}
+              </h3>
+            </div>
 
-                <div card-body>
-                    <div class="flex h-48 md:h-64 items-center justify-center overflow-hidden rounded-xl bg-base-200">
-                        @if (book.coverId) {
-                            <img
-                            [src]="'https://covers.openlibrary.org/b/id/' + book.coverId + '-M.jpg'"
-                            [alt]="'Cover of ' + book.title"
-                            class="h-full w-full object-contain"
-                            loading="lazy"
-                            />
-                        } @else {
-                            <span class="text-sm text-base-content/50">
-                                Cover unavailable
-                            </span>
-                        }
-                    </div>
+            <div card-body>
+              <div class="flex h-48 md:h-64 items-center justify-center overflow-hidden rounded-xl bg-base-200">
+                @if (book.coverId) {
+                  <img
+                    [src]="'https://covers.openlibrary.org/b/id/' + book.coverId + '-M.jpg'"
+                    [alt]="'Cover of ' + book.title"
+                    class="h-full w-full object-contain"
+                    loading="lazy"
+                  />
+                } @else {
+                  <span class="text-sm text-base-content/50">
+                    Cover unavailable
+                  </span>
+                }
+              </div>
 
-                    <p class="mt-3 text-sm text-base-content/70">
-                    {{ book.authors.join(', ') || 'Unknown author' }}
-                    </p>
+              <p class="mt-3 text-sm text-base-content/70">
+                {{ book.authors.join(', ') || 'Unknown author' }}
+              </p>
 
-                    <p class="text-xs text-base-content/50">
-                    First published: {{ book.firstPublishYear || 'Unknown' }}
-                    </p>
-                </div>
+              <p class="text-xs text-base-content/50">
+                First published: {{ book.firstPublishYear || 'Unknown' }}
+              </p>
+            </div>
 
-                <div card-footer class="flex justify-center py-3">
-                    <app-button-link
-                        variant="primary"
-                        [routerLink]="['/books', book.id]"
-                    >
-                    View details
-                    </app-button-link>
-                </div>
-                </app-card>
-            </article>
-        } @empty {
-        <p class="w-full py-8 text-center text-base-content/60">
-            No books available in this category.
+            <div card-footer class="flex justify-center py-3">
+              <app-button-link
+                variant="primary"
+                [routerLink]="['/books', book.id]"
+                [ariaLabel]="'View details for ' + book.title"
+              >
+                View details
+              </app-button-link>
+            </div>
+          </app-card>
+        </article>
+      } @empty {
+        <p
+          class="w-full py-8 text-center text-base-content/60"
+          role="status"
+        >
+          No books available in this category.
         </p>
-        }
+      }
     </div>
-    }
+  }
 
-    <!-- Pagination -->
-    <div class="join mt-8 flex justify-center">
-        <button
-            class="join-item btn btn-outline"
-            [disabled]="currentPage() === 1 || isLoading()"
-            (click)="previousPage()"
-            aria-label="Previous page"
-        >
-            «
-        </button>
+  <!-- Pagination -->
+  <nav
+    class="join mt-8 flex justify-center"
+    aria-label="Book recommendations pagination"
+  >
+    <app-button
+      type="button"
+      variant="outline"
+      [disabled]="currentPage() === 1 || isLoading()"
+      ariaLabel="Go to previous page"
+      (click)="previousPage()"
+    >
+      «
+    </app-button>
 
-        <button class="join-item btn btn-active" aria-current="page">
-            {{ currentPage() }}
-        </button>
+    <span
+      class="join-item flex items-center px-4 font-medium"
+      aria-current="page"
+      aria-label="Current page"
+    >
+      {{ currentPage() }}
+    </span>
 
-        <button
-            class="join-item btn btn-outline"
-            [disabled]="isLoading()"
-            (click)="nextPage()"
-            aria-label="Next page"
-        >
-            »
-        </button>
-    </div>
+    <app-button
+      type="button"
+      variant="outline"
+      [disabled]="isLoading()"
+      ariaLabel="Go to next page"
+      (click)="nextPage()"
+    >
+      »
+    </app-button>
+  </nav>
 
-    <!-- Button that redirect users to the /book route -->
-    <div class="w-full flex justify-center items-center p-5 mt-8">
-        <app-button-link
-            variant="primary"
-            routerLink="/books/search"
-            ariaLabel="Browse the book collection"
-        >
-            Search for books
-        </app-button-link>
-    </div>
+  <!-- Browse the book collection -->
+  <div class="mt-8 flex w-full items-center justify-center p-5">
+    <app-button-link
+      variant="primary"
+      routerLink="/books/search"
+      ariaLabel="Browse the book collection"
+    >
+      Search for books
+    </app-button-link>
+  </div>
 </section>

@@ -1,4 +1,4 @@
-
+import { AppLiveRegionDirective } from '../../../shared/directives/app-live-region.directive';
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -31,7 +31,6 @@ import { Button } from '../../../shared/components/button/button';
 
 // Pipes and Directives
 import { CoverFallbackPipe } from '../../../shared/pipes/cover-fallback-pipe-pipe';
-import { ClickFeedbackDirective } from '../../../shared/directives/click-feedback.directive';
 
 type BookDetailState =
   | { status: 'loading' }
@@ -46,8 +45,8 @@ type BookDetailState =
     IconComponent,
     Button,
     CoverFallbackPipe,
-    ClickFeedbackDirective,
-    RouterLink
+    RouterLink,
+    AppLiveRegionDirective,
   ],
   templateUrl: './book-detail.html'
 })

@@ -1,3 +1,4 @@
+
 import { Component, computed, input } from '@angular/core';
 import { ButtonVariant } from '../../types/custom-components-types';
 import { CustomButton } from '../../utils/btn-custom-variants';
@@ -7,10 +8,12 @@ import { CustomButton } from '../../utils/btn-custom-variants';
   standalone: true,
   template: `
     <button
-      [class] = "buttonClasses()"
+      [class]="buttonClasses()"
       [type]="type()"
       [disabled]="disabled()"
       [attr.aria-label]="ariaLabel() || null"
+      [attr.aria-pressed]="ariaPressed() ?? null"
+      [attr.aria-expanded]="ariaExpanded() ?? null"
     >
       <ng-content></ng-content>
     </button>
@@ -24,9 +27,10 @@ export class Button {
   type = input<'button' | 'submit' | 'reset'>('button');
   disabled = input(false);
   ariaLabel = input<string>();
+  ariaPressed = input<boolean | undefined>(undefined);
+  ariaExpanded = input<boolean | undefined>(undefined);
 
-  // This computation is part of the mimicking the behavior of clsx and CVA began inside the btn-custom-variants.ts file
-   protected buttonClasses = computed(() =>
+  protected buttonClasses = computed(() =>
     `${CustomButton.base} ${CustomButton.variants[this.variant()]}`
   );
 }

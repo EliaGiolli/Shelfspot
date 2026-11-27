@@ -1,3 +1,4 @@
+
 import { Routes } from '@angular/router';
 
 export const routes: Routes = [
@@ -31,8 +32,8 @@ export const routes: Routes = [
       {
         path: 'search',
         loadComponent: () =>
-          import('./features/book-search/search-page/search-page')
-            .then(m => m.SearchPage)
+          import('./features/book-search/search-container/search-container')
+            .then(m => m.SearchContainer)
       },
       {
         path: 'favorites',
@@ -59,18 +60,6 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/loans/loans-page/loans-page')
             .then(m => m.LoansPage)
-      },
-      {
-        path: 'new/:bookId',
-        loadComponent: () =>
-          import('./features/loans/loan-request/loan-request')
-            .then(m => m.LoanRequest)
-      },
-      {
-        path: ':loanId',
-        loadComponent: () =>
-          import('./features/loans/loan-detail/loan-detail')
-            .then(m => m.LoanDetail)
       }
     ]
   },

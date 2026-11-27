@@ -1,4 +1,4 @@
-import { By } from '@angular/platform-browser';
+
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { describe, it, expect, beforeEach } from 'vitest';
@@ -56,18 +56,14 @@ describe('Navbar', () => {
     });
 
     it('should display the mobile menu button', () => {
-      const button = getMenuButton();
-
-      expect(button).toBeTruthy();
+      expect(getMenuButton()).toBeTruthy();
     });
 
     it('should initialize the menu button with the correct accessibility attributes', () => {
       const button = getMenuButton();
 
       expect(button.getAttribute('aria-expanded')).toBe('false');
-      expect(button.getAttribute('aria-controls')).toBe(
-        'main-navigation',
-      );
+      expect(button.getAttribute('aria-controls')).toBe('main-navigation');
       expect(button.getAttribute('aria-label')).toBe(
         'Open navigation menu',
       );
@@ -98,9 +94,7 @@ describe('Navbar', () => {
 
       expect(navigation.classList.contains('visible')).toBe(true);
       expect(navigation.classList.contains('opacity-100')).toBe(true);
-      expect(
-        navigation.classList.contains('overflow-y-auto'),
-      ).toBe(true);
+      expect(navigation.classList.contains('overflow-y-auto')).toBe(true);
     });
 
     it('should update accessibility attributes when opening the menu', () => {
@@ -141,7 +135,7 @@ describe('Navbar', () => {
     it('should provide a link to the homepage', () => {
       const link = (
         fixture.nativeElement as HTMLElement
-      ).querySelector('app-button-link[routerLink="/"]');
+      ).querySelector('nav a[href="/"]');
 
       expect(link).toBeTruthy();
     });
@@ -149,9 +143,7 @@ describe('Navbar', () => {
     it('should provide a link to book search', () => {
       const link = (
         fixture.nativeElement as HTMLElement
-      ).querySelector(
-        'app-button-link[routerLink="/books/search"]',
-      );
+      ).querySelector('nav a[href="/books/search"]');
 
       expect(link).toBeTruthy();
     });
@@ -159,9 +151,7 @@ describe('Navbar', () => {
     it('should provide a link to favorites', () => {
       const link = (
         fixture.nativeElement as HTMLElement
-      ).querySelector(
-        'app-button-link[routerLink="/books/favorites"]',
-      );
+      ).querySelector('nav a[href="/books/favorites"]');
 
       expect(link).toBeTruthy();
     });
@@ -169,9 +159,7 @@ describe('Navbar', () => {
     it('should provide a link to loans', () => {
       const link = (
         fixture.nativeElement as HTMLElement
-      ).querySelector(
-        'app-button-link[routerLink="/books/loans"]',
-      );
+      ).querySelector('nav a[href="/loans"]');
 
       expect(link).toBeTruthy();
     });
@@ -179,19 +167,72 @@ describe('Navbar', () => {
     it('should provide a link to contacts', () => {
       const link = (
         fixture.nativeElement as HTMLElement
-      ).querySelector(
-        'app-button-link[routerLink="/contacts"]',
+      ).querySelector('nav a[href="/contacts"]');
+
+      expect(link).toBeTruthy();
+    });
+
+    it('should close the menu after selecting a navigation link', () => {
+      getMenuButton().click();
+      fixture.detectChanges();
+
+      const link = getNavigation().querySelector<HTMLAnchorElement>(
+        'app-button-link a',
       );
 
       expect(link).toBeTruthy();
+
+      link!.click();
+      fixture.detectChanges();
+
+      expect(component.isMenuOpen()).toBe(false);
+    });
+  });
+
+  describe('Focus management', () => {
+    it('should return focus to the menu button when closing the menu', () => {
+      const button = getMenuButton();
+
+      button.click();
+      fixture.detectChanges();
+
+      const link = getNavigation().querySelector<HTMLAnchorElement>(
+        'app-button-link a',
+      );
+
+      expect(link).toBeTruthy();
+
+      link!.focus();
+      expect(document.activeElement).toBe(link);
+
+      component.closeMenu();
+      fixture.detectChanges();
+
+      expect(document.activeElement).toBe(button);
+    });
+
+    it('should return focus to the menu button after selecting a navigation link', () => {
+      const button = getMenuButton();
+
+      button.click();
+      fixture.detectChanges();
+
+      const link = getNavigation().querySelector<HTMLAnchorElement>(
+        'app-button-link a',
+      );
+
+      expect(link).toBeTruthy();
+
+      link!.click();
+      fixture.detectChanges();
+
+      expect(document.activeElement).toBe(button);
     });
   });
 
   describe('Responsive layout', () => {
     it('should hide the mobile menu button on medium and larger screens', () => {
-      const button = getMenuButton();
-
-      expect(button.classList.contains('md:hidden')).toBe(true);
+      expect(getMenuButton().classList.contains('md:hidden')).toBe(true);
     });
 
     it('should display navigation horizontally on medium and larger screens', () => {
@@ -204,10 +245,8 @@ describe('Navbar', () => {
     });
 
     it('should use the elevated surface background for the mobile navigation', () => {
-      const navigation = getNavigation();
-
       expect(
-        navigation.classList.contains('bg-surface-elevated'),
+        getNavigation().classList.contains('bg-surface-elevated'),
       ).toBe(true);
     });
   });

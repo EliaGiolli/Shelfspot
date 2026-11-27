@@ -9,7 +9,6 @@ import { ButtonLinks } from '../../utils/btn-custom-variants';
   imports: [RouterLink, RouterLinkActive],
   template: `
     <a
-      [class.!bg-accent]="false"
       [class]="linkClasses() + ' ' + activeClasses()"
       [href]="disabled() ? null : href()"
       [routerLinkActive]="activeClasses()"
