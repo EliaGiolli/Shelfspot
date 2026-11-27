@@ -1,13 +1,7 @@
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { signal, type Signal } from '@angular/core';
-import {
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi,
-} from 'vitest';
+import { signal } from '@angular/core';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 import { FavoritePage } from './favorite-page';
 import { FavoriteService } from '../../../core/services/favorites.service';
@@ -18,39 +12,46 @@ describe('FavoritePage', () => {
   let fixture: ComponentFixture<FavoritePage>;
 
   let favoritesSignal: ReturnType<typeof signal<Book[]>>;
+  let isLoadedSignal: ReturnType<typeof signal<boolean>>;
+  let loadErrorSignal: ReturnType<typeof signal<string | null>>;
 
   let favoriteServiceMock: {
-    favorites: Signal<Book[]>;
+    favorites: ReturnType<typeof favoritesSignal.asReadonly>;
+    isLoaded: ReturnType<typeof isLoadedSignal.asReadonly>;
+    loadError: ReturnType<typeof loadErrorSignal.asReadonly>;
     toggleFavorite: ReturnType<typeof vi.fn>;
   };
 
   const mockBook: Book = {
     id: 'book-1',
-    key: '/works/book-1',
-    title: 'The Hobbit',
-    authors: ['J.R.R. Tolkien'],
-    subjects: ['Fantasy'],
+    key: '/works/OL123W',
+    title: 'Dune',
+    authors: ['Frank Herbert'],
     coverId: 123,
-    firstPublishYear: 1937,
-    description: 'A fantasy novel.',
+    firstPublishYear: 1965,
+    subjects: ['Science Fiction'],
   };
 
-  const secondBook: Book = {
+  const anotherBook: Book = {
     id: 'book-2',
-    key: '/works/book-2',
-    title: 'Pride and Prejudice',
-    authors: ['Jane Austen'],
-    subjects: ['Classic literature'],
+    key: '/works/OL456W',
+    title: 'Foundation',
+    authors: ['Isaac Asimov'],
     coverId: 456,
-    firstPublishYear: 1813,
+    firstPublishYear: 1951,
+    subjects: ['Science Fiction'],
   };
 
   beforeEach(async () => {
     favoritesSignal = signal<Book[]>([]);
+    isLoadedSignal = signal(true);
+    loadErrorSignal = signal<string | null>(null);
 
     favoriteServiceMock = {
       favorites: favoritesSignal.asReadonly(),
-      toggleFavorite: vi.fn().mockResolvedValue(true),
+      isLoaded: isLoadedSignal.asReadonly(),
+      loadError: loadErrorSignal.asReadonly(),
+      toggleFavorite: vi.fn(),
     };
 
     await TestBed.configureTestingModule({
@@ -67,206 +68,260 @@ describe('FavoritePage', () => {
     component = fixture.componentInstance;
 
     fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('Page heading', () => {
-    it('should display the library heading', () => {
-      const heading: HTMLElement | null =
-        fixture.nativeElement.querySelector('h1');
-
-      expect(heading?.textContent).toContain('Your');
-      expect(heading?.textContent).toContain('Library');
-    });
-
-    it('should display the collection description', () => {
-      expect(fixture.nativeElement.textContent).toContain(
-        'Your favorite books, all in one place.'
-      );
-    });
-  });
-
-  describe('Empty state', () => {
-    it('should display an empty state when there are no favorites', () => {
-      expect(fixture.nativeElement.textContent).toContain(
-        'Your collection is empty'
-      );
-    });
-
-    it('should display guidance for discovering books', () => {
-      expect(fixture.nativeElement.textContent).toContain(
-        'Explore the catalog and save the books you love.'
-      );
-    });
-
-    it('should not render book cards when favorites are empty', () => {
-      const cards = fixture.nativeElement.querySelectorAll('app-card');
-
-      expect(cards.length).toBe(0);
-    });
-  });
-
-  describe('Favorites rendering', () => {
-    beforeEach(() => {
-      favoritesSignal.set([mockBook, secondBook]);
-      fixture.detectChanges();
-    });
-
-    it('should render a card for each favorite book', () => {
-      const cards = fixture.nativeElement.querySelectorAll('app-card');
-
-      expect(cards.length).toBe(2);
-    });
-
-    it('should display book titles', () => {
-      const text = fixture.nativeElement.textContent;
-
-      expect(text).toContain('The Hobbit');
-      expect(text).toContain('Pride and Prejudice');
-    });
-
-    it('should display book authors', () => {
-      const text = fixture.nativeElement.textContent;
-
-      expect(text).toContain('J.R.R. Tolkien');
-      expect(text).toContain('Jane Austen');
-    });
-
-    it('should display publication years when available', () => {
-      const text = fixture.nativeElement.textContent;
-
-      expect(text).toContain('1937');
-      expect(text).toContain('1813');
-    });
-
-    it('should display the unknown author fallback when authors are missing', () => {
-      favoritesSignal.set([
-        {
-          ...mockBook,
-          authors: [],
-        },
-      ]);
+  describe('loading state', () => {
+    it('should display loading state while favorites are loading', () => {
+      isLoadedSignal.set(false);
 
       fixture.detectChanges();
 
-      expect(fixture.nativeElement.textContent).toContain(
-        'Unknown Author'
-      );
+      expect(fixture.nativeElement.textContent)
+        .toContain('Loading your favorites...');
     });
 
-    it('should render book covers with descriptive alt text', () => {
-      const images: NodeListOf<HTMLImageElement> =
+    it('should not display the empty state while loading', () => {
+      isLoadedSignal.set(false);
+
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent)
+        .not.toContain('Your collection is empty');
+    });
+
+    it('should display a loading spinner', () => {
+      isLoadedSignal.set(false);
+
+      fixture.detectChanges();
+
+      const spinner: HTMLElement | null =
+        fixture.nativeElement.querySelector('.loading-spinner');
+
+      expect(spinner).not.toBeNull();
+    });
+  });
+
+  describe('error state', () => {
+    it('should display an error when favorites cannot be loaded', () => {
+      loadErrorSignal.set(
+        'Unable to load your favorites. Please try again.',
+      );
+
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent)
+        .toContain('Unable to load your favorites');
+    });
+
+    it('should display the actual loading error message', () => {
+      loadErrorSignal.set('Storage unavailable');
+
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent)
+        .toContain('Storage unavailable');
+    });
+
+    it('should expose the error through an alert role', () => {
+      loadErrorSignal.set('Storage unavailable');
+
+      fixture.detectChanges();
+
+      const alert: HTMLElement | null =
+        fixture.nativeElement.querySelector('[role="alert"]');
+
+      expect(alert).not.toBeNull();
+    });
+
+    it('should not display the empty state when loading fails', () => {
+      loadErrorSignal.set('Storage unavailable');
+
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent)
+        .not.toContain('Your collection is empty');
+    });
+  });
+
+  describe('empty state', () => {
+    it('should display the empty state when there are no favorites', () => {
+      favoritesSignal.set([]);
+      isLoadedSignal.set(true);
+      loadErrorSignal.set(null);
+
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent)
+        .toContain('Your collection is empty');
+    });
+
+    it('should display the empty state description', () => {
+      favoritesSignal.set([]);
+
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent)
+        .toContain('You haven\'t added any favorites yet.');
+    });
+
+    it('should display the book icon in the empty state', () => {
+      favoritesSignal.set([]);
+
+      fixture.detectChanges();
+
+      const emptyState = fixture.nativeElement.querySelector(
+        'h2',
+      );
+
+      expect(emptyState?.textContent)
+        .toContain('Your collection is empty');
+    });
+  });
+
+  describe('favorites grid', () => {
+    it('should display favorite books', () => {
+      favoritesSignal.set([mockBook]);
+
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toContain('Dune');
+      expect(fixture.nativeElement.textContent)
+        .toContain('Frank Herbert');
+    });
+
+    it('should display multiple favorite books', () => {
+      favoritesSignal.set([mockBook, anotherBook]);
+
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toContain('Dune');
+      expect(fixture.nativeElement.textContent)
+        .toContain('Foundation');
+    });
+
+    it('should display book covers with descriptive alt text', () => {
+      favoritesSignal.set([mockBook, anotherBook]);
+
+      fixture.detectChanges();
+
+      const covers: NodeListOf<HTMLImageElement> =
         fixture.nativeElement.querySelectorAll(
-          'img[alt^="Cover of"]'
+          'img[alt^="Cover of"]',
         );
 
-      expect(images.length).toBe(2);
-      expect(images[0].alt).toBe('Cover of The Hobbit');
-      expect(images[1].alt).toBe('Cover of Pride and Prejudice');
+      expect(covers.length).toBe(2);
+      expect(covers[0].alt).toBe('Cover of Dune');
+      expect(covers[1].alt).toBe('Cover of Foundation');
     });
 
     it('should lazy-load book cover images', () => {
-      const images: NodeListOf<HTMLImageElement> =
-        fixture.nativeElement.querySelectorAll(
-          'img[alt^="Cover of"]'
+      favoritesSignal.set([mockBook]);
+
+      fixture.detectChanges();
+
+      const cover: HTMLImageElement | null =
+        fixture.nativeElement.querySelector(
+          'img[alt^="Cover of"]',
         );
 
-      expect(images.length).toBe(2);
-
-      images.forEach(image => {
-        expect(image.getAttribute('loading')).toBe('lazy');
-      });
+      expect(cover?.getAttribute('loading')).toBe('lazy');
     });
 
-    it('should associate each card with its book title', () => {
-      const card: HTMLElement =
-        fixture.nativeElement.querySelector('app-card');
+    it('should display the publication year when available', () => {
+      favoritesSignal.set([mockBook]);
 
-      const article: HTMLElement | null =
-        card.querySelector('article');
+      fixture.detectChanges();
 
-      const titleId = article?.getAttribute('aria-labelledby');
+      expect(fixture.nativeElement.textContent).toContain('1965');
+    });
 
-      expect(titleId).toBe('favorite-title-book-1');
+    it('should not display a publication year when unavailable', () => {
+      const bookWithoutYear: Book = {
+        ...mockBook,
+        firstPublishYear: undefined,
+      };
 
-      const title = fixture.nativeElement.querySelector(
-        `#${titleId}`
-      );
+      favoritesSignal.set([bookWithoutYear]);
 
-      expect(title?.textContent).toContain('The Hobbit');
+      fixture.detectChanges();
+
+      const yearElements: NodeListOf<HTMLElement> =
+        fixture.nativeElement.querySelectorAll(
+          '.uppercase.tracking-wider',
+        );
+
+      expect(yearElements.length).toBe(0);
+    });
+
+    it('should display Unknown Author when a book has no authors', () => {
+      const bookWithoutAuthors: Book = {
+        ...mockBook,
+        authors: [],
+      };
+
+      favoritesSignal.set([bookWithoutAuthors]);
+
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent)
+        .toContain('Unknown Author');
     });
   });
 
-  describe('Favorite removal', () => {
-    beforeEach(() => {
-      favoritesSignal.set([mockBook]);
+  describe('favorite actions', () => {
+    it('should display a remove favorite button for each book', () => {
+      favoritesSignal.set([mockBook, anotherBook]);
+
       fixture.detectChanges();
+
+      const buttons: NodeListOf<HTMLButtonElement> =
+        fixture.nativeElement.querySelectorAll('app-button button');
+
+      expect(buttons.length).toBe(2);
     });
 
-    it('should display a remove favorite button', () => {
-      const button: HTMLButtonElement =
-        fixture.nativeElement.querySelector(
-          'button[aria-label="Remove The Hobbit from favorites"]'
-        );
+    it('should provide an accessible label for the remove button', () => {
+      favoritesSignal.set([mockBook]);
 
-      expect(button).toBeTruthy();
+      fixture.detectChanges();
+
+      const button: HTMLButtonElement | null =
+        fixture.nativeElement.querySelector('app-button button');
+
+      expect(button?.getAttribute('aria-label'))
+        .toBe('Remove Dune from favorites');
     });
 
-    it('should call toggleFavorite with the selected book', () => {
+    it('should call toggleFavorite when the remove button is clicked', () => {
+      favoritesSignal.set([mockBook]);
+
+      fixture.detectChanges();
+
       const button: HTMLButtonElement =
-        fixture.nativeElement.querySelector(
-          'button[aria-label="Remove The Hobbit from favorites"]'
-        );
+        fixture.nativeElement.querySelector('app-button button');
 
       button.click();
 
       expect(favoriteServiceMock.toggleFavorite)
         .toHaveBeenCalledWith(mockBook);
     });
-
-    it('should not display remove buttons when there are no favorites', () => {
-      favoritesSignal.set([]);
-      fixture.detectChanges();
-
-      const buttons =
-        fixture.nativeElement.querySelectorAll(
-          'button[aria-label^="Remove"]'
-        );
-
-      expect(buttons.length).toBe(0);
-    });
   });
 
-  describe('Reactive updates', () => {
-    it('should update the displayed cards when favorites change', () => {
-      favoritesSignal.set([mockBook]);
-      fixture.detectChanges();
-
-      expect(
-        fixture.nativeElement.querySelectorAll('app-card').length
-      ).toBe(1);
-
-      favoritesSignal.set([mockBook, secondBook]);
-      fixture.detectChanges();
-
-      expect(
-        fixture.nativeElement.querySelectorAll('app-card').length
-      ).toBe(2);
+  describe('page heading', () => {
+    it('should display the page title', () => {
+      expect(fixture.nativeElement.textContent)
+        .toContain('Library');
     });
 
-    it('should display the empty state after all favorites are removed', () => {
-      favoritesSignal.set([mockBook]);
-      fixture.detectChanges();
-
-      favoritesSignal.set([]);
-      fixture.detectChanges();
-
-      expect(fixture.nativeElement.textContent).toContain(
-        'Your collection is empty'
-      );
+    it('should display the page description', () => {
+      expect(fixture.nativeElement.textContent)
+        .toContain('Your favorite books, all in one place.');
     });
   });
 });

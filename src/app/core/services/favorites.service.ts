@@ -14,7 +14,7 @@ export class FavoriteService {
 
   readonly favorites = this.favoritesSignal.asReadonly();
   readonly isLoaded = signal(false);
-
+  readonly loadError = signal<string | null>(null);
   readonly favoriteActionStatus = signal<FavoriteActionStatus>('idle');
   readonly favoriteActionMessage = signal('');
 
@@ -28,13 +28,18 @@ export class FavoriteService {
   private async loadFavorites(): Promise<void> {
     try {
       const favorites = await this.repository.getAll();
+
       this.favoritesSignal.set(favorites);
+      this.loadError.set(null);
     } catch (error) {
       console.error('Failed to load favorites.', error);
+
+      this.favoritesSignal.set([]);
+      this.loadError.set('Unable to load your favorites. Please try again.');
     } finally {
       this.isLoaded.set(true);
     }
-  }
+}
 
   toggleFavorite(book: Book): Promise<boolean> {
     this.favoriteActionStatus.set('idle');
