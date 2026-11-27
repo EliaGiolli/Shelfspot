@@ -94,8 +94,13 @@
             {{ loanService.isBorrowed(bookData.id) ? 'Already Borrowed' : 'Borrow Book' }}
           </app-button>
 
+          
           <app-button
             variant="outline"
+            [ariaLabel]="favoriteService.isFavorite(bookData)
+              ? 'Remove ' + bookData.title + ' from favorites'
+              : 'Add ' + bookData.title + ' to favorites'"
+            [ariaPressed]="favoriteService.isFavorite(bookData)"
             (click)="favoriteService.toggleFavorite(bookData)"
           >
             <app-icon
@@ -105,7 +110,22 @@
             />
           </app-button>
 
+
         </div>
+
+        <!-- Favorite feedback -->
+        @if (favoriteService.favoriteActionStatus() !== 'idle') {
+          <p
+            class="mt-3 text-sm"
+            [class.text-success]="favoriteService.favoriteActionStatus() === 'success'"
+            [class.text-error]="favoriteService.favoriteActionStatus() === 'error'"
+            [attr.role]="favoriteService.favoriteActionStatus() === 'error' ? 'alert' : 'status'"
+            aria-live="polite"
+          >
+            {{ favoriteService.favoriteActionMessage() }}
+          </p>
+        }
+
       </div>
     </article>
   }
@@ -148,7 +168,7 @@
         {{ state.message }}
       </p>
 
-      <div class="flex flex-wrap justify-center gap-3 mt-3">
+      <div class="mt-3 flex flex-wrap justify-center gap-3">
         <app-button
           variant="primary"
           (click)="retryBookLoad()"
