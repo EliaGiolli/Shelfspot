@@ -135,7 +135,7 @@ describe('Navbar', () => {
     it('should provide a link to the homepage', () => {
       const link = (
         fixture.nativeElement as HTMLElement
-      ).querySelector('app-button-link[routerLink="/"]');
+      ).querySelector('nav a[href="/"]');
 
       expect(link).toBeTruthy();
     });
@@ -143,7 +143,7 @@ describe('Navbar', () => {
     it('should provide a link to book search', () => {
       const link = (
         fixture.nativeElement as HTMLElement
-      ).querySelector('app-button-link[routerLink="/books/search"]');
+      ).querySelector('nav a[href="/books/search"]');
 
       expect(link).toBeTruthy();
     });
@@ -151,7 +151,7 @@ describe('Navbar', () => {
     it('should provide a link to favorites', () => {
       const link = (
         fixture.nativeElement as HTMLElement
-      ).querySelector('app-button-link[routerLink="/books/favorites"]');
+      ).querySelector('nav a[href="/books/favorites"]');
 
       expect(link).toBeTruthy();
     });
@@ -159,7 +159,7 @@ describe('Navbar', () => {
     it('should provide a link to loans', () => {
       const link = (
         fixture.nativeElement as HTMLElement
-      ).querySelector('app-button-link[routerLink="/books/loans"]');
+      ).querySelector('nav a[href="/loans"]');
 
       expect(link).toBeTruthy();
     });
@@ -167,7 +167,7 @@ describe('Navbar', () => {
     it('should provide a link to contacts', () => {
       const link = (
         fixture.nativeElement as HTMLElement
-      ).querySelector('app-button-link[routerLink="/contacts"]');
+      ).querySelector('nav a[href="/contacts"]');
 
       expect(link).toBeTruthy();
     });

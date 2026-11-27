@@ -35,51 +35,17 @@
       [class.overflow-y-auto]="isMenuOpen()"
       class="absolute left-0 top-full z-50 flex w-full flex-col items-center overflow-hidden bg-surface-elevated border-b border-accent/20 shadow-lg transition-[max-height,opacity,visibility] duration-300 ease-in-out md:visible md:static md:max-h-none md:w-auto md:flex-row md:gap-6 md:overflow-visible md:bg-transparent md:opacity-100 md:shadow-none"
     >
-      <app-button-link
-        routerLink="/"
-        routerLinkActive="!text-accent"
-        [routerLinkActiveOptions]="{ exact: true }"
-        (click)="closeMenu()"
-        variant="outline"
-      >
-        Homepage
-      </app-button-link>
-
-      <app-button-link
-        variant="outline"
-        routerLink="/books/search"
-        routerLinkActive="!text-accent"
-        (click)="closeMenu()"
-      >
-        Search Books
-      </app-button-link>
-
-      <app-button-link
-        variant="outline"
-        routerLink="/books/favorites"
-        routerLinkActive="!text-accent"
-        (click)="closeMenu()"
-      >
-        Favorites
-      </app-button-link>
-
-      <app-button-link
-        variant="outline"
-        routerLink="/books/loans"
-        routerLinkActive="!text-accent"
-        (click)="closeMenu()"
-      >
-        Loans
-      </app-button-link>
-
-      <app-button-link
-        variant="outline"
-        routerLink="/contacts"
-        routerLinkActive="!text-accent"
-        (click)="closeMenu()"
-      >
-        Contacts
-      </app-button-link>
+      @for (item of navItems; track item.path) {
+        <app-button-link
+          [routerLink]="item.path"
+          routerLinkActive="!text-accent"
+          [routerLinkActiveOptions]="{ exact: item.exact ?? false }"
+          (click)="closeMenu()"
+          variant="outline"
+        >
+          {{ item.label }}
+        </app-button-link>
+      }
     </nav>
 
   </div>
