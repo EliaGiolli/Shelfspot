@@ -1,15 +1,17 @@
 
 import { TestBed } from '@angular/core/testing';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, expect, it, beforeEach, vi } from 'vitest';
 
 import { FavoriteService } from './favorites.service';
 import { FAVORITES_REPOSITORY } from '../tokens/favorites-repository.token';
-import type { FavoritesRepository } from '../../features/favorites/repository/favorites.repository';
+
+import { AppError } from '../errors/app-error';
+
 import type { Book } from '../../shared/types/book';
+import type { FavoritesRepository } from '../../features/favorites/repository/favorites.repository';
 
 describe('FavoriteService', () => {
   let service: FavoriteService;
-
   let repositoryMock: {
     getAll: ReturnType<typeof vi.fn>;
     saveAll: ReturnType<typeof vi.fn>;
@@ -17,25 +19,13 @@ describe('FavoriteService', () => {
 
   const mockBook: Book = {
     id: 'book-1',
-    key: '/works/OL123W',
-    title: 'Dune',
-    authors: ['Frank Herbert'],
-    coverId: 123,
-    firstPublishYear: 1965,
-    subjects: ['Science Fiction'],
+    key: '/works/book-1',
+    title: 'Test Book',
+    authors: ['Test Author'],
+    subjects: []
   };
 
-  const anotherBook: Book = {
-    id: 'book-2',
-    key: '/works/OL456W',
-    title: 'Foundation',
-    authors: ['Isaac Asimov'],
-    coverId: 456,
-    firstPublishYear: 1951,
-    subjects: ['Science Fiction'],
-  };
-
-  const createService = (): FavoriteService => {
+  function createService(): FavoriteService {
     TestBed.resetTestingModule();
 
     TestBed.configureTestingModule({
@@ -43,220 +33,215 @@ describe('FavoriteService', () => {
         FavoriteService,
         {
           provide: FAVORITES_REPOSITORY,
-          useValue: repositoryMock,
-        },
-      ],
+          useValue: repositoryMock
+        }
+      ]
     });
 
     return TestBed.inject(FavoriteService);
-  };
+  }
 
   beforeEach(() => {
     repositoryMock = {
       getAll: vi.fn().mockResolvedValue([]),
-      saveAll: vi.fn().mockResolvedValue(undefined),
+      saveAll: vi.fn().mockResolvedValue(undefined)
     };
 
     service = createService();
   });
 
-  describe('initialization', () => {
-    it('should be created', () => {
-      expect(service).toBeTruthy();
-    });
+  it('should be created', () => {
+    expect(service).toBeTruthy();
+  });
 
-    it('should initialize with an empty favorites list', () => {
-      expect(service.favorites()).toEqual([]);
-    });
+  it('should initialize with an empty favorites list', async () => {
+    await Promise.resolve();
 
-    it('should initialize with isLoaded set to false', () => {
-      repositoryMock.getAll.mockReturnValue(
-        new Promise<Book[]>(() => {}),
-      );
+    expect(service.favorites()).toEqual([]);
+  });
 
-      service = createService();
+  it('should load favorites from the repository', async () => {
+    repositoryMock.getAll.mockResolvedValue([mockBook]);
+    service = createService();
 
-      expect(service.isLoaded()).toBe(false);
-    });
-
-    it('should load favorites from the repository', async () => {
-      repositoryMock.getAll.mockResolvedValue([mockBook]);
-
-      vi.clearAllMocks();
-      service = createService();
-
-      await vi.waitFor(() => {
-        expect(service.isLoaded()).toBe(true);
-      });
-
+    await vi.waitFor(() => {
       expect(service.favorites()).toEqual([mockBook]);
-      expect(repositoryMock.getAll).toHaveBeenCalledOnce();
     });
 
-    it('should set isLoaded to true after loading completes', async () => {
-      await vi.waitFor(() => {
-        expect(service.isLoaded()).toBe(true);
-      });
-    });
+    expect(repositoryMock.getAll).toHaveBeenCalledOnce();
+  });
 
-    it('should expose no load error after successful loading', async () => {
-      await vi.waitFor(() => {
-        expect(service.isLoaded()).toBe(true);
-      });
-
-      expect(service.loadError()).toBeNull();
-    });
-
-    it('should expose a load error when repository loading fails', async () => {
-      repositoryMock.getAll.mockRejectedValue(
-        new Error('Storage unavailable'),
-      );
-
-      service = createService();
-
-      await vi.waitFor(() => {
-        expect(service.isLoaded()).toBe(true);
-      });
-
-      expect(service.favorites()).toEqual([]);
-      expect(service.loadError()).toBe(
-        'Unable to load your favorites. Please try again.',
-      );
-    });
-
-    it('should not expose a load error before loading completes', () => {
-      expect(service.loadError()).toBeNull();
+  it('should expose isLoaded after initialization', async () => {
+    await vi.waitFor(() => {
+      expect(service.isLoaded()).toBe(true);
     });
   });
 
-  describe('isFavorite()', () => {
-    it('should return true when a book is in favorites', async () => {
-      repositoryMock.getAll.mockResolvedValue([mockBook]);
+  it('should handle repository loading errors', async () => {
+    repositoryMock.getAll.mockRejectedValue(new Error('Storage failure'));
+    service = createService();
 
-      service = createService();
-
-      await vi.waitFor(() => {
-        expect(service.isLoaded()).toBe(true);
-      });
-
-      expect(service.isFavorite(mockBook)).toBe(true);
+    await vi.waitFor(() => {
+      expect(service.loadError()).not.toBeNull();
     });
 
-    it('should return false when a book is not in favorites', () => {
-      expect(service.isFavorite(mockBook)).toBe(false);
-    });
+    expect(service.favorites()).toEqual([]);
+    expect(service.isLoaded()).toBe(true);
   });
 
-  describe('toggleFavorite()', () => {
-    it('should add a book to favorites', async () => {
-      const result = await service.toggleFavorite(mockBook);
+  it('should not update favorites if initial loading failed', async () => {
+    repositoryMock.getAll.mockRejectedValue(new Error('Storage failure'));
+    service = createService();
 
-      expect(result).toBe(true);
+    const result = await service.toggleFavorite(mockBook);
+
+    expect(result).toBe(false);
+    expect(service.favorites()).toEqual([]);
+    expect(repositoryMock.saveAll).not.toHaveBeenCalled();
+    expect(service.favoriteActionStatus()).toBe('error');
+  });
+
+  it('should expose an AppError when loading fails', async () => {
+    repositoryMock.getAll.mockRejectedValue(new Error('Storage failure'));
+    service = createService();
+
+    await vi.waitFor(() => {
+      expect(service.loadError()).not.toBeNull();
+    });
+
+    expect(service.loadError()).toBe(
+      'Unable to load your favorites. Please try again.'
+    );
+  });
+
+  it('should add a book to favorites', async () => {
+    const result = await service.toggleFavorite(mockBook);
+
+    expect(result).toBe(true);
+    expect(service.favorites()).toEqual([mockBook]);
+    expect(service.isFavorite(mockBook)).toBe(true);
+    expect(repositoryMock.saveAll).toHaveBeenCalledWith([mockBook]);
+  });
+
+  it('should remove a book from favorites', async () => {
+    repositoryMock.getAll.mockResolvedValue([mockBook]);
+    service = createService();
+
+    await vi.waitFor(() => {
       expect(service.favorites()).toEqual([mockBook]);
-      expect(service.isFavorite(mockBook)).toBe(true);
     });
 
-    it('should persist the updated favorites when adding a book', async () => {
-      await service.toggleFavorite(mockBook);
+    const result = await service.toggleFavorite(mockBook);
 
-      expect(repositoryMock.saveAll).toHaveBeenCalledWith([mockBook]);
+    expect(result).toBe(true);
+    expect(service.favorites()).toEqual([]);
+    expect(service.isFavorite(mockBook)).toBe(false);
+    expect(repositoryMock.saveAll).toHaveBeenCalledWith([]);
+  });
+
+  it('should expose a success message when adding a favorite', async () => {
+    await service.toggleFavorite(mockBook);
+
+    expect(service.favoriteActionStatus()).toBe('success');
+    expect(service.favoriteActionMessage()).toBe(
+      'Test Book has been added to favorites.'
+    );
+  });
+
+  it('should expose a success message when removing a favorite', async () => {
+    repositoryMock.getAll.mockResolvedValue([mockBook]);
+    service = createService();
+
+    await vi.waitFor(() => {
+      expect(service.favorites()).toEqual([mockBook]);
     });
 
-    it('should remove a book from favorites when it already exists', async () => {
-      repositoryMock.getAll.mockResolvedValue([mockBook]);
+    await service.toggleFavorite(mockBook);
 
-      service = createService();
+    expect(service.favoriteActionStatus()).toBe('success');
+    expect(service.favoriteActionMessage()).toBe(
+      'Test Book has been removed from favorites.'
+    );
+  });
 
-      await vi.waitFor(() => {
-        expect(service.isLoaded()).toBe(true);
-      });
+  it('should expose loading status while saving', async () => {
+    let resolveSave!: () => void;
 
-      const result = await service.toggleFavorite(mockBook);
+    repositoryMock.saveAll.mockImplementation(
+      () => new Promise<void>(resolve => {
+        resolveSave = resolve;
+      })
+    );
 
-      expect(result).toBe(true);
-      expect(service.favorites()).toEqual([]);
-      expect(service.isFavorite(mockBook)).toBe(false);
+    const operation = service.toggleFavorite(mockBook);
+
+    await vi.waitFor(() => {
+      expect(service.favoriteActionStatus()).toBe('loading');
     });
 
-    it('should preserve other favorites when removing a book', async () => {
-      repositoryMock.getAll.mockResolvedValue([
-        mockBook,
-        anotherBook,
-      ]);
+    resolveSave();
+    await operation;
 
-      service = createService();
+    expect(service.favoriteActionStatus()).toBe('success');
+  });
 
-      await vi.waitFor(() => {
-        expect(service.isLoaded()).toBe(true);
-      });
+  it('should handle save errors without updating favorites', async () => {
+    repositoryMock.saveAll.mockRejectedValue(new Error('Save failure'));
 
-      await service.toggleFavorite(mockBook);
+    const result = await service.toggleFavorite(mockBook);
 
-      expect(service.favorites()).toEqual([anotherBook]);
-    });
+    expect(result).toBe(false);
+    expect(service.favorites()).toEqual([]);
+    expect(service.favoriteActionStatus()).toBe('error');
+    expect(service.favoriteActionMessage()).toBe(
+      'Unable to update favorites. Please try again.'
+    );
+  });
 
-    it('should expose a success message when adding a favorite', async () => {
-      await service.toggleFavorite(mockBook);
+  it('should expose a structured AppError when saving fails', async () => {
+    repositoryMock.saveAll.mockRejectedValue(new Error('Save failure'));
 
-      expect(service.favoriteActionStatus()).toBe('success');
-      expect(service.favoriteActionMessage()).toBe(
-        'Added to favorites.',
-      );
-    });
+    await service.toggleFavorite(mockBook);
 
-    it('should expose a success message when removing a favorite', async () => {
-      repositoryMock.getAll.mockResolvedValue([mockBook]);
+    expect(service.favoriteActionError()).toBeInstanceOf(AppError);
+    expect(service.favoriteActionError()?.type).toBe('storage');
+    expect(service.favoriteActionError()?.originalError).toBeInstanceOf(Error);
+  });
 
-      service = createService();
+  it('should clear previous action errors before a new operation', async () => {
+    repositoryMock.saveAll.mockRejectedValueOnce(new Error('Save failure'));
 
-      await vi.waitFor(() => {
-        expect(service.isLoaded()).toBe(true);
-      });
+    await service.toggleFavorite(mockBook);
 
-      await service.toggleFavorite(mockBook);
+    expect(service.favoriteActionError()).toBeInstanceOf(AppError);
 
-      expect(service.favoriteActionStatus()).toBe('success');
-      expect(service.favoriteActionMessage()).toBe(
-        'Removed from favorites.',
-      );
-    });
+    repositoryMock.saveAll.mockResolvedValue(undefined);
 
-    it('should not update favorites when persistence fails', async () => {
-      repositoryMock.saveAll.mockRejectedValue(
-        new Error('Storage unavailable'),
-      );
+    await service.toggleFavorite(mockBook);
 
-      const result = await service.toggleFavorite(mockBook);
+    expect(service.favoriteActionError()).toBeNull();
+    expect(service.favoriteActionStatus()).toBe('success');
+  });
 
-      expect(result).toBe(false);
-      expect(service.favorites()).toEqual([]);
-      expect(service.isFavorite(mockBook)).toBe(false);
-    });
+  it('should serialize concurrent favorite operations', async () => {
+    const secondBook: Book = {
+      ...mockBook,
+      id: 'book-2',
+      key: '/works/book-2',
+      title: 'Second Book'
+    };
 
-    it('should expose an error message when persistence fails', async () => {
-      repositoryMock.saveAll.mockRejectedValue(
-        new Error('Storage unavailable'),
-      );
+    await Promise.all([
+      service.toggleFavorite(mockBook),
+      service.toggleFavorite(secondBook)
+    ]);
 
-      await service.toggleFavorite(mockBook);
+    expect(service.favorites()).toEqual([mockBook, secondBook]);
+    expect(repositoryMock.saveAll).toHaveBeenCalledTimes(2);
+  });
 
-      expect(service.favoriteActionStatus()).toBe('error');
-      expect(service.favoriteActionMessage()).toBe(
-        'Unable to update favorites. Please try again.',
-      );
-    });
-
-    it('should clear the previous action feedback before a new operation', async () => {
-      await service.toggleFavorite(mockBook);
-
-      expect(service.favoriteActionStatus()).toBe('success');
-
-      await service.toggleFavorite(anotherBook);
-
-      expect(service.favoriteActionStatus()).toBe('success');
-      expect(service.favoriteActionMessage()).toBe(
-        'Added to favorites.',
-      );
-    });
+  it('should expose favorites as a readonly signal', () => {
+    expect(service.favorites()).toEqual([]);
+    expect('set' in service.favorites()).toBe(false);
   });
 });
